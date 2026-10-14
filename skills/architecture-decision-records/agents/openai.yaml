@@ -1,0 +1,4 @@
+interface:
+  display_name: "Architecture Decision Records"
+  short_description: "Record choices and consequences in the chosen document"
+  default_prompt: "Use $architecture-decision-records with the supplied project context and requested output scope."

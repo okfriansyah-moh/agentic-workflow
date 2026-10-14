@@ -1,0 +1,4 @@
+interface:
+  display_name: "STRIDE Threat Analysis"
+  short_description: "Analyze concrete threats across trust boundaries"
+  default_prompt: "Use $stride-analysis-patterns with the supplied project context and requested output scope."

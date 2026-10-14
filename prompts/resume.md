@@ -1,0 +1,5 @@
+# Resume an interrupted implementation
+
+Resolve the selected bundle from the repository .ai/config.json: its bundle value is relative to the .ai directory. Open each required skills/<name>/SKILL.md directly under that bundle, even when a same-named global skill is already available or loaded. Resolve supporting resources relative to the selected skill file. Use the selected global bundle only when the repository has no .ai/config.json; resolve its bundle value relative to the global configuration directory. Name-based discovery never overrides the repository pin.
+
+Use the existing Forge state and selected pinned bundle. Reconcile task execution fields, source hashes, Git branches/base ancestry, claims, worker identities, receipts and artifact hashes. Resume related workers when available; replace only unavailable workers with a compact handoff. Recheck implementation fingerprints before reusing evidence. Release stale claims only with ownership/liveness evidence. Preserve branches and uncommitted work. Continue eligible work in dependency order within the remaining correction budget and return the exact recovery action for blocked groups.

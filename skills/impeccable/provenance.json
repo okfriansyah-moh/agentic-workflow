@@ -1,0 +1,13 @@
+{
+  "name": "impeccable",
+  "repo": "pbakaus/impeccable",
+  "commit": "d631a8827f99414d2b6daba4ef08b7f8701751d7",
+  "path": ".agents/skills/impeccable",
+  "url": "https://github.com/pbakaus/impeccable/tree/d631a8827f99414d2b6daba4ef08b7f8701751d7/.agents/skills/impeccable",
+  "upstream_skill_sha256": "58c0252bca04521de87007aeb495f7ec99dc4c7341bc890fe82b6d577573af91",
+  "local_adaptations": [
+    "Replaced entry point with scoped Codex review adapter; retained original reference corpus; omitted inactive binary/overlay launchers and provider agent templates."
+  ],
+  "upstream_license_file": "LICENSE",
+  "baseline": "Recorded after installation under the shared skill-workspace install stage."
+}

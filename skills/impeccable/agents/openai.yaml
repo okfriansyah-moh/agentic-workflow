@@ -1,0 +1,4 @@
+interface:
+  display_name: "impeccable"
+  short_description: "Review visual craft, responsiveness, and UI states"
+  default_prompt: "Use $impeccable for the requested frontend design work within the current product scope."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ATDD Creation"
+  short_description: "Create traceable product and engineering acceptance tests"
+  default_prompt: "Use $atdd-creation to create one readable acceptance-test specification from this product's requirements, designs and technical contracts."

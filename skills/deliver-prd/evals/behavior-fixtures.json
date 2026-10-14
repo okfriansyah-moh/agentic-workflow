@@ -1,0 +1,210 @@
+{
+  "schema": 1,
+  "skill": "deliver-prd",
+  "local_version": "3.1.0",
+  "updated": "2026-10-11",
+  "purpose": "Behavioral evaluation fixtures for the reviewed product-PRD standard; judge semantic outcomes, not exact prose.",
+  "method": {
+    "execution": "Give an author the request and context for a case, the proposed skill, and an isolated temporary destination. Generate a PRD or focused update, then review its behavior against expected outcomes. BF-10 combines BF-01 through BF-05 into a complete unrelated-product exercise.",
+    "review": "Assess source authority, permission/lifecycle consistency across representations, decision dependencies, observable acceptance, readiness/evidence distinction, and project isolation. Record actual output locations, findings, corrections, and evaluation limitations in the staged installation record.",
+    "limits": "Fixtures are evaluation inputs, not proof of execution. Structural validators do not establish behavioral correctness; do not claim statistical model reliability from a small manual exercise."
+  },
+  "cases": [
+    {
+      "id": "BF-01",
+      "topic": "private context and source authority",
+      "request": "Write a standalone PRD from the supplied private notes and external assignment.",
+      "context": {
+        "external_brief": {
+          "A01": "List workspace reservations; export to CSV."
+        },
+        "private_notes": {
+          "D01": "Staff may cancel their own future reservations.",
+          "D02": "Department lead may cancel any future reservation."
+        },
+        "unrelated_context": "Author onboarding on 8 December; private company wiki samples."
+      },
+      "expected": [
+        "Restate A01/D01/D02 completely with external versus user origin and internal requirement/acceptance mappings.",
+        "Omit unrelated onboarding and private company links; samples do not establish requirements.",
+        "No acceptance criterion requires opening private notes."
+      ]
+    },
+    {
+      "id": "BF-02",
+      "topic": "engineering-only open decisions",
+      "request": "Prepare a PRD ready to start technical design.",
+      "context": {
+        "product_policy": "Staff reserve available rooms and cancel their own future reservations; denied access and conflict feedback are settled.",
+        "engineering_open": [
+          "database engine",
+          "session mechanism",
+          "deployment",
+          "test tooling"
+        ],
+        "implementation_evidence": "No software tests have run."
+      },
+      "expected": [
+        "Use Ready for technical design after document coverage/coherence checks.",
+        "Keep engineering questions owned or Unassigned in a separate register.",
+        "Software gates remain Planned, without claiming implementation, tests, deployment, or release approval."
+      ]
+    },
+    {
+      "id": "BF-03",
+      "topic": "mixed responsibilities and inherited capabilities",
+      "request": "Clarify actors and journeys for a room-booking app.",
+      "context": {
+        "application_roles": {
+          "Staff": "Browse and reserve available rooms; cancel own reservations.",
+          "Department lead": "All Staff capabilities; may cancel any future reservation."
+        },
+        "delivery_roles": [
+          "developer",
+          "assessment reviewer",
+          "operator"
+        ],
+        "connected_assistant": "Not a product feature."
+      },
+      "expected": [
+        "Only Staff and Department lead appear as application roles; inherited Staff access is explicit.",
+        "Development/review/operations duties appear in delivery verification, without inventing screens or personas.",
+        "No AI feature or assistant role is added."
+      ]
+    },
+    {
+      "id": "BF-04",
+      "topic": "configurable validation and existing content",
+      "request": "Include the selected configurable room label and floor-plan attachment policies.",
+      "context": {
+        "selected_policy": {
+          "label": "1–80 Unicode code points inclusive after trimming surrounding whitespace; required.",
+          "notes": "Optional; omission preserves and explicit clearing removes; safe plain-text display.",
+          "attachment": "Static PDF, 1–2,097,152 bytes; actual content must be valid.",
+          "compatibility": "Lowered bounds do not truncate unchanged labels or remove existing attachments; changed/new input follows effective limits."
+        },
+        "engineering_open": "Configuration keys and PDF validation implementation."
+      },
+      "expected": [
+        "Record units, inclusive limits, required/optional behavior, and policy origin as selected user policy, not universal standards.",
+        "Describe effective limits, field errors, retained permitted drafts, invalid direct submissions, invalid configuration readiness, and failed replacement preserving prior attachment.",
+        "Provide boundary/clear/omission/Unicode/plain-text/override/compatibility acceptance and keep validation mechanisms in the handoff.",
+        "Do not substitute Movie App image formats, sizes, or name policies."
+      ]
+    },
+    {
+      "id": "BF-05",
+      "topic": "lifecycle consistency without a universal archive rule",
+      "request": "Cover reservation cancellation and shared room information.",
+      "context": {
+        "selected_policy": "A Staff member can cancel their own future reservation directly; cancellation is final, frees the time slot, preserves a historical cancellation record, and never deletes the room. No archive/restore screen.",
+        "concurrency": "A stale cancellation cannot override a changed reservation; retain the current view and request review."
+      },
+      "expected": [
+        "Permission matrix, journey, flow, story, criteria, and conceptual relationships agree on direct cancellation.",
+        "Historical cancellation is distinguished from archive/restoration or arbitrary deletion.",
+        "Room remains available and shared room data survives cancellation.",
+        "Do not impose archive-first removal from the Movie App."
+      ]
+    },
+    {
+      "id": "BF-06",
+      "topic": "conditional AI and exact approval",
+      "request": "Write requirements for an assistant that proposes expense claims under an employee account.",
+      "context": {
+        "selected_policy": "AI proposes a claim; employee reviews and explicitly approves the exact content; changed content requires fresh approval; invalid/rejected proposals remain unsubmitted; repeated and uncertain submissions must not duplicate a claim.",
+        "excluded": [
+          "AI deletion",
+          "AI account management"
+        ],
+        "engineering_open": "Trustworthy approval proof and model/provider contracts."
+      },
+      "expected": [
+        "Treat assistant as a tool under Employee authority; apply AI-BEHAVIOR because product output is model-generated.",
+        "Acceptance binds approval to reviewed content, rejects AI assertions of approval, and requires renewed approval after correction.",
+        "Cover invalid/rejected, duplicate, uncertain, failure, and recovery results with no unconfirmed success.",
+        "Keep approval proof mechanism, provider, and contracts Open for technical design."
+      ]
+    },
+    {
+      "id": "BF-07",
+      "topic": "AI authorship is not AI product scope",
+      "request": "Use AI assistance to draft a deterministic visitor-pass PRD.",
+      "context": {
+        "product_scope": "Visitors receive a pass approved by reception; no model-generated product output.",
+        "selected_policy": "Reception approves the latest pass request before issue."
+      },
+      "expected": [
+        "Retain reception authority and observable pass behavior.",
+        "Do not add MCP clients, AI output quality evaluations, prompt injection surfaces, or model/provider choices merely because an assistant wrote the PRD."
+      ]
+    },
+    {
+      "id": "BF-08",
+      "topic": "material product blocker and ID history",
+      "request": "Update a PRD with an unresolved cancellation refund policy.",
+      "context": {
+        "existing_ids": [
+          "FR-004",
+          "NFR-002",
+          "US-007",
+          "AC-012",
+          "OD-003",
+          "A01",
+          "D02"
+        ],
+        "retired_ids": [
+          "AC-011"
+        ],
+        "unresolved_product_question": "Whether a paid booking cancellation receives a refund or account credit.",
+        "engineering_question": "Payment adapter implementation."
+      },
+      "expected": [
+        "Keep Draft and link pending refund/credit criteria to OD-003; do not guess a policy.",
+        "Preserve valid existing/source IDs and retired history; append new IDs without reusing AC-011.",
+        "Assign payment adapter detail to technical design separately from the product blocker."
+      ]
+    },
+    {
+      "id": "BF-09",
+      "topic": "unsupported numerical recommendations",
+      "request": "Propose input limits for an unfamiliar product population.",
+      "context": {
+        "population": "No measured name or uploaded-file distributions.",
+        "available_evidence": "A primary standard describes a field bound; one named person is an individual example."
+      },
+      "expected": [
+        "Research actual primary sources before proposing unsupported numerical recommendations.",
+        "Distinguish a precedent and individual example from statistically verified coverage or a universal naming standard.",
+        "Label proposed limits Recommended and preserve unknown distributions; do not silently adopt them.",
+        "Honor later explicit selected policy and document its limitations."
+      ]
+    },
+    {
+      "id": "BF-10",
+      "topic": "unrelated product isolation",
+      "request": "Create a room-booking PRD from BF-01 through BF-05 context, without changing source documents.",
+      "context": {
+        "scope": "List reservations/export CSV, room availability, Staff booking and final cancellation, Department lead cancellation, configurable label/PDF policies.",
+        "scope_exclusions": [
+          "AI features",
+          "archive/restore",
+          "movie/TV catalog"
+        ],
+        "technical_handoff": "Engineering implementation is Open; no assessment technology mandated.",
+        "additional_selected_policy": {
+          "D03": "Staff can browse rooms and availability; view/export only their own reservations. Department lead inherits those capabilities, may view/export all reservations, and manages room labels, optional notes, and floor-plan PDFs. There is no public access.",
+          "D04": "Reservations require a room and future start/end instants at minute precision, with end after start. Intervals sharing only an end/start boundary do not overlap. Display the viewer-selected timezone. Room conflicts reject creation without a partial booking. Success persists across restarts.",
+          "D05": "Duplicate/retried booking submissions must not create extra reservations. Reconcile uncertain results before resubmitting. Simultaneous competing bookings permit at most one confirmation. Stale room edits retain the draft and require current-data review.",
+          "D06": "Cancellation is allowed until the reservation start, with a separate confirmation; canceling that confirmation changes nothing. It frees the slot and retains read-only history. A repeated confirmed cancellation has no additional effect.",
+          "D07": "Invalid input saves nothing. Effective limits appear before input; configuration bounds are finite inclusive min/max with min no greater than max. Invalid affected configuration prevents affected functions becoming ready with actionable redacted diagnostics. Plain-text notes retain punctuation; no markup executes in forms, details, exports, previews, or history."
+        }
+      },
+      "expected": [
+        "One standalone PRD with coherent permissions, requirements, acceptance, input policy, applicable Mermaid product flows, and source-status coverage.",
+        "No Movie App actors, 100/100 seed, credits/cast, archive-first, MCP, JPEG/PNG/WebP, 5 MiB, name defaults, imposed nine diagrams, or Spring/gRPC/GraphQL constraints.",
+        "Ready for technical design only after document checks, while actual software evidence remains Planned."
+      ]
+    }
+  ]
+}

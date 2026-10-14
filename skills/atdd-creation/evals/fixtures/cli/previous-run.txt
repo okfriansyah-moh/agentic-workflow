@@ -1,0 +1,3 @@
+Synthetic evaluation fixture, not real runtime evidence.
+Build build-v1; 2026-10-01T09:00:00Z; disposable offline fixture workstation.
+ATDD-007: exit 1, stderr line 2, byte comparison unchanged: PASS for revision 1 expectations.

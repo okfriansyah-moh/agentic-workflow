@@ -1,0 +1,8 @@
+Plan Creation
+Created for Muhammad Okfriansyah with Codex, 13 October 2026.
+
+This locally authored skill implements the user's approved planning design.
+Methodological sources and adaptation boundaries are identified in
+references/sources.md. No third-party package is bundled; upstream projects
+are not runtime dependencies. Templates and checker code are original local
+work. Prior installed-skill backups retain their original metadata/notices.

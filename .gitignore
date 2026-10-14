@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+.DS_Store
+node_modules/
+coverage/
+build/
+dist/
+.venv/
+.ai/state/
+.ai/reports/
+.ai/evidence/
+.ai/install-backups/
+test-results/
+playwright-report/

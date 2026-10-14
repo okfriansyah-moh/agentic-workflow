@@ -1,0 +1,25 @@
+{
+  "kind": "User-authorized local orchestrator",
+  "created": "2026-10-10",
+  "author": "Muhammad Okfriansyah with Codex",
+  "source_scope": "New routing/output contract; supporting skills retain their own upstream source/licenses.",
+  "publication": "No publication requested.",
+  "version": "2.1.0",
+  "updated": "2026-10-11",
+  "general_supporting_routes": [
+    "ui-ux-pro-max",
+    "design-system-foundations",
+    "impeccable"
+  ],
+  "conditional_supporting_routes": {
+    "browser_artifacts": [
+      "frontend-design",
+      "fixing-accessibility"
+    ],
+    "declared_svelte_component_handoff": [
+      "shadcn-svelte"
+    ],
+    "other_declared_technologies": "Discover relevant installed adapters; install only when needed and authorized."
+  },
+  "local_revision": "User-approved specification-first standard layout; consolidated validation; owner-selected single system; complete source dispositions and nested-state regressions; legacy layout compatibility."
+}

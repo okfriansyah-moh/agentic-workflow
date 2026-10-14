@@ -1,0 +1,20 @@
+# Sources and local design decisions
+
+Prepared for Muhammad Okfriansyah on 13 October 2026. The approved design in this conversation governs this skill. These are methodological references, not installed runtime dependencies or commands to execute.
+
+| Source | Selected idea | Adaptation boundary |
+|---|---|---|
+| Supplied Officeless planning material (source attribution only) and its format/endpoint references | Concrete task contracts, source knowledge, dependency waves, acceptance mapping | Feature groups combine relevant domains. No inherited private paths, mandatory epic/Jira flow, endpoint quotas, file/time caps or fixed story points |
+| Supplied strategic-init1/strategic-init2 plans | Real examples of contracts, implementation steps, frontend states and validation handoffs | Samples guide depth only; their systems, credentials, endpoint names, policies and completion claims are not copied into templates |
+| Existing local plan-management and writing-plans | Stable IDs, source-based updates, cohesive decomposition and concrete verification | plan-creation replaces maintained package authoring; lightweight task decomposition stays in writing-plans |
+| [GitHub Spec Kit task template](https://github.com/github/spec-kit/blob/main/templates/tasks-template.md) | User-outcome grouping, dependencies and independently verifiable checkpoints | Use adopted project acceptance; do not import optional-test defaults, compulsory setup phases or commit/deploy actions |
+| [Superpowers writing-plans](https://github.com/obra/superpowers/blob/main/skills/writing-plans/SKILL.md) and [task review](https://github.com/obra/superpowers/blob/main/skills/subagent-driven-development/SKILL.md) | Fresh-reader task detail, consumed/produced interfaces and independent review | Adaptive test timing, project-derived scope, no mandatory tool-specific execution or autonomous authority expansion |
+| [BMAD planning](https://docs.bmad-method.org/plan/break-work-into-stories-and-track-it/) | Hierarchical work, stable identity, retained evidence and separate build/closure boundaries | Markdown feature folders with separate tasks; no tracker installation or ticket synchronization |
+| [Anthropic context engineering](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents) and [long-running work](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents) | Focused context retrieval and resumable progress/evidence | Root → group → task → explicit sources; no mandatory runtime harness, background service or Git commit policy |
+| [The Practical Test Pyramid](https://martinfowler.com/articles/practical-test-pyramid.html) | Distinct test levels and real-boundary proof | Select by obligation and risk; do not impose fixed test ratios |
+| [Cucumber Example Mapping](https://cucumber.io/docs/bdd/example-mapping/) | Separate rules, concrete examples and unanswered questions | Preserve existing ATDD cases and make task-specific assertions observable |
+| [Playwright visual comparisons](https://playwright.dev/docs/test-snapshots) | Repeatable rendering context and explicit comparison baselines | Tool-neutral visual review; reference mockups do not automatically establish approved baselines |
+
+The local PRD/design-system/techdoc/ATDD skills supply handoff boundaries. The installed design-system entrypoint identifies its current specification; do not assume an example filename is universal. SpoolIn source files serve only as bounded evaluation evidence.
+
+Public sources were consulted during the design session on 13 October 2026 at the linked pages. Moving branch/web references were not pinned to a Git revision; no immutable upstream snapshot is claimed. This bundle contains newly written instructions, templates and checker code, with conceptual adaptations rather than copied upstream code/prose. Local source identities and hashes are recorded in the installation audit. Preserve original notices if later updates directly adapt licensed text or code.

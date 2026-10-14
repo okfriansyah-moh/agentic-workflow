@@ -1,0 +1,13 @@
+{
+  "name": "fixing-accessibility",
+  "repo": "ibelick/ui-skills",
+  "commit": "61db8907496d7687d2ae44c59ddb912d4702af96",
+  "path": "skills/fixing-accessibility",
+  "url": "https://github.com/ibelick/ui-skills/tree/61db8907496d7687d2ae44c59ddb912d4702af96/skills/fixing-accessibility",
+  "upstream_skill_sha256": "549261e8a53b53a1a20c0ddbf736821e5fc0876ad82eee76e0efab8e9ee9dadf",
+  "local_adaptations": [
+    "Added Codex direct-tool invocation guidance; accessibility criteria preserved."
+  ],
+  "upstream_license_file": "LICENSE",
+  "baseline": "Recorded after installation under the shared skill-workspace install stage."
+}

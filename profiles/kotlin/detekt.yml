@@ -1,0 +1,18 @@
+build:
+  maxIssues: 0
+config:
+  validation: true
+complexity:
+  active: true
+  LongMethod:
+    active: true
+    threshold: 51
+    excludes: ['**/generated/**']
+  CyclomaticComplexMethod:
+    active: true
+    threshold: 10
+    excludes: ['**/generated/**']
+  NestedBlockDepth:
+    active: true
+    threshold: 3
+    excludes: ['**/generated/**']

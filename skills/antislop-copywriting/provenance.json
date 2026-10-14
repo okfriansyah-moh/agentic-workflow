@@ -1,0 +1,8 @@
+{
+  "source": "https://github.com/miqdadbadjuber/anti-slop",
+  "revision": "b1cdf87d49b1653293d58424516fd80394008345",
+  "upstream_version": "3.2.20",
+  "license": "MIT",
+  "source_sha256": "c155b9a0e644cb4d1a0dfa4670e7681fc8245e983e378468efc5634df46623e9",
+  "adaptation": "Focused portable guidance; approved design authority; one review ledger; no install wizard or repeat mode approval; no forced aesthetic bans or comment-length rule."
+}

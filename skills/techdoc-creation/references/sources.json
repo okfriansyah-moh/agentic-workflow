@@ -1,0 +1,67 @@
+{
+  "reviewed_on": "2026-10-10",
+  "timezone": "Asia/Jakarta",
+  "upstream_file_hashes": {
+    "architecture-designer": {
+      "SKILL.md": "d8f3d98c54bbf35ad07e068c7ae4c9b570a3e0e51041d7669e91e8593a7655c7",
+      "references/architecture-patterns.md": "954bde741cffe6dec00acb63840bbb79654d2647ca8f7c9a8f99f5888b94c5f9",
+      "references/database-selection.md": "6439a36138654947acb808eeff1fff5862894ef94a7210e8fd540bb2641c5a80",
+      "references/system-design.md": "b33ff621c6461eb321d18fc9923c4bba689776e1cd0f0c00945584c2698319a1",
+      "references/nfr-checklist.md": "37b9b0f083bd224acccb04eec86edc09a494c693a4ad0ec32ea24f472c122d70",
+      "references/adr-template.md": "cada2aa2f8fa039ba63ab95499cbe653a28110f9f406040a06966552026fea4b"
+    },
+    "security-requirement-extraction": {
+      "SKILL.md": "bf391927dc404280e0f4d8c0ec20513c579fc6c277dfd04ad5a8e0a730ce8dde",
+      "references/details.md": "e304b0e15e876dfc99e09302491fa1c635e0a509e5a04b91ed1047b6400f12da"
+    },
+    "stride-analysis-patterns": {
+      "SKILL.md": "b7cfab85be4d04a81d22f79cc3b0e95aab8aa3ae4dfacbcf44de076dbeb16f1e",
+      "references/details.md": "c386eb04dacbbb52eaaed318e7681549c40bd4686cce2f0d17d24f1c03ae1049"
+    },
+    "architecture-decision-records": {
+      "SKILL.md": "f8928e30d37eb7654e18adc93c752b43e7272f88054fba5a7813b434779c50e6"
+    }
+  },
+  "sources": [
+    {
+      "skill": "architecture-designer",
+      "repository": "Jeffallan/claude-skills",
+      "revision": "1be15d8064f88fc25216442406d40add8fd23b53",
+      "path": "skills/architecture-designer",
+      "license": "MIT",
+      "treatment": "adapted"
+    },
+    {
+      "skill": "security-requirement-extraction",
+      "repository": "wshobson/agents",
+      "revision": "46891e7e60da0e52baf1050b7b6391b64e84c6d9",
+      "path": "plugins/security-scanning/skills/security-requirement-extraction",
+      "license": "MIT",
+      "treatment": "adapted"
+    },
+    {
+      "skill": "stride-analysis-patterns",
+      "repository": "wshobson/agents",
+      "revision": "46891e7e60da0e52baf1050b7b6391b64e84c6d9",
+      "path": "plugins/security-scanning/skills/stride-analysis-patterns",
+      "license": "MIT",
+      "treatment": "adapted"
+    },
+    {
+      "skill": "architecture-decision-records",
+      "repository": "wshobson/agents",
+      "revision": "46891e7e60da0e52baf1050b7b6391b64e84c6d9",
+      "path": "plugins/documentation-generation/skills/architecture-decision-records",
+      "license": "MIT",
+      "treatment": "adapted"
+    },
+    {
+      "skill": "doc-coauthoring",
+      "repository": "anthropics/skills",
+      "revision": "dbd4588f9e1033efb41dad4bef2f7947c8993d44",
+      "path": "skills/doc-coauthoring",
+      "license": "unresolved; no upstream content included",
+      "treatment": "original local implementation"
+    }
+  ]
+}

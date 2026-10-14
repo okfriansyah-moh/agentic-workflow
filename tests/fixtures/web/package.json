@@ -1,0 +1,16 @@
+{
+  "name": "agent-workflow-gate-fixture",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "eslint": "10.12.0",
+    "typescript": "6.0.3",
+    "svelte": "5.57.2",
+    "svelte-check": "4.7.6",
+    "@typescript-eslint/parser": "8.71.2",
+    "eslint-plugin-svelte": "3.23.1",
+    "dependency-cruiser": "18.6.0",
+    "vitest": "5.0.4",
+    "@vitest/coverage-v8": "5.0.4"
+  }
+}

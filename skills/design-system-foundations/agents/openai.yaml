@@ -1,0 +1,4 @@
+interface:
+  display_name: "Design System Foundations"
+  short_description: "Define shared tokens and component state specifications"
+  default_prompt: "Use $design-system-foundations to define tokens and component states for the current design package."

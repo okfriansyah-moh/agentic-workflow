@@ -1,0 +1,4 @@
+interface:
+  display_name: "Security Requirements"
+  short_description: "Map threats to controls and verifiable requirements"
+  default_prompt: "Use $security-requirement-extraction with the supplied project context and requested output scope."

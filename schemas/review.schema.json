@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Independent review",
+  "type": "object",
+  "required": [
+    "reviewer",
+    "tested_revision",
+    "input_fingerprint",
+    "verdict",
+    "findings"
+  ],
+  "properties": {
+    "reviewer": {
+      "type": "string",
+      "minLength": 1
+    },
+    "tested_revision": {
+      "type": "string",
+      "minLength": 1
+    },
+    "input_fingerprint": {
+      "type": "string",
+      "minLength": 1
+    },
+    "verdict": {
+      "enum": [
+        "accepted",
+        "changes-required",
+        "blocked"
+      ]
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "required",
+          "status"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "status": {
+            "enum": [
+              "open",
+              "resolved"
+            ]
+          },
+          "path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "explanation": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  }
+}

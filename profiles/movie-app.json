@@ -1,0 +1,724 @@
+{
+  "schema_version": 1,
+  "name": "movie-app",
+  "supported_suffixes": [
+    ".kt",
+    ".java",
+    ".ts",
+    ".tsx",
+    ".js",
+    ".jsx",
+    ".svelte"
+  ],
+  "checks": [
+    {
+      "id": "core-ktlint",
+      "component": "core",
+      "stage": "fast",
+      "when": [
+        "services/core/src/**/*.kt"
+      ],
+      "argv": [
+        "./gradlew",
+        ":services:core:ktlintCheck"
+      ],
+      "required": true
+    },
+    {
+      "id": "core-detekt",
+      "component": "core",
+      "stage": "fast",
+      "when": [
+        "services/core/src/**/*.kt"
+      ],
+      "argv": [
+        "./gradlew",
+        ":services:core:detekt"
+      ],
+      "required": true
+    },
+    {
+      "id": "core-compile",
+      "component": "core",
+      "stage": "fast",
+      "when": [
+        "services/core/src/**/*.kt"
+      ],
+      "argv": [
+        "./gradlew",
+        ":services:core:compileKotlin"
+      ],
+      "required": true
+    },
+    {
+      "id": "core-tests",
+      "component": "core",
+      "stage": "integration",
+      "when": [
+        "services/core/src/**/*.kt"
+      ],
+      "argv": [
+        "./gradlew",
+        ":services:core:test",
+        "--rerun-tasks"
+      ],
+      "required": true,
+      "test_report": {
+        "format": "junit",
+        "glob": "services/core/build/test-results/test/TEST-*.xml"
+      }
+    },
+    {
+      "id": "core-boundaries",
+      "component": "core",
+      "stage": "integration",
+      "when": [
+        "services/core/src/**/*.kt"
+      ],
+      "argv": [
+        "./gradlew",
+        ":services:core:architectureTest",
+        "--rerun-tasks"
+      ],
+      "required": true,
+      "test_report": {
+        "format": "junit",
+        "glob": "services/core/build/test-results/architectureTest/TEST-*.xml"
+      }
+    },
+    {
+      "id": "core-database",
+      "component": "core",
+      "stage": "integration",
+      "when": [
+        "services/core/src/**/*.kt"
+      ],
+      "argv": [
+        "./gradlew",
+        ":services:core:integrationTest",
+        "--rerun-tasks"
+      ],
+      "required": true,
+      "test_report": {
+        "format": "junit",
+        "glob": "services/core/build/test-results/integrationTest/TEST-*.xml"
+      }
+    },
+    {
+      "id": "core-coverage",
+      "component": "core",
+      "stage": "integration",
+      "when": [
+        "services/core/src/**/*.kt"
+      ],
+      "argv": [
+        "./gradlew",
+        ":services:core:koverXmlReport",
+        "--rerun-tasks"
+      ],
+      "required": true
+    },
+    {
+      "id": "catalog-ktlint",
+      "component": "catalog",
+      "stage": "fast",
+      "when": [
+        "services/catalog/src/**/*.kt"
+      ],
+      "argv": [
+        "./gradlew",
+        ":services:catalog:ktlintCheck"
+      ],
+      "required": true
+    },
+    {
+      "id": "catalog-detekt",
+      "component": "catalog",
+      "stage": "fast",
+      "when": [
+        "services/catalog/src/**/*.kt"
+      ],
+      "argv": [
+        "./gradlew",
+        ":services:catalog:detekt"
+      ],
+      "required": true
+    },
+    {
+      "id": "catalog-compile",
+      "component": "catalog",
+      "stage": "fast",
+      "when": [
+        "services/catalog/src/**/*.kt"
+      ],
+      "argv": [
+        "./gradlew",
+        ":services:catalog:compileKotlin"
+      ],
+      "required": true
+    },
+    {
+      "id": "catalog-tests",
+      "component": "catalog",
+      "stage": "integration",
+      "when": [
+        "services/catalog/src/**/*.kt"
+      ],
+      "argv": [
+        "./gradlew",
+        ":services:catalog:test",
+        "--rerun-tasks"
+      ],
+      "required": true,
+      "test_report": {
+        "format": "junit",
+        "glob": "services/catalog/build/test-results/test/TEST-*.xml"
+      }
+    },
+    {
+      "id": "catalog-boundaries",
+      "component": "catalog",
+      "stage": "integration",
+      "when": [
+        "services/catalog/src/**/*.kt"
+      ],
+      "argv": [
+        "./gradlew",
+        ":services:catalog:architectureTest",
+        "--rerun-tasks"
+      ],
+      "required": true,
+      "test_report": {
+        "format": "junit",
+        "glob": "services/catalog/build/test-results/architectureTest/TEST-*.xml"
+      }
+    },
+    {
+      "id": "catalog-database",
+      "component": "catalog",
+      "stage": "integration",
+      "when": [
+        "services/catalog/src/**/*.kt"
+      ],
+      "argv": [
+        "./gradlew",
+        ":services:catalog:integrationTest",
+        "--rerun-tasks"
+      ],
+      "required": true,
+      "test_report": {
+        "format": "junit",
+        "glob": "services/catalog/build/test-results/integrationTest/TEST-*.xml"
+      }
+    },
+    {
+      "id": "catalog-coverage",
+      "component": "catalog",
+      "stage": "integration",
+      "when": [
+        "services/catalog/src/**/*.kt"
+      ],
+      "argv": [
+        "./gradlew",
+        ":services:catalog:koverXmlReport",
+        "--rerun-tasks"
+      ],
+      "required": true
+    },
+    {
+      "id": "media-ktlint",
+      "component": "media",
+      "stage": "fast",
+      "when": [
+        "services/media/src/**/*.kt"
+      ],
+      "argv": [
+        "./gradlew",
+        ":services:media:ktlintCheck"
+      ],
+      "required": true
+    },
+    {
+      "id": "media-detekt",
+      "component": "media",
+      "stage": "fast",
+      "when": [
+        "services/media/src/**/*.kt"
+      ],
+      "argv": [
+        "./gradlew",
+        ":services:media:detekt"
+      ],
+      "required": true
+    },
+    {
+      "id": "media-compile",
+      "component": "media",
+      "stage": "fast",
+      "when": [
+        "services/media/src/**/*.kt"
+      ],
+      "argv": [
+        "./gradlew",
+        ":services:media:compileKotlin"
+      ],
+      "required": true
+    },
+    {
+      "id": "media-tests",
+      "component": "media",
+      "stage": "integration",
+      "when": [
+        "services/media/src/**/*.kt"
+      ],
+      "argv": [
+        "./gradlew",
+        ":services:media:test",
+        "--rerun-tasks"
+      ],
+      "required": true,
+      "test_report": {
+        "format": "junit",
+        "glob": "services/media/build/test-results/test/TEST-*.xml"
+      }
+    },
+    {
+      "id": "media-boundaries",
+      "component": "media",
+      "stage": "integration",
+      "when": [
+        "services/media/src/**/*.kt"
+      ],
+      "argv": [
+        "./gradlew",
+        ":services:media:architectureTest",
+        "--rerun-tasks"
+      ],
+      "required": true,
+      "test_report": {
+        "format": "junit",
+        "glob": "services/media/build/test-results/architectureTest/TEST-*.xml"
+      }
+    },
+    {
+      "id": "media-database",
+      "component": "media",
+      "stage": "integration",
+      "when": [
+        "services/media/src/**/*.kt"
+      ],
+      "argv": [
+        "./gradlew",
+        ":services:media:integrationTest",
+        "--rerun-tasks"
+      ],
+      "required": true,
+      "test_report": {
+        "format": "junit",
+        "glob": "services/media/build/test-results/integrationTest/TEST-*.xml"
+      }
+    },
+    {
+      "id": "media-coverage",
+      "component": "media",
+      "stage": "integration",
+      "when": [
+        "services/media/src/**/*.kt"
+      ],
+      "argv": [
+        "./gradlew",
+        ":services:media:koverXmlReport",
+        "--rerun-tasks"
+      ],
+      "required": true
+    },
+    {
+      "id": "frontend-lint",
+      "component": "frontend",
+      "stage": "fast",
+      "when": [
+        "frontend/src/**/*.ts",
+        "frontend/src/**/*.svelte",
+        "frontend/src/**/*.js"
+      ],
+      "argv": [
+        "npm",
+        "run",
+        "lint",
+        "--workspace",
+        "frontend"
+      ],
+      "required": true
+    },
+    {
+      "id": "frontend-types",
+      "component": "frontend",
+      "stage": "fast",
+      "when": [
+        "frontend/src/**/*.ts",
+        "frontend/src/**/*.svelte",
+        "frontend/src/**/*.js"
+      ],
+      "argv": [
+        "npm",
+        "run",
+        "check",
+        "--workspace",
+        "frontend"
+      ],
+      "required": true
+    },
+    {
+      "id": "frontend-dependencies",
+      "component": "frontend",
+      "stage": "fast",
+      "when": [
+        "frontend/src/**/*.ts",
+        "frontend/src/**/*.svelte",
+        "frontend/src/**/*.js"
+      ],
+      "argv": [
+        "npm",
+        "run",
+        "check:dependencies",
+        "--workspace",
+        "frontend"
+      ],
+      "required": true
+    },
+    {
+      "id": "frontend-tests",
+      "component": "frontend",
+      "stage": "integration",
+      "when": [
+        "frontend/src/**/*.ts",
+        "frontend/src/**/*.svelte",
+        "frontend/src/**/*.js"
+      ],
+      "argv": [
+        "npm",
+        "run",
+        "test:coverage",
+        "--workspace",
+        "frontend"
+      ],
+      "required": true,
+      "test_report": {
+        "format": "vitest",
+        "glob": "frontend/coverage/test-results.json"
+      }
+    },
+    {
+      "id": "frontend-build",
+      "component": "frontend",
+      "stage": "integration",
+      "when": [
+        "frontend/src/**/*.ts",
+        "frontend/src/**/*.svelte",
+        "frontend/src/**/*.js"
+      ],
+      "argv": [
+        "npm",
+        "run",
+        "build",
+        "--workspace",
+        "frontend"
+      ],
+      "required": true
+    },
+    {
+      "id": "mcp-lint",
+      "component": "mcp",
+      "stage": "fast",
+      "when": [
+        "mcp/src/**/*.ts",
+        "mcp/src/**/*.svelte",
+        "mcp/src/**/*.js"
+      ],
+      "argv": [
+        "npm",
+        "run",
+        "lint",
+        "--workspace",
+        "mcp"
+      ],
+      "required": true
+    },
+    {
+      "id": "mcp-types",
+      "component": "mcp",
+      "stage": "fast",
+      "when": [
+        "mcp/src/**/*.ts",
+        "mcp/src/**/*.svelte",
+        "mcp/src/**/*.js"
+      ],
+      "argv": [
+        "npm",
+        "run",
+        "check",
+        "--workspace",
+        "mcp"
+      ],
+      "required": true
+    },
+    {
+      "id": "mcp-dependencies",
+      "component": "mcp",
+      "stage": "fast",
+      "when": [
+        "mcp/src/**/*.ts",
+        "mcp/src/**/*.svelte",
+        "mcp/src/**/*.js"
+      ],
+      "argv": [
+        "npm",
+        "run",
+        "check:dependencies",
+        "--workspace",
+        "mcp"
+      ],
+      "required": true
+    },
+    {
+      "id": "mcp-tests",
+      "component": "mcp",
+      "stage": "integration",
+      "when": [
+        "mcp/src/**/*.ts",
+        "mcp/src/**/*.svelte",
+        "mcp/src/**/*.js"
+      ],
+      "argv": [
+        "npm",
+        "run",
+        "test:coverage",
+        "--workspace",
+        "mcp"
+      ],
+      "required": true,
+      "test_report": {
+        "format": "vitest",
+        "glob": "mcp/coverage/test-results.json"
+      }
+    },
+    {
+      "id": "mcp-build",
+      "component": "mcp",
+      "stage": "integration",
+      "when": [
+        "mcp/src/**/*.ts",
+        "mcp/src/**/*.svelte",
+        "mcp/src/**/*.js"
+      ],
+      "argv": [
+        "npm",
+        "run",
+        "build",
+        "--workspace",
+        "mcp"
+      ],
+      "required": true
+    },
+    {
+      "id": "browser-acceptance",
+      "component": "frontend",
+      "stage": "delivery",
+      "when": [
+        "frontend/src/**/*.svelte"
+      ],
+      "argv": [
+        "npm",
+        "run",
+        "test:e2e"
+      ],
+      "required": true,
+      "test_report": {
+        "format": "junit",
+        "glob": "test-results/junit.xml"
+      }
+    },
+    {
+      "id": "semgrep",
+      "component": "shared",
+      "stage": "integration",
+      "when": [
+        "services/**/*.kt",
+        "frontend/src/*",
+        "mcp/src/*"
+      ],
+      "argv": [
+        "semgrep",
+        "scan",
+        "--config",
+        "{bundle}/profiles/security/semgrep.yml",
+        "--error",
+        "--strict",
+        "--metrics",
+        "off",
+        "--exclude",
+        ".ai",
+        "--exclude",
+        "node_modules",
+        "--json",
+        "."
+      ],
+      "required": true,
+      "result_format": "semgrep-json"
+    },
+    {
+      "id": "gitleaks",
+      "component": "shared",
+      "stage": "fast",
+      "when": [
+        "services/**",
+        "frontend/src/**",
+        "mcp/src/**"
+      ],
+      "argv": [
+        "gitleaks",
+        "dir",
+        "--redact",
+        "--no-banner",
+        "--exit-code",
+        "1",
+        "--config",
+        "{bundle}/profiles/security/gitleaks.toml",
+        "."
+      ],
+      "required": true
+    },
+    {
+      "id": "osv",
+      "component": "shared",
+      "stage": "integration",
+      "when": [
+        "package-lock.json",
+        "**/gradle.lockfile"
+      ],
+      "argv": [
+        "osv-scanner",
+        "scan",
+        "source",
+        "--recursive",
+        "--x-exclude",
+        ".ai",
+        "--format",
+        "json",
+        "--all-packages",
+        "."
+      ],
+      "required": true,
+      "result_format": "osv-json"
+    }
+  ],
+  "coverage": [
+    {
+      "component": "core",
+      "when": [
+        "services/core/src/main/**/*.kt"
+      ],
+      "roots": [
+        "services/core/src/main"
+      ],
+      "reports": [
+        "services/core/build/reports/kover/report.xml"
+      ],
+      "format": "jacoco",
+      "source_prefix": "services/core/src/main/kotlin",
+      "exclude": [
+        "**/generated/**"
+      ]
+    },
+    {
+      "component": "catalog",
+      "when": [
+        "services/catalog/src/main/**/*.kt"
+      ],
+      "roots": [
+        "services/catalog/src/main"
+      ],
+      "reports": [
+        "services/catalog/build/reports/kover/report.xml"
+      ],
+      "format": "jacoco",
+      "source_prefix": "services/catalog/src/main/kotlin",
+      "exclude": [
+        "**/generated/**"
+      ]
+    },
+    {
+      "component": "media",
+      "when": [
+        "services/media/src/main/**/*.kt"
+      ],
+      "roots": [
+        "services/media/src/main"
+      ],
+      "reports": [
+        "services/media/build/reports/kover/report.xml"
+      ],
+      "format": "jacoco",
+      "source_prefix": "services/media/src/main/kotlin",
+      "exclude": [
+        "**/generated/**"
+      ]
+    },
+    {
+      "component": "frontend",
+      "when": [
+        "frontend/src/**"
+      ],
+      "roots": [
+        "frontend/src"
+      ],
+      "reports": [
+        "frontend/coverage/lcov.info"
+      ],
+      "format": "lcov",
+      "source_prefix": "frontend",
+      "exclude": [
+        "**/generated/**",
+        "**/*.test.*",
+        "**/*.spec.*"
+      ]
+    },
+    {
+      "component": "mcp",
+      "when": [
+        "mcp/src/**"
+      ],
+      "roots": [
+        "mcp/src"
+      ],
+      "reports": [
+        "mcp/coverage/lcov.info"
+      ],
+      "format": "lcov",
+      "source_prefix": "mcp",
+      "exclude": [
+        "**/generated/**",
+        "**/*.test.*",
+        "**/*.spec.*"
+      ]
+    }
+  ],
+  "limits": {
+    "function_lines": 50,
+    "cyclomatic": 10,
+    "nesting": 3,
+    "changed_coverage_percent": 80
+  },
+  "sonar": {
+    "required": false,
+    "state": "not-configured"
+  },
+  "notes": [
+    "Commands are required build contracts for application setup; missing wrappers/tasks/scripts block applicable checks.",
+    "Do not run application tasks during workflow installation.",
+    "Documentation mockup scripts are source requirements, not application components; their content remains fingerprinted."
+  ],
+  "source_exclude": [
+    "docs/**"
+  ]
+}

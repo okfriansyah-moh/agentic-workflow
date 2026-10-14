@@ -1,0 +1,4 @@
+interface:
+  display_name: "Plan Creation"
+  short_description: "Create detailed feature groups and AI-ready task plans"
+  default_prompt: "Use $plan-creation to create an implementation-plan package from the approved project documents."

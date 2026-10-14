@@ -1,0 +1,4 @@
+interface:
+  display_name: "frontend-design"
+  short_description: "Author distinctive PRD-based frontend mockups"
+  default_prompt: "Use $frontend-design for the requested frontend design work within the current product scope."

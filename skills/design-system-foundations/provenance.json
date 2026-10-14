@@ -1,0 +1,8 @@
+{
+  "name": "design-system-foundations",
+  "author": "claudekit (from installed metadata)",
+  "license": "MIT (from installed metadata)",
+  "original_commit": "Unknown; preserved installed baseline rather than claiming an upstream match.",
+  "upstream_counterpart": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill/tree/main/.claude/skills/design-system",
+  "local_adaptation": "Renamed existing personal skill with supporting resources preserved."
+}

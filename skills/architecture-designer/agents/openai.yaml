@@ -1,0 +1,4 @@
+interface:
+  display_name: "Architecture Designer"
+  short_description: "Design boundaries, tradeoffs and system behavior"
+  default_prompt: "Use $architecture-designer with the supplied project context and requested output scope."

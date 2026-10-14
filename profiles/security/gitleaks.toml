@@ -1,0 +1,11 @@
+title = "Portable workflow application scan"
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Installed pinned tool bundles and dependency caches are separately reviewed inputs"
+paths = [
+  '''(^|/)\.ai/(bundles|install-backups)/''',
+  '''(^|/)node_modules/''',
+]

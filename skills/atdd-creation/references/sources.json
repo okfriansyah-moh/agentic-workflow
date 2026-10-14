@@ -1,0 +1,235 @@
+{
+  "reviewed_on": "2026-10-12",
+  "timezone": "Asia/Jakarta",
+  "identity_note": "Public Git blob SHA-1 identifies the exact fetched file, not a repository commit. SHA-256 hashes identify exact inspected bytes.",
+  "public_sources": [
+    {
+      "repository": "softaworks/agent-toolkit",
+      "path": "skills/qa-test-planner/SKILL.md",
+      "url": "https://github.com/softaworks/agent-toolkit/blob/main/skills/qa-test-planner/SKILL.md",
+      "git_blob_sha1": "a2699325a92f96817a590a5c36699c21cb3545d8",
+      "sha256": "64adcbcf148712c6a67e9f05c5cee91b81e65da2f6ee458775c593fb0f5b657c",
+      "license": "MIT",
+      "treatment": "Readable case organization, prerequisites, data, outcomes, cleanup and regression/design review."
+    },
+    {
+      "repository": "softaworks/agent-toolkit",
+      "path": "LICENSE",
+      "url": "https://github.com/softaworks/agent-toolkit/blob/main/LICENSE",
+      "git_blob_sha1": "fc473440ee9ae27aa3d774bcd3888496ef0fad2d",
+      "sha256": "4b4447da5344f8b2d3a8a19ba8366d1ac7a24d9ab4690bd04576dc772ddf8321",
+      "license": "MIT",
+      "treatment": "license notice retained"
+    },
+    {
+      "repository": "Jeffallan/claude-skills",
+      "path": "skills/test-master/SKILL.md",
+      "url": "https://github.com/Jeffallan/claude-skills/blob/main/skills/test-master/SKILL.md",
+      "git_blob_sha1": "27436802cf16aea3588a950085d942371d5972a5",
+      "sha256": "93c3710547afb31d51962b090dbc282d10d7f35528967ca307f135771460bb41",
+      "license": "MIT",
+      "treatment": "Applicable integration, security, performance and operational scenario challenge without test-code generation."
+    },
+    {
+      "repository": "Jeffallan/claude-skills",
+      "path": "skills/test-master/references/integration-testing.md",
+      "url": "https://github.com/Jeffallan/claude-skills/blob/main/skills/test-master/references/integration-testing.md",
+      "git_blob_sha1": "2a4e3567cdf928076c73e2235c459ffd63242108",
+      "sha256": "2330ec33787f4afcde1486c0c041b33f015396d995b0799372f081601631dfa8",
+      "license": "MIT",
+      "treatment": "Applicable integration, security, performance and operational scenario challenge without test-code generation."
+    },
+    {
+      "repository": "Jeffallan/claude-skills",
+      "path": "skills/test-master/references/security-testing.md",
+      "url": "https://github.com/Jeffallan/claude-skills/blob/main/skills/test-master/references/security-testing.md",
+      "git_blob_sha1": "90a70319288cb2a9594b8dfed2eb0286cc64fd90",
+      "sha256": "aa4fe58e2e1341fc8e9ce2c50abe940b378571fa0b9233904aa567a31d8bb6fc",
+      "license": "MIT",
+      "treatment": "Applicable integration, security, performance and operational scenario challenge without test-code generation."
+    },
+    {
+      "repository": "Jeffallan/claude-skills",
+      "path": "skills/test-master/references/performance-testing.md",
+      "url": "https://github.com/Jeffallan/claude-skills/blob/main/skills/test-master/references/performance-testing.md",
+      "git_blob_sha1": "850ef721ebbc74524cd376f896ad51da0a09246b",
+      "sha256": "8ba93c666af382e91c8ee1bd4ccc02e213c3c3b986b1b88f53321214bd2d6955",
+      "license": "MIT",
+      "treatment": "Applicable integration, security, performance and operational scenario challenge without test-code generation."
+    },
+    {
+      "repository": "Jeffallan/claude-skills",
+      "path": "LICENSE",
+      "url": "https://github.com/Jeffallan/claude-skills/blob/main/LICENSE",
+      "git_blob_sha1": "b77bf2ab726c6e7cb5a81a9d3b7dc38266ebfd3d",
+      "sha256": "06dcddbb6908a0c6dd4a9e8ec822eea41d5a460a53089fecccc8a68049e99241",
+      "license": "MIT",
+      "treatment": "license notice retained"
+    },
+    {
+      "repository": "obra/superpowers",
+      "path": "skills/test-driven-development/SKILL.md",
+      "url": "https://github.com/obra/superpowers/blob/main/skills/test-driven-development/SKILL.md",
+      "git_blob_sha1": "46838cc9e893c06259e3bdad0fc2425b36242f15",
+      "sha256": "64b03fce4aee5a97a93160cea8111f3ba13a17b7c001db4bd5836d67fd10705d",
+      "license": "MIT",
+      "treatment": "Independent expected outcomes, observable behavior and concrete-defect assertion quality; later test-first handoff only."
+    },
+    {
+      "repository": "obra/superpowers",
+      "path": "skills/test-driven-development/writing-good-tests.md",
+      "url": "https://github.com/obra/superpowers/blob/main/skills/test-driven-development/writing-good-tests.md",
+      "git_blob_sha1": "d3c4482fd30b4f9084bb61545fe73939a7502c28",
+      "sha256": "51471c853306ff92ca8bb41dcaea05f31c0e46b03651f8f3c99754b7172f4ae1",
+      "license": "MIT",
+      "treatment": "Independent expected outcomes, observable behavior and concrete-defect assertion quality; later test-first handoff only."
+    },
+    {
+      "repository": "obra/superpowers",
+      "path": "LICENSE",
+      "url": "https://github.com/obra/superpowers/blob/main/LICENSE",
+      "git_blob_sha1": "abf0390320aa14406af7a520b9b0739fdda9bf08",
+      "sha256": "a37e0e9697144819e1d965176ac4ae5bc3fa02d11e7812036bbcadf6dafe2400",
+      "license": "MIT",
+      "treatment": "license notice retained"
+    },
+    {
+      "repository": "bmad-code-org/bmad-method-test-architecture-enterprise",
+      "path": "skills/bmad-testarch-test-design/SKILL.md",
+      "url": "https://github.com/bmad-code-org/bmad-method-test-architecture-enterprise/blob/main/skills/bmad-testarch-test-design/SKILL.md",
+      "git_blob_sha1": "6e7bb0e3ec965efae269782f1584ea630aba775e",
+      "sha256": "2ee570c7d8ebf9f5fc3dfc1f4791bf075de610f6cbc13563be16ad53e5e6f37a",
+      "license": "MIT",
+      "treatment": "Risk, testability, source coverage inventory and bidirectional traceability concepts."
+    },
+    {
+      "repository": "bmad-code-org/bmad-method-test-architecture-enterprise",
+      "path": "skills/bmad-testarch-trace/SKILL.md",
+      "url": "https://github.com/bmad-code-org/bmad-method-test-architecture-enterprise/blob/main/skills/bmad-testarch-trace/SKILL.md",
+      "git_blob_sha1": "4613e7e00e0d39f60f7d18d69856ac829aac8302",
+      "sha256": "164ffbe2d7d0307fe5502dc9703a2e76f40a9a80e54d5d90958270137df6f3d4",
+      "license": "MIT",
+      "treatment": "Risk, testability, source coverage inventory and bidirectional traceability concepts."
+    },
+    {
+      "repository": "bmad-code-org/bmad-method-test-architecture-enterprise",
+      "path": "LICENSE",
+      "url": "https://github.com/bmad-code-org/bmad-method-test-architecture-enterprise/blob/main/LICENSE",
+      "git_blob_sha1": "d0a0c83d6d5436ff8f45adac1ede98dc857abede",
+      "sha256": "d63b6198ba078d9494407eb94e2d86adf6350195301bb5ded4ba24e36bce8b55",
+      "license": "MIT",
+      "treatment": "license notice retained"
+    },
+    {
+      "repository": "saleem-daqa/qa-test-case-generation",
+      "path": "SKILL.md",
+      "url": "https://github.com/saleem-daqa/qa-test-case-generation/blob/main/SKILL.md",
+      "git_blob_sha1": "d2f47024eda5db3cfbdb02ec6ffbddbfad3ddb3e",
+      "sha256": "6f414b39364c4ef192b07e1aa1e3d18b8f14a3e4d28e38951f03564642c17ff6",
+      "license": "MIT",
+      "treatment": "Stable identifiers, source tagging, documented versus inferred cases, semantic deduplication."
+    },
+    {
+      "repository": "saleem-daqa/qa-test-case-generation",
+      "path": "LICENSE",
+      "url": "https://github.com/saleem-daqa/qa-test-case-generation/blob/main/LICENSE",
+      "git_blob_sha1": "06c1be0510a596564a8dff19a1f5089ad94e6e17",
+      "sha256": "1e8281919f3bb0df93bfab2e70b672ed1e9e94e873a5e468255baefa4404c8fc",
+      "license": "MIT",
+      "treatment": "license notice retained"
+    }
+  ],
+  "local_sources": [
+    {
+      "path": "local-skills/techdoc-creation/SKILL.md",
+      "sha256": "dea11d97ba2d118c0a40fa2b9fd14f43660c5a0fcafc71876c2ba298f3988df0",
+      "license": "not established for redistribution; private/local reference only",
+      "treatment": "orchestration pattern"
+    },
+    {
+      "path": "local-skills/techdoc-creation/references/output-contract.md",
+      "sha256": "3db3704d24744e5cb2689c35f98382b96ada1716302513cead854c569b630d45",
+      "license": "not established for redistribution; private/local reference only",
+      "treatment": "readability and document-scope pattern"
+    },
+    {
+      "path": "local-skills/techdoc-creation/references/routing.md",
+      "sha256": "b823a44da06f30bd2696642263b799473492c659350fe5a779a5afe53ddbe973",
+      "license": "not established for redistribution; private/local reference only",
+      "treatment": "conditional specialist routing pattern"
+    },
+    {
+      "path": "local-skills/doc-coauthoring/SKILL.md",
+      "sha256": "a21d1da9560d3d23c5f38ccd8bb909465cb6dd2f494a07ac0cbe9c693cca99ac",
+      "license": "not established for redistribution; private/local reference only",
+      "treatment": "routed only; implementation not copied"
+    },
+    {
+      "path": "local-skills/docs-sync/SKILL.md",
+      "sha256": "9239739d6d947c4dae20026bc8010d08733850c42d95f14d792d68383f39d940",
+      "license": "not established for redistribution; private/local reference only",
+      "treatment": "routed only; implementation not copied"
+    },
+    {
+      "path": "supplied-billing/.claude/skills/generate-atdd/SKILL.md",
+      "sha256": "628e4a03c7a6b3b4e3c475d2f7a28922b41ed109a8432c237dc765ac1262fb74",
+      "license": "not established for redistribution; private/local reference only",
+      "treatment": "private user-provided workflow concepts; no business payloads copied"
+    },
+    {
+      "path": "supplied-billing/.claude/skills/generate-atdd/resources/verify_coverage.rb",
+      "sha256": "3c7d9698e3edeb859df5e73ab3ae64e7152de230b60f8900bae01aaa006bea92",
+      "license": "not established for redistribution; private/local reference only",
+      "treatment": "inspected limitation; new independent-inventory checker implementation"
+    },
+    {
+      "path": "supplied-billing/.claude/skills/generate-atdd/resources/atdd_template.csv",
+      "sha256": "19a86855f950e866d256bde6c1bbc358914dfe2436e2665160c8e37a3cf2b116",
+      "license": "not established for redistribution; private/local reference only",
+      "treatment": "private format reference; replaced with original Markdown contract"
+    },
+    {
+      "path": "supplied-browser-workflows/.claude/skills/test-case-generator/SKILL.md",
+      "sha256": "cc75e0047e27d8b96af37ad9382808c5165e4dd2c7aa98078c226853f982d0f8",
+      "license": "not established for redistribution; private/local reference only",
+      "treatment": "private user-provided planning/review concepts; no corporate integration or business payload copied"
+    },
+    {
+      "path": "supplied-browser-workflows/.claude/skills/test-planning/SKILL.md",
+      "sha256": "2bb7251bc140167457ad7f795bcfde887e16d9a4bd923008715dab896eda7de2",
+      "license": "not established for redistribution; private/local reference only",
+      "treatment": "private user-provided planning/review concepts; no corporate integration or business payload copied"
+    },
+    {
+      "path": "supplied-browser-workflows/.claude/skills/test-design/SKILL.md",
+      "sha256": "4195d7a14b0c662e052559d36f6368e863a07049acc982faaab8bfcb685ea12e",
+      "license": "not established for redistribution; private/local reference only",
+      "treatment": "private user-provided planning/review concepts; no corporate integration or business payload copied"
+    },
+    {
+      "path": "supplied-browser-workflows/.claude/skills/atdd-review/SKILL.md",
+      "sha256": "9c714ed469183b78bf8a99f3c03372e4a4d3b1b581b62741ce3ac4bbedb91812",
+      "license": "not established for redistribution; private/local reference only",
+      "treatment": "private user-provided planning/review concepts; no corporate integration or business payload copied"
+    },
+    {
+      "path": "supplied-billing/docs/atdd/lump_sum_atdd.csv",
+      "sha256": "bc5e2c648bc67da2c45effa288d888ebf842964e9bd048df53034ec2099920bd",
+      "license": "not established for redistribution; private/local reference only",
+      "treatment": "private structural example only; case content not bundled"
+    },
+    {
+      "path": "supplied-billing/docs/atdd/billing_tags_atdd.csv",
+      "sha256": "b8ef2a3f6be58f66340b0b47d92f94f076ee3d0b9d52c6f57f4f590c2ff75922",
+      "license": "not established for redistribution; private/local reference only",
+      "treatment": "private structural example only; case content not bundled"
+    },
+    {
+      "path": "supplied-billing/docs/epics/MIB-11928/MIB-11928_atdd.csv",
+      "sha256": "9642d31de04fdfddb6a177116b4292a0697f29eda8544af01ffaca1a2493ae34",
+      "license": "not established for redistribution; private/local reference only",
+      "treatment": "private structural example only; case content not bundled"
+    }
+  ],
+  "new_material": "Original ATDD synthesis, checker and synthetic evaluation fixtures authored for this authorized local skill."
+}

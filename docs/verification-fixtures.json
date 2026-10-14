@@ -1,0 +1,203 @@
+[
+  {
+    "case": "web-eslint",
+    "argv": [
+      "<source>/tests/fixtures/web/node_modules/.bin/eslint",
+      "src"
+    ],
+    "exit_code": 0,
+    "expected": "pass",
+    "expected_finding": null,
+    "passed": true,
+    "output": ""
+  },
+  {
+    "case": "web-svelte-check",
+    "argv": [
+      "<source>/tests/fixtures/web/node_modules/.bin/svelte-check",
+      "--tsconfig",
+      "tsconfig.json"
+    ],
+    "exit_code": 0,
+    "expected": "pass",
+    "expected_finding": null,
+    "passed": true,
+    "output": "Loading svelte-check in workspace: <source>/tests/fixtures/web\nGetting Svelte diagnostics...\n\nsvelte-check found 0 errors and 0 warnings\n"
+  },
+  {
+    "case": "web-depcruise",
+    "argv": [
+      "<source>/tests/fixtures/web/node_modules/.bin/depcruise",
+      "src",
+      "--config",
+      "../../../profiles/web/dependency-cruiser.cjs",
+      "--output-type",
+      "err"
+    ],
+    "exit_code": 0,
+    "expected": "pass",
+    "expected_finding": null,
+    "passed": true,
+    "output": "\n\u2714 no dependency violations found (5 modules, 4 dependencies cruised)\n\n"
+  },
+  {
+    "case": "web-vitest",
+    "argv": [
+      "<source>/tests/fixtures/web/node_modules/.bin/vitest",
+      "run",
+      "--coverage",
+      "--reporter=json",
+      "--outputFile=coverage/test-results.json"
+    ],
+    "exit_code": 0,
+    "expected": "pass",
+    "expected_finding": null,
+    "passed": true,
+    "output": "JSON report written to <source>/tests/fixtures/web/coverage/test-results.json\n % Coverage report from v8\nNo files with missing coverage.\n1 file fully covered.\n\n=============================== Coverage summary ===============================\nStatements   : 100% ( 1/1 )\nBranches     : 100% ( 0/0 )\nFunctions    : 100% ( 1/1 )\nLines        : 100% ( 1/1 )\n================================================================================\n"
+  },
+  {
+    "case": "web-function-limit",
+    "argv": [
+      "<source>/tests/fixtures/web/node_modules/.bin/eslint",
+      "<source>/tests/fixtures/web/src/bad.ts"
+    ],
+    "exit_code": 1,
+    "expected": "fail",
+    "expected_finding": "max-lines-per-function",
+    "passed": true,
+    "output": "\n<source>/tests/fixtures/web/src/bad.ts\n  1:8  error  Function 'tooLong' has too many lines (53). Maximum allowed is 50  max-lines-per-function\n\n\u2716 1 problem (1 error, 0 warnings)\n\n"
+  },
+  {
+    "case": "web-type-error",
+    "argv": [
+      "<source>/tests/fixtures/web/node_modules/.bin/svelte-check",
+      "--tsconfig",
+      "tsconfig.json"
+    ],
+    "exit_code": 1,
+    "expected": "fail",
+    "expected_finding": "not assignable",
+    "passed": true,
+    "output": "Loading svelte-check in workspace: <source>/tests/fixtures/web\nGetting Svelte diagnostics...\n\n<source>/tests/fixtures/web/src/bad.ts:1:14\nError: Type 'string' is not assignable to type 'number'. \nexport const incorrect: number = \"text\";\n\n====================================\nsvelte-check found 1 error and 0 warnings in 1 file\n"
+  },
+  {
+    "case": "web-cycle",
+    "argv": [
+      "<source>/tests/fixtures/web/node_modules/.bin/depcruise",
+      "src",
+      "--config",
+      "../../../profiles/web/dependency-cruiser.cjs",
+      "--output-type",
+      "err"
+    ],
+    "exit_code": 1,
+    "expected": "fail",
+    "expected_finding": "no-cycles",
+    "passed": true,
+    "output": "\n  error no-cycles: src/cycle-a.ts \u2192 \n      src/cycle-b.ts \u2192\n      src/cycle-a.ts\n\nx 1 dependency violations (1 errors, 0 warnings). 7 modules, 6 dependencies cruised.\n\n"
+  },
+  {
+    "case": "detekt-Good.kt",
+    "argv": [
+      "java",
+      "-jar",
+      "<verified-tools>/detekt.jar",
+      "--input",
+      "<source>/tests/fixtures/jvm/Good.kt",
+      "--config",
+      "<source>/profiles/kotlin/detekt.yml"
+    ],
+    "exit_code": 0,
+    "expected": "pass",
+    "expected_finding": null,
+    "passed": true,
+    "output": ".\n\n1 kotlin file was analyzed.\nComplexity Report:\n\t- 8 lines of code (loc)\n\t- 7 source lines of code (sloc)\n\t- 4 logical lines of code (lloc)\n\t- 0 comment lines of code (cloc)\n\t- 2 cyclomatic complexity (mcc)\n\t- 0 cognitive complexity\n\t- 0 number of total code smells\n\t- 0% comment source ratio\n\t- 500 mcc per 1,000 lloc\n\t- 0 code smells per 1,000 lloc\n\nProject Statistics:\n\t- number of properties: 0\n\t- number of functions: 2\n\t- number of classes: 2\n\t- number of packages: 1\n\t- number of kt files: 1\n\n"
+  },
+  {
+    "case": "detekt-Bad.kt",
+    "argv": [
+      "java",
+      "-jar",
+      "<verified-tools>/detekt.jar",
+      "--input",
+      "<source>/tests/fixtures/jvm/Bad.kt",
+      "--config",
+      "<source>/profiles/kotlin/detekt.yml"
+    ],
+    "exit_code": 2,
+    "expected": "fail",
+    "expected_finding": "NestedBlockDepth",
+    "passed": true,
+    "output": ".\n\n1 kotlin file was analyzed.\n<source>/tests/fixtures/jvm/Bad.kt:3:9: Function branch is nested too deeply. [NestedBlockDepth]\n\n<source>/tests/fixtures/jvm/Bad.kt - 20min debt\n\t\u001b[33mNestedBlockDepth - 4/3 - [Function branch is nested too deeply.] at <source>/tests/fixtures/jvm/Bad.kt:3:9\u001b[0m\n\nOverall debt: 20min\n\ncomplexity - 20min debt\n\t\u001b[33mNestedBlockDepth - 4/3 - [Function branch is nested too deeply.] at <source>/tests/fixtures/jvm/Bad.kt:3:9\u001b[0m\n\nOverall debt: 20min\n\nComplexity Report:\n\t- 16 lines of code (loc)\n\t- 15 source lines of code (sloc)\n\t- 8 logical lines of code (lloc)\n\t- 0 comment lines of code (cloc)\n\t- 5 cyclomatic complexity (mcc)\n\t- 10 cognitive complexity\n\t- 1 number of total code smells\n\t- 0% comment source ratio\n\t- 625 mcc per 1,000 lloc\n\t- 125 code smells per 1,000 lloc\n\nProject Statistics:\n\t- number of properties: 0\n\t- number of functions: 1\n\t- number of classes: 1\n\t- number of packages: 1\n\t- number of kt files: 1\n\nAnalysis failed with 1 weighted issues.\n"
+  },
+  {
+    "case": "jvm-compile",
+    "argv": [
+      "javac",
+      "-cp",
+      "<verified-tools>/archunit.jar:<verified-tools>/slf4j-api.jar",
+      "-d",
+      "<temporary-output>",
+      "<source>/tests/fixtures/jvm/src/BoundaryCheck.java",
+      "<source>/tests/fixtures/jvm/src/org/springframework/beans/factory/annotation/Autowired.java",
+      "<source>/tests/fixtures/jvm/src/fixture/bad/FieldInjection.java",
+      "<source>/tests/fixtures/jvm/src/fixture/good/Service.java",
+      "<source>/tests/fixtures/jvm/src/fixture/good/Store.java",
+      "<source>/tests/fixtures/jvm/src/fixture/bad/a/First.java",
+      "<source>/tests/fixtures/jvm/src/fixture/bad/b/Second.java"
+    ],
+    "exit_code": 0,
+    "expected": "pass",
+    "expected_finding": null,
+    "passed": true,
+    "output": ""
+  },
+  {
+    "case": "architecture-fixture.good-injection",
+    "argv": [
+      "java",
+      "-cp",
+      "<temporary-output>",
+      "BoundaryCheck",
+      "fixture.good",
+      "injection"
+    ],
+    "exit_code": 0,
+    "expected": "pass",
+    "expected_finding": null,
+    "passed": true,
+    "output": "SLF4J(W): No SLF4J providers were found.\nSLF4J(W): Defaulting to no-operation (NOP) logger implementation\nSLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.\n"
+  },
+  {
+    "case": "architecture-fixture.bad-injection",
+    "argv": [
+      "java",
+      "-cp",
+      "<temporary-output>",
+      "BoundaryCheck",
+      "fixture.bad",
+      "injection"
+    ],
+    "exit_code": 1,
+    "expected": "fail",
+    "expected_finding": "Architecture Violation",
+    "passed": true,
+    "output": "SLF4J(W): No SLF4J providers were found.\nSLF4J(W): Defaulting to no-operation (NOP) logger implementation\nSLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.\nException in thread \"main\" java.lang.AssertionError: Architecture Violation [Priority: MEDIUM] - Rule 'no fields should be annotated with @Autowired' was violated (1 times):\nField <fixture.bad.FieldInjection.store> is annotated with @Autowired in (FieldInjection.java:0)\n\tat com.tngtech.archunit.lang.ArchRule$Assertions.assertNoViolation(ArchRule.java:94)\n\tat com.tngtech.archunit.lang.ArchRule$Assertions.check(ArchRule.java:86)\n\tat com.tngtech.archunit.lang.ArchRule$Factory$SimpleArchRule.check(ArchRule.java:165)\n\tat com.tngtech.archunit.lang.syntax.ObjectsShouldInternal.check(ObjectsShouldInternal.java:81)\n\tat BoundaryCheck.main(BoundaryCheck.java:14)\n"
+  },
+  {
+    "case": "architecture-fixture.bad-cycles",
+    "argv": [
+      "java",
+      "-cp",
+      "<temporary-output>",
+      "BoundaryCheck",
+      "fixture.bad",
+      "cycles"
+    ],
+    "exit_code": 1,
+    "expected": "fail",
+    "expected_finding": "Architecture Violation",
+    "passed": true,
+    "output": "SLF4J(W): No SLF4J providers were found.\nSLF4J(W): Defaulting to no-operation (NOP) logger implementation\nSLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.\nException in thread \"main\" java.lang.AssertionError: Architecture Violation [Priority: MEDIUM] - Rule 'slices matching 'fixture.bad.(*)..' should be free of cycles' was violated (1 times):\nCycle detected: Slice a -> \n                Slice b -> \n                Slice a\n  1. Dependencies of Slice a\n    - Field <fixture.bad.a.First.second> has type <fixture.bad.b.Second> in (First.java:0)\n  2. Dependencies of Slice b\n    - Field <fixture.bad.b.Second.first> has type <fixture.bad.a.First> in (Second.java:0)\n\tat com.tngtech.archunit.lang.ArchRule$Assertions.assertNoViolation(ArchRule.java:94)\n\tat com.tngtech.archunit.lang.ArchRule$Assertions.check(ArchRule.java:86)\n\tat com.tngtech.archunit.lang.ArchRule$Factory$SimpleArchRule.check(ArchRule.java:165)\n\tat com.tngtech.archunit.lang.syntax.ObjectsShouldInternal.check(ObjectsShouldInternal.java:81)\n\tat com.tngtech.archunit.library.dependencies.SliceRule.check(SliceRule.java:81)\n\tat BoundaryCheck.main(BoundaryCheck.java:12)\n"
+  }
+]

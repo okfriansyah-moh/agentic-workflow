@@ -1,0 +1,2338 @@
+{
+  "schema_version": 1,
+  "version": "1.0.0",
+  "bundle": {
+    "name": "agent-workflow",
+    "version": "1.0.0"
+  },
+  "counts": {
+    "reuse": 47,
+    "new": 11,
+    "adapt": 7,
+    "upstream-adapt": 6,
+    "total": 71
+  },
+  "skills": [
+    {
+      "name": "brainstorming",
+      "category": "requirements-planning",
+      "source": {
+        "kind": "reuse",
+        "label": "local-skills/brainstorming",
+        "version": "local-snapshot-c9a45fa75a59",
+        "source_sha256": "c9a45fa75a59f5b94bfa3c98092beefc097b97ab741b50f292b04faf00b52cb8",
+        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [],
+      "activation": {
+        "when": [
+          "Explore substantial feature or architecture choices and turn an idea into an approved design and implementation plan. Use for brainstorming or unresolved design decisions; skip routine edits and already-approved implementation."
+        ],
+        "unless": []
+      },
+      "owner": "forge",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "3cc177c229965d2e1bca5d99d0b6d0d6fc5bf91e53b4cc4f30348f20961fb155"
+      },
+      "conditional_dependencies": [
+        "failure"
+      ]
+    },
+    {
+      "name": "deliver-prd",
+      "category": "requirements-planning",
+      "source": {
+        "kind": "reuse",
+        "label": "local-skills/deliver-prd",
+        "version": "local-snapshot-094f2ba40d73",
+        "source_sha256": "094f2ba40d73f1fc34b1c69530c6ae192bf78dadb44d00902a8636c32c1c09a4",
+        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [],
+      "activation": {
+        "when": [
+          "Create or update one standalone Markdown Product Requirements Document with release scope, product behavior, traceable requirements, stories, and acceptance criteria for technical-design handoff. Use for PRD authoring before implementation."
+        ],
+        "unless": []
+      },
+      "owner": "forge",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "7e77213132f00d87663377ef6defa295f0fe7925f023cb85385c353edea22157"
+      },
+      "conditional_dependencies": [
+        "brainstorming",
+        "failure",
+        "humanizer"
+      ]
+    },
+    {
+      "name": "techdoc-creation",
+      "category": "requirements-planning",
+      "source": {
+        "kind": "reuse",
+        "label": "local-skills/techdoc-creation",
+        "version": "local-snapshot-5f61e4943dcc",
+        "source_sha256": "5f61e4943dcc6924f2f7d053432b65ef439e16fad4bdca91365f2099bc43b3b6",
+        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [],
+      "activation": {
+        "when": [
+          "Create or update one application-focused technical design document with detailed engineering responsibilities, complete applicable contracts, database design and requirement traceability. Setup or research alone does not generate a document."
+        ],
+        "unless": []
+      },
+      "owner": "forge",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "ecb10347666831eebe044a697eb126c0653e3da46c3da55723c8b14abbe3ded4"
+      },
+      "conditional_dependencies": [
+        "api-design",
+        "architecture-decision-records",
+        "architecture-designer",
+        "atdd-creation",
+        "brainstorming",
+        "codebase-design",
+        "coding-standards",
+        "config-validation",
+        "design-system",
+        "docs-sync",
+        "dto",
+        "failure",
+        "idempotency",
+        "migration-management",
+        "modularity",
+        "observability",
+        "pipeline",
+        "security-audit",
+        "security-requirement-extraction",
+        "stride-analysis-patterns",
+        "task-observer",
+        "test-generation",
+        "vertical-slice"
+      ]
+    },
+    {
+      "name": "design-system",
+      "category": "requirements-planning",
+      "source": {
+        "kind": "reuse",
+        "label": "local-skills/design-system",
+        "version": "local-snapshot-53e077c17b79",
+        "source_sha256": "53e077c17b796c3515320aef5ec98714e4c869078eead3ef78f9d6386e267b57",
+        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [],
+      "activation": {
+        "when": [
+          "Create or update a requirements-based design-system package for web, mobile, or games, with a design specification, shared tokens, component catalog, and visual screen/flow/state examples. Orchestrates design, review, and conditional technology handoff without selecting a production stack."
+        ],
+        "unless": []
+      },
+      "owner": "forge",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "44a2de734ab13720d4b48606234515c723e31eac16f109eb245fd0f16a1cbfe9"
+      },
+      "conditional_dependencies": [
+        "design-system-foundations",
+        "fixing-accessibility",
+        "frontend-design",
+        "impeccable",
+        "ui-ux-pro-max"
+      ]
+    },
+    {
+      "name": "atdd-creation",
+      "category": "requirements-planning",
+      "source": {
+        "kind": "reuse",
+        "label": "local-skills/atdd-creation",
+        "version": "local-snapshot-71c31b9eb957",
+        "source_sha256": "71c31b9eb957a98841fe5e9577103c7e230ac6661b831937eb6c382c78d0a787",
+        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [],
+      "activation": {
+        "when": [
+          "Create or update one acceptance-test specification from requirements, design artifacts and technical contracts, with traceable product and engineering scenarios. Use for ATDD document authoring before implementation; skill setup and research alone do not generate an ATDD document."
+        ],
+        "unless": []
+      },
+      "owner": "forge",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "df09a5c46e5c8bdf16cc435551d5221911a876ddf035a55cceabf4b0a563fd3c"
+      },
+      "conditional_dependencies": [
+        "api-design",
+        "config-validation",
+        "design-system",
+        "determinism",
+        "docs-sync",
+        "dto",
+        "failure",
+        "fixing-accessibility",
+        "idempotency",
+        "migration-management",
+        "observability",
+        "performance-optimization",
+        "pipeline",
+        "security-requirement-extraction",
+        "stride-analysis-patterns",
+        "task-observer",
+        "tdd",
+        "techdoc-creation",
+        "test-driven-development",
+        "test-generation"
+      ]
+    },
+    {
+      "name": "plan-creation",
+      "category": "requirements-planning",
+      "source": {
+        "kind": "reuse",
+        "label": "local-skills/plan-creation",
+        "version": "local-snapshot-f55909ee57d2",
+        "source_sha256": "f55909ee57d271113919f9fceb3d29197e1af0cdbeb0a577c71c8b81fe206aa0",
+        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [],
+      "activation": {
+        "when": [
+          "Create, update, or review a detailed implementation-plan package with feature groups, AI-ready task files, dependency order, acceptance mapping, and review requirements. Use for PLAN.md authoring before implementation."
+        ],
+        "unless": []
+      },
+      "owner": "forge",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "3cccf433a10edf2c4b3c86de4f9ee10313a208a5ad02352bd7486ded02cf4e15"
+      },
+      "conditional_dependencies": [
+        "design-system",
+        "failure",
+        "idempotency"
+      ]
+    },
+    {
+      "name": "design-system-foundations",
+      "category": "design-accessibility",
+      "source": {
+        "kind": "reuse",
+        "label": "local-skills/design-system-foundations",
+        "version": "local-snapshot-39ffdb5cc3a6",
+        "source_sha256": "39ffdb5cc3a6573ad127a373a65aa869c021fbe5e2a6a29b9bb285fc941bd9fa",
+        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [],
+      "activation": {
+        "when": [
+          "Define three-layer design tokens, component specifications, and visual"
+        ],
+        "unless": []
+      },
+      "owner": "forge",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "c4fcb66132014087dfcac3ae21dec7889db24301ed6297f05ed6e6a9248fb60c"
+      },
+      "conditional_dependencies": [
+        "design-system"
+      ]
+    },
+    {
+      "name": "frontend-design",
+      "category": "design-accessibility",
+      "source": {
+        "kind": "reuse",
+        "label": "local-skills/frontend-design",
+        "version": "local-snapshot-b170f3743668",
+        "source_sha256": "b170f3743668ea7e584ab14b4612b4db526b261db0af156aed3182a0a53d0ce4",
+        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [],
+      "activation": {
+        "when": [
+          "Guidance for distinctive, intentional visual design when building new UI or reshaping an existing one. Helps with aesthetic direction, typography, and making choices that don't read as templated defaults."
+        ],
+        "unless": []
+      },
+      "owner": "forge",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "876b05d60d77c8c935acf12b933cb0e6ae903399ea553162c585816e1c757406"
+      },
+      "conditional_dependencies": [
+        "failure"
+      ]
+    },
+    {
+      "name": "impeccable",
+      "category": "design-accessibility",
+      "source": {
+        "kind": "reuse",
+        "label": "local-skills/impeccable",
+        "version": "local-snapshot-6c2fd1775b42",
+        "source_sha256": "6c2fd1775b42042bf5aab6f2e37bdabec2cb60c06716055009631ac8a1038e56",
+        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [],
+      "activation": {
+        "when": [
+          "Review and refine existing frontend designs using Impeccable visual craft, hierarchy, responsive, state, and accessibility criteria. Use as a targeted review companion for a chosen design direction or PRD-based design-system package."
+        ],
+        "unless": []
+      },
+      "owner": "forge",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "f03cb994d7aa19fb8c1dfddf26d0d749bde9ee695c7ce6d77fb61129a48a520d"
+      },
+      "conditional_dependencies": [
+        "design-system",
+        "failure"
+      ]
+    },
+    {
+      "name": "fixing-accessibility",
+      "category": "design-accessibility",
+      "source": {
+        "kind": "reuse",
+        "label": "local-skills/fixing-accessibility",
+        "version": "local-snapshot-522edca7b468",
+        "source_sha256": "522edca7b46855db65b2d79fc9ed5f8c8c2cef697ec4836c96c9f060dd2ab28c",
+        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [],
+      "activation": {
+        "when": [
+          "Audit and fix HTML accessibility issues including ARIA labels, keyboard navigation, focus management, color contrast, and form errors. Use when adding interactive controls, forms, dialogs, or reviewing WCAG compliance."
+        ],
+        "unless": []
+      },
+      "owner": "forge",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "7e4a7f6f5b1e849432e985e1e37184bbc63bdc709f838333c948bbd6e2457753"
+      },
+      "conditional_dependencies": [
+        "failure"
+      ]
+    },
+    {
+      "name": "ui-ux-pro-max",
+      "category": "design-accessibility",
+      "source": {
+        "kind": "reuse",
+        "label": "local-skills/ui-ux-pro-max",
+        "version": "local-snapshot-92aeb555bdc4",
+        "source_sha256": "92aeb555bdc44a1286b01d207af181c88ddd0320f8c5932bceb75eb9c9af8b29",
+        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [],
+      "activation": {
+        "when": [
+          "Search bundled UI/UX references for a focused unresolved choice or UX review within the selected framework and adopted design."
+        ],
+        "unless": [
+          "The task has no unresolved design/review question; a recommendation cannot replace an approved design or select a framework."
+        ]
+      },
+      "owner": "forge",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "f4a17c7ed2517089884f084b55a62387a1c87c5456c72c95d15895dab5ed1543"
+      },
+      "conditional_dependencies": [
+        "design-system"
+      ]
+    },
+    {
+      "name": "architecture-designer",
+      "category": "architecture",
+      "source": {
+        "kind": "reuse",
+        "label": "local-skills/architecture-designer",
+        "version": "local-snapshot-43650b74b195",
+        "source_sha256": "43650b74b19553711f670c6d1c32006dcd2e3d84e6cd6aa9927ab4445fc2c468",
+        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [],
+      "activation": {
+        "when": [
+          "Design or review system boundaries, interactions, quality attributes and architectural tradeoffs from approved requirements or implementation evidence. Produce architecture decisions and diagrams without imposing a language, framework or deployment topology."
+        ],
+        "unless": []
+      },
+      "owner": "forge",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "1476a59ec2c7a5c4f7b319e0799524652c52a983f74b0914304049aaaf712e99"
+      },
+      "conditional_dependencies": [
+        "failure"
+      ]
+    },
+    {
+      "name": "architecture-decision-records",
+      "category": "architecture",
+      "source": {
+        "kind": "reuse",
+        "label": "local-skills/architecture-decision-records",
+        "version": "local-snapshot-2ad6b47aa9fe",
+        "source_sha256": "2ad6b47aa9fe986da43993317fd38def3bc8009f3ecbc34e150f47301de40140",
+        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [],
+      "activation": {
+        "when": [
+          "Record significant architectural decisions with source context, alternatives, consequences and stable history. Embed records in a parent document when requested, or use an explicitly selected existing ADR convention."
+        ],
+        "unless": []
+      },
+      "owner": "forge",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "9c3e03a97cf7e0dc3bd40ea1567c21ed798a0411111f15e7124b360418bb22b0"
+      },
+      "conditional_dependencies": []
+    },
+    {
+      "name": "domain-modeling",
+      "category": "architecture",
+      "source": {
+        "kind": "reuse",
+        "label": "local-skills/domain-modeling",
+        "version": "local-snapshot-2d64407d21d7",
+        "source_sha256": "2d64407d21d737b3f41a4df855571e3e80f9e0d85e5682d35b0a145682d08463",
+        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [],
+      "activation": {
+        "when": [
+          "Build and sharpen a project's domain model. Use when discussing codebase terminology, writing or editing a GLOSSARY.md, or recording or editing an ADR."
+        ],
+        "unless": []
+      },
+      "owner": "forge",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "019c5a011366598ef6417876fbc242d6ff7702ced66b867f87a007cef47d8b7d"
+      },
+      "conditional_dependencies": []
+    },
+    {
+      "name": "codebase-design",
+      "category": "architecture",
+      "source": {
+        "kind": "reuse",
+        "label": "local-skills/codebase-design",
+        "version": "local-snapshot-ece26f79fdec",
+        "source_sha256": "ece26f79fdec31b7f01d29293c89cf0d984a1a38babcbe6a1992f0fa9f910285",
+        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [],
+      "activation": {
+        "when": [
+          "Shared vocabulary for designing deep modules. Use when the user wants to design or improve a module's interface, find deepening opportunities, decide where a seam goes, make code more testable or AI-navigable, or when another skill needs the deep-module vocabulary."
+        ],
+        "unless": []
+      },
+      "owner": "forge",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "a886e4ffd16f06981e071099e1f53b4bdb79fc3303489ae68d5e7fc4471a4560"
+      },
+      "conditional_dependencies": []
+    },
+    {
+      "name": "modularity",
+      "category": "architecture",
+      "source": {
+        "kind": "reuse",
+        "label": "local-skills/modularity",
+        "version": "local-snapshot-ee61f2100aec",
+        "source_sha256": "ee61f2100aec9e7ffa4e9064b40c54bb3fb72b837acd1ed14f4f696079f6c2f4",
+        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [],
+      "activation": {
+        "when": [
+          "Design or validate module boundaries, ownership, and public interfaces. Use when changing cross-module dependencies or isolating responsibilities."
+        ],
+        "unless": []
+      },
+      "owner": "forge",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "966c7583277e30628761743820eb5d286b7fd34ed3088398c22d4e83c5b192b3"
+      },
+      "conditional_dependencies": [
+        "codebase-design",
+        "coding-standards",
+        "dependency-analysis",
+        "dto"
+      ]
+    },
+    {
+      "name": "dependency-analysis",
+      "category": "architecture",
+      "source": {
+        "kind": "reuse",
+        "label": "local-skills/dependency-analysis",
+        "version": "local-snapshot-88e6c9cd2abb",
+        "source_sha256": "88e6c9cd2abb68d14044ac329771cdd492cb55e1caeb7dfd4de9836464a44e62",
+        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [],
+      "activation": {
+        "when": [
+          "Map component dependencies and identify cycles, coupling, or safe execution order. Use for architectural dependency analysis and parallel-work planning."
+        ],
+        "unless": []
+      },
+      "owner": "forge",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "c0727f6e74b6631dbc47e19e73e95b4eacfffc0eeeaebbff0a72e2457859fa04"
+      },
+      "conditional_dependencies": [
+        "codebase-design",
+        "coding-standards"
+      ]
+    },
+    {
+      "name": "vertical-slice",
+      "category": "architecture",
+      "source": {
+        "kind": "reuse",
+        "label": "local-skills/vertical-slice",
+        "version": "local-snapshot-9b611abf45c5",
+        "source_sha256": "9b611abf45c509a0ffbe9befcf055e659aa437bb9f46fd0fc1a4b8688f02a96e",
+        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [],
+      "activation": {
+        "when": [
+          "Organize a feature around its end-to-end behavior when vertical slices fit the architecture. Use for feature boundaries or an explicitly requested vertical-slice refactor."
+        ],
+        "unless": []
+      },
+      "owner": "forge",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "5088293b677cae033f219e4fd73f8321422d034d7d46f48282766cf7d967dbe0"
+      },
+      "conditional_dependencies": [
+        "coding-standards",
+        "dto",
+        "failure",
+        "modularity"
+      ]
+    },
+    {
+      "name": "api-design",
+      "category": "contracts-configuration",
+      "source": {
+        "kind": "reuse",
+        "label": "local-skills/api-design",
+        "version": "local-snapshot-4603a025554f",
+        "source_sha256": "4603a025554f51242b337bfb9be6d307ae11c573ae796715a15b79eeca23d8fe",
+        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [],
+      "activation": {
+        "when": [
+          "Design or evolve an external or inter-component API contract. Use for endpoint, RPC, event, or library-boundary design and compatibility decisions."
+        ],
+        "unless": []
+      },
+      "owner": "forge",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "a7c7c25710fba56b5f7630d3fce711e9e475d2b41cea8bea7a06d05c0808fc94"
+      },
+      "conditional_dependencies": [
+        "coding-standards",
+        "dto",
+        "failure",
+        "idempotency"
+      ]
+    },
+    {
+      "name": "dto",
+      "category": "contracts-configuration",
+      "source": {
+        "kind": "reuse",
+        "label": "local-skills/dto",
+        "version": "local-snapshot-4802938ec2a9",
+        "source_sha256": "4802938ec2a934dcee3bbfe26126e959563627aba54c6344bab4855dfc200fbf",
+        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [],
+      "activation": {
+        "when": [
+          "Define or evolve data contracts across process, module, or persistence boundaries. Use for DTOs, schemas, serialization, and producer-consumer compatibility."
+        ],
+        "unless": []
+      },
+      "owner": "forge",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "7ccbb39c593da80967895b39fa8da2857831b585d4dc387449ae40ea384b8516"
+      },
+      "conditional_dependencies": [
+        "coding-standards"
+      ]
+    },
+    {
+      "name": "config-validation",
+      "category": "contracts-configuration",
+      "source": {
+        "kind": "reuse",
+        "label": "local-skills/config-validation",
+        "version": "local-snapshot-31279b439853",
+        "source_sha256": "31279b4398533a68dbe819d2923e6dc5700b3cee4557c5a365448a7374cc7f3c",
+        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [],
+      "activation": {
+        "when": [
+          "Design or validate configuration sources, precedence, defaults, and startup checks. Use when adding configuration or diagnosing inconsistent settings."
+        ],
+        "unless": []
+      },
+      "owner": "forge",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "ab56d676e64f7a1713cda06b354999ac2c5ddcb7d6212a41d242f081ed7f9c35"
+      },
+      "conditional_dependencies": [
+        "coding-standards"
+      ]
+    },
+    {
+      "name": "determinism",
+      "category": "reliability-persistence",
+      "source": {
+        "kind": "reuse",
+        "label": "local-skills/determinism",
+        "version": "local-snapshot-71238ce1a8d0",
+        "source_sha256": "71238ce1a8d017a1a3f8e28c688f7c7934ca9e9707aeec7c0842d1ba9d894dd9",
+        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [],
+      "activation": {
+        "when": [
+          "Establish reproducible behavior within a defined computation or test boundary. Use for stable ordering, repeatable outputs, hashing, and nondeterminism diagnosis."
+        ],
+        "unless": []
+      },
+      "owner": "forge",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "6115c8ff99bc7a42c74a4ab84f1eb4610259888bcfea4ee72fae581c917b2fc5"
+      },
+      "conditional_dependencies": [
+        "coding-standards"
+      ]
+    },
+    {
+      "name": "idempotency",
+      "category": "reliability-persistence",
+      "source": {
+        "kind": "reuse",
+        "label": "local-skills/idempotency",
+        "version": "local-snapshot-9285a98671ea",
+        "source_sha256": "9285a98671eacbb904262804aa476b6016a080111952e5382739a5d6960174da",
+        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [],
+      "activation": {
+        "when": [
+          "Make repeated or concurrent operations safe without duplicating effects. Use for retryable writes, request keys, jobs, and checkpoint resume."
+        ],
+        "unless": []
+      },
+      "owner": "forge",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "3146c4aaded8d00f027c464c15909549c7497df6de7d1c1f1ed4a699f4ad90a9"
+      },
+      "conditional_dependencies": [
+        "coding-standards"
+      ]
+    },
+    {
+      "name": "failure",
+      "category": "reliability-persistence",
+      "source": {
+        "kind": "reuse",
+        "label": "local-skills/failure",
+        "version": "local-snapshot-4b06c41ddd6f",
+        "source_sha256": "4b06c41ddd6fe161240c6ce427379ecefa3177a2dbbc5fb5b429d84894db129b",
+        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [],
+      "activation": {
+        "when": [
+          "Design failure classification, bounded retries, partial results, and recovery. Use when defining resilience behavior or fixing repeated failures."
+        ],
+        "unless": []
+      },
+      "owner": "forge",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "ec129503d9dad741fab17f9cf3ce191527e0f53a52fd3b26b2d2c656c6ee977e"
+      },
+      "conditional_dependencies": [
+        "coding-standards",
+        "idempotency"
+      ]
+    },
+    {
+      "name": "pipeline",
+      "category": "reliability-persistence",
+      "source": {
+        "kind": "reuse",
+        "label": "local-skills/pipeline",
+        "version": "local-snapshot-73750bf846a4",
+        "source_sha256": "73750bf846a4a5320398998f26f47f618d8f14744ceb9f9c88d8e9184e73687a",
+        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [],
+      "activation": {
+        "when": [
+          "Design or verify staged processing, dependency ordering, handoffs, and checkpoint recovery. Use for data or application pipelines, including fan-out and fan-in."
+        ],
+        "unless": []
+      },
+      "owner": "forge",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "53f883e0edcba0a1d65a9ee217fd34596de885498ec306b3c84e6b60af76feca"
+      },
+      "conditional_dependencies": [
+        "coding-standards",
+        "failure",
+        "idempotency"
+      ]
+    },
+    {
+      "name": "migration-management",
+      "category": "reliability-persistence",
+      "source": {
+        "kind": "reuse",
+        "label": "local-skills/migration-management",
+        "version": "local-snapshot-3616560ddd90",
+        "source_sha256": "3616560ddd90a8bfdf7211c51e3b9f561038f622cb4acd81fc0097e0542d298e",
+        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [],
+      "activation": {
+        "when": [
+          "Create or review database schema and data migrations using the project migration system. Use for schema evolution, backfills, and migration recovery planning."
+        ],
+        "unless": []
+      },
+      "owner": "forge",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "a9df336819e62a9a591814f9f766a8c8ba8c0c455d7227057b3fa3ce26e4ba11"
+      },
+      "conditional_dependencies": [
+        "coding-standards",
+        "database-portability"
+      ]
+    },
+    {
+      "name": "database-portability",
+      "category": "reliability-persistence",
+      "source": {
+        "kind": "reuse",
+        "label": "local-skills/database-portability",
+        "version": "local-snapshot-e7dc696c5cf8",
+        "source_sha256": "e7dc696c5cf870dc73d0b240308445d10cee95d1672b341fd5a050f842466b6b",
+        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [],
+      "activation": {
+        "when": [
+          "Assess or implement compatibility across explicitly supported database engines. Use for database abstraction, dialect differences, or multi-engine behavior."
+        ],
+        "unless": [
+          "Project explicitly supports one database engine only."
+        ]
+      },
+      "owner": "forge",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "52c4839c3f98db49a232cff7fbd49f71ba9f7bcfed66a479f5aa1b1e61650bf0"
+      },
+      "conditional_dependencies": [
+        "coding-standards",
+        "migration-management"
+      ]
+    },
+    {
+      "name": "coding-standards",
+      "category": "code-quality",
+      "source": {
+        "kind": "reuse",
+        "label": "local-skills/coding-standards",
+        "version": "local-snapshot-47d759f9fdc1",
+        "source_sha256": "47d759f9fdc1a66f0f86b9fdf97bd37f21be9b98f3bb6b5e5c706bf71331e4cf",
+        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [],
+      "activation": {
+        "when": [
+          "Establish or apply coding conventions for the affected language and component. Use when implementing code or reviewing consistency with project standards."
+        ],
+        "unless": []
+      },
+      "owner": "review-verify",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "0ba7599799508ac6b31900944193cfee321e50d485070492ef9f4288d9f2ec67"
+      },
+      "conditional_dependencies": [
+        "code-review",
+        "codebase-design",
+        "failure"
+      ]
+    },
+    {
+      "name": "code-quality",
+      "category": "code-quality",
+      "source": {
+        "kind": "reuse",
+        "label": "local-skills/code-quality",
+        "version": "local-snapshot-84650d7365f0",
+        "source_sha256": "84650d7365f0fef16e4d4e2fe5eaf1d63b490cef09d120162fb866dc427279c9",
+        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [],
+      "activation": {
+        "when": [
+          "Assess maintainability and correctness of changed code against project conventions. Use for a focused quality pass; use code-review for a full branch or PR review."
+        ],
+        "unless": []
+      },
+      "owner": "review-verify",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "bc8a4057dd1a0033a374c4cc1356bbde166c41dd918ce8f9bf4bd49eb7589145"
+      },
+      "conditional_dependencies": [
+        "code-review",
+        "coding-standards"
+      ]
+    },
+    {
+      "name": "code-review",
+      "category": "code-quality",
+      "source": {
+        "kind": "reuse",
+        "label": "local-skills/code-review",
+        "version": "local-snapshot-ada905fda636",
+        "source_sha256": "ada905fda636e3ba326466c5588ef05d0f43f862fd3c683940c67f04a7dc6e0c",
+        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [
+        "coding-standards"
+      ],
+      "activation": {
+        "when": [
+          "Review the changes since a fixed point (commit, branch, tag, or merge-base) along two axes: Standards (does the code follow this repo''s documented coding standards?) and Spec (does the code match what the originating issue/spec asked for?). Evaluates both axes and reports evidence-backed findings. Use when the user wants to review a branch, a PR, work-in-progress changes, or asks to \"review since X\"."
+        ],
+        "unless": []
+      },
+      "owner": "review-verify",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "97774722e89c8ec8dc55f3e2e617def03b601e71905539b8e7c19b3b4235e000"
+      },
+      "conditional_dependencies": [
+        "failure"
+      ]
+    },
+    {
+      "name": "tdd",
+      "category": "testing",
+      "source": {
+        "kind": "reuse",
+        "label": "local-skills/tdd",
+        "version": "local-snapshot-7e37d86e498a",
+        "source_sha256": "7e37d86e498a722aa5b58a8c981b74a8dddc616542f7ec94c0e66169bec1ef88",
+        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [],
+      "activation": {
+        "when": [
+          "Test-driven development. Use when the user wants to build features or fix bugs test-first, mentions \"red-green-refactor\", or wants integration tests."
+        ],
+        "unless": []
+      },
+      "owner": "forge",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "79093e124c8e3125c3d98df7bbb5044317084cc2fa4ab97b374e01f938343756"
+      },
+      "conditional_dependencies": [
+        "code-review",
+        "codebase-design"
+      ]
+    },
+    {
+      "name": "test-driven-development",
+      "category": "testing",
+      "source": {
+        "kind": "reuse",
+        "label": "local-skills/test-driven-development",
+        "version": "local-snapshot-896fc2b5182c",
+        "source_sha256": "896fc2b5182c11ed7c47e21589b6680187e79f6a8b3e0631ba36e634216f79cc",
+        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [
+        "tdd"
+      ],
+      "activation": {
+        "when": [
+          "Run test-first development through the installed tdd workflow. Use when explicitly requested by this name or when an accepted task calls for TDD."
+        ],
+        "unless": []
+      },
+      "owner": "forge",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "890536c40b3882e09c87bd7d581694cf517643b84a0581ac69a5597361a42244"
+      },
+      "conditional_dependencies": [
+        "coding-standards",
+        "test-generation"
+      ]
+    },
+    {
+      "name": "test-generation",
+      "category": "testing",
+      "source": {
+        "kind": "reuse",
+        "label": "local-skills/test-generation",
+        "version": "local-snapshot-50c9a9bd05fa",
+        "source_sha256": "50c9a9bd05fa8c5f603c1ee4a611e62622465e098da973dc1ccd4123e0947b5e",
+        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [],
+      "activation": {
+        "when": [
+          "Add meaningful behavior tests or assess missing coverage using the project test framework. Use for regression tests, boundary coverage, and test-suite improvements."
+        ],
+        "unless": []
+      },
+      "owner": "forge",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "62af3bc9e00aad8f57f9c65b3d31abca95e734476f11ed5b0104348654c8f976"
+      },
+      "conditional_dependencies": [
+        "coding-standards",
+        "failure",
+        "tdd"
+      ]
+    },
+    {
+      "name": "diagnosing-bugs",
+      "category": "testing",
+      "source": {
+        "kind": "reuse",
+        "label": "local-skills/diagnosing-bugs",
+        "version": "local-snapshot-7e99e59005b5",
+        "source_sha256": "7e99e59005b5a74988aa663e1cea854f630012726c301d60da1a85bd709926b5",
+        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [],
+      "activation": {
+        "when": [
+          "Diagnosis loop for hard bugs and performance regressions. Use when the user says \"diagnose\"/\"debug this\", or reports something broken/throwing/failing/slow."
+        ],
+        "unless": []
+      },
+      "owner": "forge",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "b49df2579ba96260cd33681448e1e6ecdfc1e9bd13144530233c7c28720ca8af"
+      },
+      "conditional_dependencies": [
+        "failure"
+      ]
+    },
+    {
+      "name": "security-audit",
+      "category": "security",
+      "source": {
+        "kind": "reuse",
+        "label": "local-skills/security-audit",
+        "version": "local-snapshot-06a036855a13",
+        "source_sha256": "06a036855a13c95e9c0cf8fbc196e2955fac8856f7fefb555309ba215fcc3851",
+        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [],
+      "activation": {
+        "when": [
+          "Perform a scoped security review with evidence-backed findings and remediation. Use when a security audit is requested or a change presents material security risk."
+        ],
+        "unless": []
+      },
+      "owner": "review-verify",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "606a4760cd0de203bf127936d8c28bac44f4c52e96374f81b9da081b6433232b"
+      },
+      "conditional_dependencies": [
+        "coding-standards"
+      ]
+    },
+    {
+      "name": "security-requirement-extraction",
+      "category": "security",
+      "source": {
+        "kind": "reuse",
+        "label": "local-skills/security-requirement-extraction",
+        "version": "local-snapshot-3b78a88b0a95",
+        "source_sha256": "3b78a88b0a95c44df048aee909d2b44449903e49df09db7b4cb7d15acf1caf50",
+        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [],
+      "activation": {
+        "when": [
+          "Translate concrete threats and approved security obligations into enforceable requirements, control mappings and observable acceptance criteria. Supports technical-design sections without generating implementation or claiming compliance."
+        ],
+        "unless": []
+      },
+      "owner": "review-verify",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "2dc6fbf142b6b5238b2336ab042d7c91756569fa10f57c5d1b7f896c87e60741"
+      },
+      "conditional_dependencies": [
+        "failure"
+      ]
+    },
+    {
+      "name": "stride-analysis-patterns",
+      "category": "security",
+      "source": {
+        "kind": "reuse",
+        "label": "local-skills/stride-analysis-patterns",
+        "version": "local-snapshot-5e3397e730f9",
+        "source_sha256": "5e3397e730f9ceafa8111936e633dc5723ae742806bc03018c0d81cc33c94a59",
+        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [],
+      "activation": {
+        "when": [
+          "Identify concrete threats across system trust boundaries using STRIDE, with assets, attacker capabilities, impact and mitigation evidence. Use for architecture security design and scoped threat-model review."
+        ],
+        "unless": []
+      },
+      "owner": "review-verify",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "73a59cffec6dbc3ddd5a6c42ed4ecb00de9164588397186c6acf2a08f9591e93"
+      },
+      "conditional_dependencies": []
+    },
+    {
+      "name": "project-scaffold",
+      "category": "delivery",
+      "source": {
+        "kind": "reuse",
+        "label": "local-skills/project-scaffold",
+        "version": "local-snapshot-77540b06a17f",
+        "source_sha256": "77540b06a17f3fcc1f794223edf274fb25e64d31bead4b2440b76a305593517d",
+        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [],
+      "activation": {
+        "when": [
+          "Initialize a requested new project or component using its chosen ecosystem and conventions. Use for scaffolding; do not trigger setup for ordinary feature work."
+        ],
+        "unless": []
+      },
+      "owner": "forge",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "b6da617e8d96662ebcfd1a5d99fce872ae0e17855061765fbffe9068e9cc7160"
+      },
+      "conditional_dependencies": [
+        "coding-standards",
+        "pipeline"
+      ]
+    },
+    {
+      "name": "performance-optimization",
+      "category": "delivery",
+      "source": {
+        "kind": "reuse",
+        "label": "local-skills/performance-optimization",
+        "version": "local-snapshot-66e862f975eb",
+        "source_sha256": "66e862f975eb92be25b0fe1fdc0434c73c0c38f4a93796f34d88fa22df45a562",
+        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [],
+      "activation": {
+        "when": [
+          "Investigate and improve a measured performance bottleneck. Use for latency, throughput, memory, query, or resource-consumption problems."
+        ],
+        "unless": []
+      },
+      "owner": "forge",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "98d28b4220d864c769241a1d557ccf1bf45fb60eb65caec06400c178475ab187"
+      },
+      "conditional_dependencies": [
+        "coding-standards"
+      ]
+    },
+    {
+      "name": "conflict-resolution",
+      "category": "delivery",
+      "source": {
+        "kind": "reuse",
+        "label": "local-skills/conflict-resolution",
+        "version": "local-snapshot-0b00d43c4be5",
+        "source_sha256": "0b00d43c4be52c06c2786f4ebec93af3645240ef83181ba192b2ad31601a807e",
+        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [],
+      "activation": {
+        "when": [
+          "Resolve merge or concurrent-edit conflicts by preserving intended behavior. Use for conflicted files, integration disagreements, and incompatible parallel changes."
+        ],
+        "unless": []
+      },
+      "owner": "forge",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "00c2d849e415e189e0627b57e205b9e71fa0518e1499bd1919b44deaf2912eae"
+      },
+      "conditional_dependencies": [
+        "coding-standards"
+      ]
+    },
+    {
+      "name": "docs-sync",
+      "category": "delivery",
+      "source": {
+        "kind": "reuse",
+        "label": "local-skills/docs-sync",
+        "version": "local-snapshot-758f02dc2ed4",
+        "source_sha256": "758f02dc2ed4503df340d0e2ae697eef1d98ac7d72761aed2b7f7f896a9659e6",
+        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [],
+      "activation": {
+        "when": [
+          "Reconcile documentation and implementation against current requirements. Use when behavior changes, documentation drifts, or a documentation consistency review is requested."
+        ],
+        "unless": []
+      },
+      "owner": "forge",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "ddce9ef87a06e8215ffc7687a98d831b15806c14799c6d34537a7e0a3ffd6d9a"
+      },
+      "conditional_dependencies": [
+        "coding-standards"
+      ]
+    },
+    {
+      "name": "pr",
+      "category": "delivery",
+      "source": {
+        "kind": "reuse",
+        "label": "local-skills/pr",
+        "version": "local-snapshot-b84e946f3712",
+        "source_sha256": "b84e946f3712d812e61d7b106b91c68e6e1259d8c2de63503968bd67a211c206",
+        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [],
+      "activation": {
+        "when": [
+          "Use when writing a PR body."
+        ],
+        "unless": []
+      },
+      "owner": "forge",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "b57c7527b8b07c2216d9dbe0cdb0568d1abec03e953b0a14189272fe50ab4bd7"
+      },
+      "conditional_dependencies": []
+    },
+    {
+      "name": "humanizer",
+      "category": "writing-upkeep",
+      "source": {
+        "kind": "reuse",
+        "label": "local-skills/humanizer",
+        "version": "local-snapshot-a01833ea19b5",
+        "source_sha256": "a01833ea19b5ce0334ca7f038f30b48c4634590f236b85af44835e4726e25ceb",
+        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [],
+      "activation": {
+        "when": [
+          "Draft or rewrite prose on behalf of Muhammad Okfriansyah in his polished conversational, casually phrased voice. Use for humanizing text or writing in his voice; preserve facts and technical content. English by default, unless requested otherwise."
+        ],
+        "unless": []
+      },
+      "owner": "forge",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "d42b6d371164928c1b042a90c563760c4de69e2068891ef2dd3f729bd364640f"
+      },
+      "conditional_dependencies": [
+        "pipeline"
+      ]
+    },
+    {
+      "name": "writing-for-agents",
+      "category": "writing-upkeep",
+      "source": {
+        "kind": "reuse",
+        "label": "local-skills/writing-for-agents",
+        "version": "local-snapshot-fb0e4bf6fe7d",
+        "source_sha256": "fb0e4bf6fe7d347687b2dc6c21374a638b95fb058bf8bec2406b931567a1bb34",
+        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [],
+      "activation": {
+        "when": [
+          "Writing documents for agents. Use when creating or editing skills, or modifying AGENTS.md or CLAUDE.md."
+        ],
+        "unless": []
+      },
+      "owner": "forge",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "07a9a831206f34ebf88b721baa6d906e58235db60e0079e2136420db01afd57a"
+      },
+      "conditional_dependencies": [
+        "failure"
+      ]
+    },
+    {
+      "name": "task-observer",
+      "category": "writing-upkeep",
+      "source": {
+        "kind": "reuse",
+        "label": "local-skills/task-observer",
+        "version": "local-snapshot-179ad383cd95",
+        "source_sha256": "179ad383cd958835662965267dcfdd4b1daa6659ba2611a907d620ef44195bff",
+        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [],
+      "activation": {
+        "when": [
+          "Observe substantive work for reusable skill improvements and user corrections. Capture concise proposals in the shared global observation log; review or update skills when requested. Also use for skill-observation and One Skill to Rule Them All requests."
+        ],
+        "unless": []
+      },
+      "owner": "forge",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "465ce991071a377a7a5c61034df212f9747019573079548b37d32db2bf73f77a"
+      },
+      "conditional_dependencies": []
+    },
+    {
+      "name": "rtk",
+      "category": "writing-upkeep",
+      "source": {
+        "kind": "reuse",
+        "label": "local-skills/rtk",
+        "version": "local-snapshot-ed6a43e874ed",
+        "source_sha256": "ed6a43e874edb6232b3c944799b47b780911570af5a7d9daff46fbecb407a5bf",
+        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [],
+      "activation": {
+        "when": [
+          "Use an available RTK CLI to reduce verbose command output. Use when RTK is requested or suitable for large logs; fall back to ordinary tools when unavailable."
+        ],
+        "unless": []
+      },
+      "owner": "forge",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "eeb6e76e81da076865288b89d6b77131c0a51dcfe10d5692121484772059d9de"
+      },
+      "conditional_dependencies": [
+        "coding-standards",
+        "failure"
+      ]
+    },
+    {
+      "name": "token-optimization",
+      "category": "writing-upkeep",
+      "source": {
+        "kind": "reuse",
+        "label": "local-skills/token-optimization",
+        "version": "local-snapshot-4c757752d4a4",
+        "source_sha256": "4c757752d4a4fe68ef0cd57f4fdcbb0f6a7ff4e0aea79e2a739006249f221489",
+        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [],
+      "activation": {
+        "when": [
+          "Reduce unnecessary context and tool-output volume while preserving task evidence. Use for context-pressure problems or an explicitly requested token-efficiency pass."
+        ],
+        "unless": []
+      },
+      "owner": "forge",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "27ef16b5663c22fe61e28d480c7174558067eb7fcaefef1870b91f78adc8e088"
+      },
+      "conditional_dependencies": [
+        "coding-standards",
+        "rtk"
+      ]
+    },
+    {
+      "name": "workflow-install",
+      "category": "new",
+      "source": {
+        "kind": "new",
+        "label": "agent-workflow/workflow-install",
+        "version": "1.0.0",
+        "source_sha256": "514f22425d9fac9f9b51e346ddd203ae852878f0c420e4565c678eff45acacdc",
+        "license": "Private project-authored material; no public distribution grant added."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [],
+      "activation": {
+        "when": [
+          "Install or maintain a managed agent-workflow bundle globally or in a repository; inspect conflicts, portability, upgrades and removal."
+        ],
+        "unless": []
+      },
+      "owner": "operations",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "757252ceeb54665057e3a9e046d56bc7bdf23434aff08e5a5dfb9c8cdd3a90c7"
+      },
+      "conditional_dependencies": []
+    },
+    {
+      "name": "worktree-integration",
+      "category": "new",
+      "source": {
+        "kind": "new",
+        "label": "agent-workflow/worktree-integration",
+        "version": "1.0.0",
+        "source_sha256": "85cf359f7559b261d316d66c45325e0aa86cad8d22d4a235e43eba43665e2e3f",
+        "license": "Private project-authored material; no public distribution grant added."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [
+        "conflict-resolution",
+        "dependency-analysis"
+      ],
+      "activation": {
+        "when": [
+          "Coordinate concurrent repository writers with claimed paths, isolated worktrees and verified semantic integration."
+        ],
+        "unless": []
+      },
+      "owner": "integrator",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "46a7cc696f0a24240db66a0f4e10a54603493e66d2d143c122a8d3cbea06c2fc"
+      },
+      "conditional_dependencies": []
+    },
+    {
+      "name": "quality-gates",
+      "category": "new",
+      "source": {
+        "kind": "new",
+        "label": "agent-workflow/quality-gates",
+        "version": "1.0.0",
+        "source_sha256": "ddc6731cde02ac5751ca2f6b2da111aacf19322e8020fe4cdefc65acbc3bf06e",
+        "license": "Private project-authored material; no public distribution grant added."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [
+        "code-quality",
+        "security-audit"
+      ],
+      "activation": {
+        "when": [
+          "Run configured quality and security checks with revision-bound results; diagnose failed, unavailable or inapplicable gates."
+        ],
+        "unless": []
+      },
+      "owner": "review-verify",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "4ac0e43dd89ea1b18924ac7021395cb2a7621146080a56747e61591a91cce60f"
+      },
+      "conditional_dependencies": []
+    },
+    {
+      "name": "kotlin-spring",
+      "category": "new",
+      "source": {
+        "kind": "new",
+        "label": "agent-workflow/kotlin-spring",
+        "version": "1.0.0",
+        "source_sha256": "933b18a8a78168247b852f5ba1d5246afd3d7ce17d17db5f8cd1495578d2ac91",
+        "license": "Private project-authored material; no public distribution grant added."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [
+        "spring-dependency-injection",
+        "jpa-hibernate"
+      ],
+      "activation": {
+        "when": [
+          "Implement approved Kotlin/Spring Boot service and transport behavior with explicit validation, lifecycle and error handling."
+        ],
+        "unless": []
+      },
+      "owner": "backend",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "0f291ee51e9dc300224c66d9ae7bfff49d3bf0f7ce008b46b777f70a7269002d"
+      },
+      "conditional_dependencies": [
+        "failure",
+        "idempotency"
+      ]
+    },
+    {
+      "name": "spring-dependency-injection",
+      "category": "new",
+      "source": {
+        "kind": "new",
+        "label": "agent-workflow/spring-dependency-injection",
+        "version": "1.0.0",
+        "source_sha256": "7419b087d0dfa64e15aac1296fd4eded9ebbcacd09dfae82d36a8584bf2ddc10",
+        "license": "Private project-authored material; no public distribution grant added."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [],
+      "activation": {
+        "when": [
+          "Implement or review Spring bean wiring, constructor injection, qualifiers and lifecycle without dependency cycles."
+        ],
+        "unless": []
+      },
+      "owner": "backend",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "a5edec620fd6848dd8815a76c49c3cb4dc0f7946190c3fdc5265f1ee621e6864"
+      },
+      "conditional_dependencies": []
+    },
+    {
+      "name": "jpa-hibernate",
+      "category": "new",
+      "source": {
+        "kind": "new",
+        "label": "agent-workflow/jpa-hibernate",
+        "version": "1.0.0",
+        "source_sha256": "2b0d1d620fba7a4822ce5722430863751f935ff7b2e60b9e115d1ac94e82ec8a",
+        "license": "Private project-authored material; no public distribution grant added."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [],
+      "activation": {
+        "when": [
+          "Implement JPA/Hibernate entities, transactions, locking and queries with PostgreSQL-backed behavior tests."
+        ],
+        "unless": []
+      },
+      "owner": "backend",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "92b8e8657e79eab1c0cd14b513548f07986e7ccdb92f797d9c367c0936561bb3"
+      },
+      "conditional_dependencies": []
+    },
+    {
+      "name": "svelte-typescript",
+      "category": "new",
+      "source": {
+        "kind": "new",
+        "label": "agent-workflow/svelte-typescript",
+        "version": "1.0.0",
+        "source_sha256": "30eca6bd32b92e36dc1ecad49989840af6e9c05436740f9de5c384d786d01dfc",
+        "license": "Private project-authored material; no public distribution grant added."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [
+        "design-system-foundations",
+        "fixing-accessibility"
+      ],
+      "activation": {
+        "when": [
+          "Implement approved Svelte/TypeScript screens and states with typed data flow, responsive behavior and accessibility."
+        ],
+        "unless": []
+      },
+      "owner": "frontend",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "3baa47e0ffa31d077895b914bc3a21ce34fee51bb8e27d8612aea55e118e985e"
+      },
+      "conditional_dependencies": [
+        "design-system"
+      ]
+    },
+    {
+      "name": "node-backend",
+      "category": "new",
+      "source": {
+        "kind": "new",
+        "label": "agent-workflow/node-backend",
+        "version": "1.0.0",
+        "source_sha256": "eca9ea89ecc70a958b27f5b160d54cdc3e13bcd0ca95e558a2842bfa1f7994fe",
+        "license": "Private project-authored material; no public distribution grant added."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [],
+      "activation": {
+        "when": [
+          "Implement Node/TypeScript services or the selected MCP adapter with validated input, cancellation and controlled I/O."
+        ],
+        "unless": []
+      },
+      "owner": "backend",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "2dc297d98f3361791ea486c6a52276257603df3783f47ad01892f3ad99ea56f8"
+      },
+      "conditional_dependencies": []
+    },
+    {
+      "name": "devops-ci",
+      "category": "new",
+      "source": {
+        "kind": "new",
+        "label": "agent-workflow/devops-ci",
+        "version": "1.0.0",
+        "source_sha256": "e53125cfde8293f189322569d710726b3a37c448855c248fca78f9595430040e",
+        "license": "Private project-authored material; no public distribution grant added."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [],
+      "activation": {
+        "when": [
+          "Implement reproducible local/CI builds, Compose environments and operational release or recovery checks."
+        ],
+        "unless": []
+      },
+      "owner": "operations",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "1ac78cdd873eadcdfcefeef8ddf84fbd7d2b35ef46479a8ca2782a8a1d58b6ae"
+      },
+      "conditional_dependencies": [
+        "failure"
+      ]
+    },
+    {
+      "name": "observability",
+      "category": "new",
+      "source": {
+        "kind": "new",
+        "label": "agent-workflow/observability",
+        "version": "1.0.0",
+        "source_sha256": "1a7eb07ac3371e88d145d607f38d480867deef5a8703e9d3a9d4c74509c0430c",
+        "license": "Private project-authored material; no public distribution grant added."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [],
+      "activation": {
+        "when": [
+          "Implement or review useful application logs, metrics, traces and alerts with redaction and operational checks."
+        ],
+        "unless": []
+      },
+      "owner": "operations",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "2444d143f6571cc050a235beb3fc3c2b79a98b2e03664c6e9b8bbc85531674a5"
+      },
+      "conditional_dependencies": [
+        "analyze-alert",
+        "failure"
+      ]
+    },
+    {
+      "name": "acceptance-verification",
+      "category": "new",
+      "source": {
+        "kind": "new",
+        "label": "agent-workflow/acceptance-verification",
+        "version": "1.0.0",
+        "source_sha256": "99b67354d3976c4a4b0869705eb1b06bb2ae25616a04c4257b01e5a30bedb73f",
+        "license": "Private project-authored material; no public distribution grant added."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [
+        "verify-test-evidence"
+      ],
+      "activation": {
+        "when": [
+          "Map assigned ATDD cases to executable verification at their required proof boundary and evaluate feature acceptance."
+        ],
+        "unless": []
+      },
+      "owner": "qa-evidence",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "82af6c46f0ecccfdc8e7e2affab4cbdb720e7f76afeba18a321e58edc82e52fa"
+      },
+      "conditional_dependencies": [
+        "record-test-video"
+      ]
+    },
+    {
+      "name": "forge",
+      "category": "adapted",
+      "source": {
+        "kind": "adapt",
+        "label": "supplied-forge",
+        "version": "supplied-snapshot",
+        "source_sha256": "ac694bcc552564a94dd9e5d1b7821327c789cf965b8d9c499a14594a3f0792d2",
+        "license": "User-supplied private workflow material; no public distribution grant added."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [
+        "worktree-integration",
+        "task-implement",
+        "quality-gates",
+        "acceptance-verification",
+        "task-delivery"
+      ],
+      "activation": {
+        "when": [
+          "Execute an approved multi-task plan through native subagents, claimed worktrees and independently verified receipts."
+        ],
+        "unless": []
+      },
+      "owner": "forge",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "5286cfbb52023a7d942fc5471657b8e5b8491fa878a0cfbbb8fa33c3991d6d15"
+      },
+      "conditional_dependencies": [
+        "design-system"
+      ]
+    },
+    {
+      "name": "task-full-workflow",
+      "category": "adapted",
+      "source": {
+        "kind": "adapt",
+        "label": "supplied-billing-task-full-workflow",
+        "version": "supplied-snapshot",
+        "source_sha256": "3f298d31b863849eab4628f0141e8c52eb67138830b74b7cba46959b3dd2abce",
+        "license": "User-supplied private workflow material; no public distribution grant added."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [
+        "forge",
+        "task-implement",
+        "task-delivery"
+      ],
+      "activation": {
+        "when": [
+          "Route an authorized task through necessary planning, implementation, verification and delivery using one execution state."
+        ],
+        "unless": []
+      },
+      "owner": "forge",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "86f46af1cfe9e7aa6cb6feb48e4b67f5cafe4c549c6b2f2a4c2194fd23d35620"
+      },
+      "conditional_dependencies": [
+        "atdd-creation",
+        "brainstorming",
+        "deliver-prd",
+        "design-system",
+        "plan-creation",
+        "techdoc-creation"
+      ]
+    },
+    {
+      "name": "task-implement",
+      "category": "adapted",
+      "source": {
+        "kind": "adapt",
+        "label": "supplied-billing-task-implement",
+        "version": "supplied-snapshot",
+        "source_sha256": "541349a3820af9da67750748c765b1f15ba078be5cd0d9aefa439cef35aaba63",
+        "license": "User-supplied private workflow material; no public distribution grant added."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [
+        "coding-standards",
+        "quality-gates"
+      ],
+      "activation": {
+        "when": [
+          "Implement one bounded approved task, apply its selected test strategy and return a verifiable receipt."
+        ],
+        "unless": []
+      },
+      "owner": "forge",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "3cbd0f9d7c34c9392e3ab332960b1a5990be4b0f38cb766af86713fb4c597721"
+      },
+      "conditional_dependencies": [
+        "failure",
+        "tdd"
+      ]
+    },
+    {
+      "name": "task-delivery",
+      "category": "adapted",
+      "source": {
+        "kind": "adapt",
+        "label": "supplied-billing-task-delivery",
+        "version": "supplied-snapshot",
+        "source_sha256": "4e63f9527a3de3347a3826c3d394a42ad889595dba5fc5bd33ed2beaa24968a4",
+        "license": "User-supplied private workflow material; no public distribution grant added."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [
+        "quality-gates",
+        "verify-test-evidence",
+        "pr"
+      ],
+      "activation": {
+        "when": [
+          "Deliver verified scoped changes through commits and an authorized draft pull request when the remote is configured."
+        ],
+        "unless": []
+      },
+      "owner": "forge",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "97bc3c583631ae4a3f89cbe4c3d0faa514eb2f58a22b51ced3f6f3ea9a7b903b"
+      },
+      "conditional_dependencies": []
+    },
+    {
+      "name": "analyze-alert",
+      "category": "adapted",
+      "source": {
+        "kind": "adapt",
+        "label": "supplied-officeless-analyze-alert",
+        "version": "supplied-snapshot",
+        "source_sha256": "d38aac79ecf881800f5fb361b286d0521ee0d4ca78285caae7cfd9e9186886bf",
+        "license": "User-supplied private workflow material; no public distribution grant added."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [
+        "observability"
+      ],
+      "activation": {
+        "when": [
+          "Investigate a supplied alert using observed telemetry, source context and a bounded incident timeline."
+        ],
+        "unless": []
+      },
+      "owner": "operations",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "75ac448eaafcb25c09f8ee81ee7e7881682ddee40fc5d963a5ef75f7e318e46d"
+      },
+      "conditional_dependencies": [
+        "task-implement"
+      ]
+    },
+    {
+      "name": "record-test-video",
+      "category": "adapted",
+      "source": {
+        "kind": "adapt",
+        "label": "supplied-billing-record-test-video",
+        "version": "supplied-snapshot",
+        "source_sha256": "0224415f89e6e490c684c931875520e8be7e4e87dc760a71363f0a3fa70aac28",
+        "license": "User-supplied private workflow material; no public distribution grant added."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [
+        "acceptance-verification"
+      ],
+      "activation": {
+        "when": [
+          "Record real UI acceptance journeys with readable actions, case timestamps and linked assertions."
+        ],
+        "unless": []
+      },
+      "owner": "qa-evidence",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "a8d708df79308634dbb20df1e58d132592a354ae5d067441444e6d7f9f8571bd"
+      },
+      "conditional_dependencies": [
+        "verify-test-evidence"
+      ]
+    },
+    {
+      "name": "verify-test-evidence",
+      "category": "adapted",
+      "source": {
+        "kind": "adapt",
+        "label": "supplied-billing-attach-test-evidence",
+        "version": "supplied-snapshot",
+        "source_sha256": "b80860d933b50cf36d924bf6069db6b73ce50335f7395706c4cc568fe9c888ec",
+        "license": "User-supplied private workflow material; no public distribution grant added."
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [],
+      "activation": {
+        "when": [
+          "Independently validate acceptance evidence mapping, provenance, freshness and recording readability."
+        ],
+        "unless": []
+      },
+      "owner": "review-verify",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "16b2efbd8d8323c8eb607ec680cfa89b80980e3ab1dc648fd83ceac787c8d0ec"
+      },
+      "conditional_dependencies": []
+    },
+    {
+      "name": "antislop",
+      "category": "anti-slop",
+      "source": {
+        "kind": "upstream-adapt",
+        "label": "https://github.com/miqdadbadjuber/anti-slop",
+        "version": "3.2.20+workflow.1",
+        "revision": "b1cdf87d49b1653293d58424516fd80394008345",
+        "source_sha256": "3b6e0a441e67c12df02e3ca548118e2f940caee6eda122aada56d62eb82b00b2",
+        "license": "MIT"
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [],
+      "activation": {
+        "when": [
+          "Apply a focused filter for generic UI, copy and interaction output within the adopted design and one review process."
+        ],
+        "unless": []
+      },
+      "owner": "review-verify",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "a6d0be443750edac7f48dcaf7c4610ae5838a058899faec5c5e47e520064b018"
+      },
+      "conditional_dependencies": [
+        "antislop-code",
+        "antislop-copywriting",
+        "antislop-human",
+        "antislop-layoutmobile",
+        "antislop-ui",
+        "code-review"
+      ]
+    },
+    {
+      "name": "antislop-ui",
+      "category": "anti-slop",
+      "source": {
+        "kind": "upstream-adapt",
+        "label": "https://github.com/miqdadbadjuber/anti-slop",
+        "version": "3.2.20+workflow.1",
+        "revision": "b1cdf87d49b1653293d58424516fd80394008345",
+        "source_sha256": "19201956524ad4fa80d98ecce6621cf849b67322a9041757c21e83af59e1cf37",
+        "license": "MIT"
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [
+        "antislop"
+      ],
+      "activation": {
+        "when": [
+          "Review visual composition and working UI against the adopted design, avoiding generic decorative filler."
+        ],
+        "unless": []
+      },
+      "owner": "review-verify",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "a3cc9ecedc6a1b4e5e5f37ee69ee007a6ae80eb5aebc8df94cd8c5e7ed1534d7"
+      },
+      "conditional_dependencies": []
+    },
+    {
+      "name": "antislop-copywriting",
+      "category": "anti-slop",
+      "source": {
+        "kind": "upstream-adapt",
+        "label": "https://github.com/miqdadbadjuber/anti-slop",
+        "version": "3.2.20+workflow.1",
+        "revision": "b1cdf87d49b1653293d58424516fd80394008345",
+        "source_sha256": "c155b9a0e644cb4d1a0dfa4670e7681fc8245e983e378468efc5634df46623e9",
+        "license": "MIT"
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [
+        "antislop"
+      ],
+      "activation": {
+        "when": [
+          "Write or review specific factual product copy without invented claims, filler or repetitive framing."
+        ],
+        "unless": []
+      },
+      "owner": "review-verify",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "8693eeac4971f0824f569011c1fbbd97d3ae9fd34456d0832c72a26cf61759c6"
+      },
+      "conditional_dependencies": [
+        "failure",
+        "humanizer"
+      ]
+    },
+    {
+      "name": "antislop-human",
+      "category": "anti-slop",
+      "source": {
+        "kind": "upstream-adapt",
+        "label": "https://github.com/miqdadbadjuber/anti-slop",
+        "version": "3.2.20+workflow.1",
+        "revision": "b1cdf87d49b1653293d58424516fd80394008345",
+        "source_sha256": "8bdf0ead0885a342a3a87ee5a64f98207f81e91d28f92c0434ccfaf4611594c1",
+        "license": "MIT"
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [
+        "antislop"
+      ],
+      "activation": {
+        "when": [
+          "Verify that changed UI works for users with different input, vision and motion needs."
+        ],
+        "unless": []
+      },
+      "owner": "review-verify",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "a92cbaf7dbe94f9f31132accca00a2048dddf5adffe7865051700c8c82035322"
+      },
+      "conditional_dependencies": []
+    },
+    {
+      "name": "antislop-layoutmobile",
+      "category": "anti-slop",
+      "source": {
+        "kind": "upstream-adapt",
+        "label": "https://github.com/miqdadbadjuber/anti-slop",
+        "version": "3.2.20+workflow.1",
+        "revision": "b1cdf87d49b1653293d58424516fd80394008345",
+        "source_sha256": "02dbe251d1d90b1ccbf26119a6b8e9424a3b16dbe7ef189ef41a104385b01e1e",
+        "license": "MIT"
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [
+        "antislop"
+      ],
+      "activation": {
+        "when": [
+          "Verify responsive reflow, content sizing, touch interactions and mobile navigation across meaningful viewport widths."
+        ],
+        "unless": []
+      },
+      "owner": "review-verify",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "d39767eba5f7df61bd4b7759f15e71afe723daa5868db9ec39c4e7593a3c9eef"
+      },
+      "conditional_dependencies": []
+    },
+    {
+      "name": "antislop-code",
+      "category": "anti-slop",
+      "source": {
+        "kind": "upstream-adapt",
+        "label": "https://github.com/miqdadbadjuber/anti-slop",
+        "version": "3.2.20+workflow.1",
+        "revision": "b1cdf87d49b1653293d58424516fd80394008345",
+        "source_sha256": "8620a359ad6da4ec0858fa59dcce9e2fa68418a9550492467ab0120b4cc08f9f",
+        "license": "MIT"
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [
+        "antislop"
+      ],
+      "activation": {
+        "when": [
+          "Review comment hygiene while preserving necessary explanations and leaving executable code quality to its owning skills."
+        ],
+        "unless": []
+      },
+      "owner": "review-verify",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "17c1b70e74d2d2c199d04d328632732cd7ab4b1371f3409d2cd70c9d9b1909fe"
+      },
+      "conditional_dependencies": [
+        "code-review",
+        "coding-standards"
+      ]
+    }
+  ],
+  "external_dependencies": [
+    {
+      "name": "Python",
+      "purpose": "Core CLI",
+      "required": true,
+      "version": "3.11+"
+    },
+    {
+      "name": "Git",
+      "purpose": "Claims, worktrees and integration",
+      "required_for": [
+        "worktree-integration"
+      ]
+    },
+    {
+      "name": "PyYAML",
+      "purpose": "Retained document/observer skill helpers",
+      "required_for": [
+        "task-observer",
+        "deliver-prd",
+        "techdoc-creation",
+        "design-system",
+        "atdd-creation",
+        "plan-creation"
+      ],
+      "installed_by_workflow": false
+    },
+    {
+      "name": "Browser/Playwright and ffmpeg",
+      "purpose": "Actual browser checks and recording inspection",
+      "required_for": [
+        "record-test-video"
+      ],
+      "installed_by_workflow": false
+    },
+    {
+      "name": "Profile toolchains and scanners",
+      "purpose": "Configured checks; see the project profile",
+      "installed_by_workflow": false
+    }
+  ],
+  "conflict_rules": {
+    "project_bundle_governs": true,
+    "entrypoints": [
+      "task-full-workflow",
+      "forge",
+      "task-implement"
+    ],
+    "single_execution_state": true,
+    "alias": {
+      "test-driven-development": "tdd"
+    },
+    "reference_only_existing": [
+      "running-prompt",
+      "parallel-dev",
+      "subagent-driven-development"
+    ],
+    "max_workers": 3,
+    "max_correction_rounds": 2,
+    "unrelated_global_skills": "preserve",
+    "built_in_and_plugin_skills": "host-owned"
+  },
+  "role_sources": [
+    {
+      "label": "supplied-latest-forge",
+      "source_sha256": "ac694bcc552564a94dd9e5d1b7821327c789cf965b8d9c499a14594a3f0792d2"
+    },
+    {
+      "label": "supplied-latest-backend",
+      "source_sha256": "d7029851c5f8074a471e36736f73788347755b8fff25cb1be135cee12ea2e484"
+    },
+    {
+      "label": "supplied-review-verify",
+      "source_sha256": "8e9d4ee02e1ff1a00cfcd3caf60a266ab05e0269610499e868d41f7c6ab9c160"
+    }
+  ]
+}

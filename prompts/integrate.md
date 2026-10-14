@@ -1,0 +1,7 @@
+# Integration brief
+
+Resolve the selected bundle from the repository .ai/config.json: its bundle value is relative to the .ai directory. Open each required skills/<name>/SKILL.md directly under that bundle, even when a same-named global skill is already available or loaded. Resolve supporting resources relative to the selected skill file. Use the selected global bundle only when the repository has no .ai/config.json; resolve its bundle value relative to the global configuration directory. Name-based discovery never overrides the repository pin.
+
+Use the approved dependency order, accepted worker commits/receipts, recorded integration branch/base and integration-owner cases. Acquire the exclusive integration claim. Verify ancestry, review status and ownership, then merge accepted commits while preserving behavior from every lane. Resolve conflicts against contracts; literal union merging is unsuitable for code. Run combined checks and required feature acceptance at the resulting revision. Integration corrections need scoped ownership and independent review. Return commits, conflict decisions, actual checks, fresh evidence, branch/head and remaining actions. Keep failed worktrees and receipts for recovery.
+
+Read [coordination and evidence contracts](../docs/COORDINATION.md) for the current structured helper inputs and receipt/evidence requirements. Required checks are full command contracts, not names alone. Keep briefs consistent with that shared definition.

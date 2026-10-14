@@ -1,0 +1,26 @@
+deliver-prd local adaptation
+
+Original project: https://github.com/product-on-purpose/pm-skills
+Original author: product-on-purpose; Copyright 2026 Jonathan Prisant
+License: Apache License 2.0 (see LICENSE)
+Upstream commit recorded at installation: 1cef1a9eae10017389863d51e289e0ae41e17fcb
+Upstream skill version: 3.0.0
+
+Locally modified on 2026-10-10 for Muhammad Okfriansyah.
+Modified: SKILL.md and references/TEMPLATE.md.
+Added: references/movie-app-context.md and references/AI-BEHAVIOR.md.
+Adaptation: one Markdown PRD, inline acceptance criteria, source/status preservation,
+draft handling of unresolved decisions, and conditional Movie App context.
+Original history, fictional example, and trigger fixtures are retained.
+The shared skill workspace retains the baseline and applied proposal.
+
+Local revision 3.1.0, modified on 2026-10-11 (11 October 2026) for Muhammad Okfriansyah.
+Modified: SKILL.md, references/TEMPLATE.md, references/movie-app-context.md, NOTICE.
+Added: evals/behavior-fixtures.json.
+Adaptation: standalone product requirements with internal provenance; explicit application
+permissions; observable acceptance and product flowcharts; configurable input policies;
+product readiness separate from engineering decisions and planned release evidence;
+substantive review followed by Humanizer; conditional Movie App decisions.
+Apache licensing, upstream identity/commit, original history, fictional example,
+AI behavior reference, and trigger fixtures remain preserved.
+Local installation and validation evidence are retained in the shared skill workspace.

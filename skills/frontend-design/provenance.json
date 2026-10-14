@@ -1,0 +1,13 @@
+{
+  "name": "frontend-design",
+  "repo": "anthropics/skills",
+  "commit": "dbd4588f9e1033efb41dad4bef2f7947c8993d44",
+  "path": "skills/frontend-design",
+  "url": "https://github.com/anthropics/skills/tree/dbd4588f9e1033efb41dad4bef2f7947c8993d44/skills/frontend-design",
+  "upstream_skill_sha256": "d91970639e9f5c37682ac7ab60094d35f1c7c1f38d731bd56396563aee10c1d3",
+  "local_adaptations": [
+    "Entry point and individual LICENSE.txt installed unchanged; Codex UI metadata added."
+  ],
+  "upstream_license_file": "LICENSE.txt",
+  "baseline": "Recorded after installation under the shared skill-workspace install stage."
+}

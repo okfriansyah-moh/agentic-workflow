@@ -1,0 +1,4 @@
+interface:
+  display_name: "Design System"
+  short_description: "Create design systems for web, mobile, and games"
+  default_prompt: "Use $design-system to create one design-system.md handoff, shared tokens, and a clean mockup/ gallery from the governing requirements for the declared targets."

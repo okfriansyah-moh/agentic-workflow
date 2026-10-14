@@ -1,0 +1,6 @@
+interface:
+  display_name: "Task Observer"
+  short_description: "Capture useful lessons and review skill improvements"
+  default_prompt: "Use $task-observer to review my pending skill observations."
+policy:
+  allow_implicit_invocation: true

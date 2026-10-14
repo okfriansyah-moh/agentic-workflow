@@ -1,0 +1,50 @@
+# Sources and adaptations
+
+Reviewed 2026-10-12 (Asia/Jakarta). This is a locally authored synthesis of the sources below, with a new standard-library coverage checker. Source identities are in [sources.json](sources.json); applicable upstream license text is retained in [NOTICE](../NOTICE). Public Git blob hashes identify inspected files, not repository commits. Snapshot SHA-256 values identify the inspected local bytes. No stars or popularity number is used as a correctness guarantee.
+
+## Combined responsibilities
+
+| Source | Contribution | Adaptation and boundary |
+| --- | --- | --- |
+| Installed techdoc-creation | Concise parent orchestrator, conditional references, source authority, one main document and focused review | Original ATDD-specific workflow and output contract; does not invoke techdoc generation or change source designs. |
+| Mekari Billing generate-atdd and supplied local examples | Product vocabulary, Given/When/Then, concrete fixtures, priorities, source references and positive/negative/edge cases | Human-readable Markdown replaces mandatory CSV. Explicit test levels replace SUT/SIT assumptions. The independent inventory fixes the limitation of checking only source IDs already referenced in output. Private business payloads are not copied. |
+| Mekari Officeless test-case-generator, test-planning and test-design | Reconcile requirements/design, interaction states, roles, risks and planning techniques | Source inputs and tools are optional by applicability; no mandatory corporate system, browser automation or publishing flow. |
+| [BMAD test design](https://github.com/bmad-code-org/bmad-method-test-architecture-enterprise/tree/main/skills/bmad-testarch-test-design) and [traceability](https://github.com/bmad-code-org/bmad-method-test-architecture-enterprise/tree/main/skills/bmad-testarch-trace) | Independent coverage inventory, testability, risk prioritization and source-to-test mapping | Adapt concepts into one document; no mandatory BMAD workflow, toolchain, numeric risk formula or coverage-count gate. |
+| [QA Test Planner](https://github.com/softaworks/agent-toolkit/tree/main/skills/qa-test-planner) | Readable cases, prerequisites, data, expected outcomes, cleanup, regression organization and design checks | Native Markdown and source-derived acceptance; no provider/tool requirement or universal template complexity. |
+| [Saleem QA Test Case Generation](https://github.com/saleem-daqa/qa-test-case-generation) | Stable identifiers, source tags, documented versus inferred scenarios and deduplication | Stable document-local source clauses and semantic distinct-case review. No fixed case totals or blanket prohibition of negative/observability cases. |
+| [Test Master](https://github.com/Jeffallan/claude-skills/tree/main/skills/test-master) | Functional, integration, contract, security, performance and operational challenge | Engineering scenario design only. No framework selection, test implementation, fixed performance thresholds or purported execution. |
+| [Obra Superpowers test-driven-development](https://github.com/obra/superpowers/tree/main/skills/test-driven-development) and writing-good-tests | Independent expected outcomes, observable behavior and identifiable defects | Document test intent now; the later implementation phase may run test-first. No evidence of a failing test is invented. Installed TDD skills remain unchanged. |
+| Mekari Officeless atdd-review | Format, relevance, redundancy, completeness and edge-case review | Review both mappings and actual assertion adequacy. No per-case human approval or corporate reporting requirement. |
+| Installed doc-coauthoring and docs-sync | Reader comprehension and source consistency | Conditional delegation to local skills within parent document scope; no supporting-skill prose or private material bundled. |
+
+## Local provenance and reuse
+
+The user supplied the Billing and Officeless directories as private examples for this authorized local synthesis. Their public redistribution license was not established. The bundle records file hashes and paths for review, uses generalized workflow ideas, and omits private CSV rows, endpoints, credentials, internal links and business-specific fixtures. These references do not grant broader rights to the original material.
+
+Installed specialist skills remain independently maintained and licensed; the routing reference identifies them without copying their implementations. Their absence does not prevent the core from producing a useful specification with explicit limitations.
+
+## Deliberately omitted upstream behavior
+
+Do not inherit upstream implementation runners, mandatory integrations, publication, task creation, automatic TDD execution or blanket approval gates. Do not import numeric thresholds, technologies, actors, test levels or product guarantees from examples. Product scope and acceptance come from the user's governing sources. The coverage helper establishes structural consistency only; source extraction, assertion sufficiency and authentic runtime evidence still require review.
+
+## Local revision 1.1.1 — 13 October 2026
+
+User-requested reusable security-first refinement adds boundary-to-owner enforcement, safe query/rendering/process use, explicit configurable quota contracts, concurrent integrity, durable retry lifetimes and storage/DTO/wire/consumer reconciliation. Lessons from the authorized SpoolIn specification review are generalized; its stack, topology, field names, quotas and stores are not defaults. Technical design defines controls and compatibility; acceptance authoring derives source-grounded, observable cases without inventing policy or execution evidence.
+
+Primary OWASP guidance was inspected on 13 October 2026: [SQL injection prevention](https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html), [XSS prevention](https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html) and [OS command injection defense](https://cheatsheetseries.owasp.org/cheatsheets/OS_Command_Injection_Defense_Cheat_Sheet.html). Controls are locally written; no external text/code was copied. Existing upstream manifests/notices, invocation metadata and unrelated guidance are preserved. See [validation](validation.md) for actual checks and limits.
+
+## Local revision 1.1.2 — 13 October 2026
+
+User-requested frontend/design/acceptance synchronization adds a shared UI reference map, implementation-plan handoff and conditional Expected UI guidance. The local SpoolIn review provides evidence for clearer page/state/component links and concise oracles instead of long fixture extracts. Its brand, twelve-flow count, state IDs, routes, stack and preview assets are not reusable defaults. Graphical UI guidance adapts to the selected project; component-only and no-UI products preserve their own boundaries. Existing security-first rules, invocation policy, upstream manifests/notices and unrelated guidance remain unchanged. No external prose or private assets were copied into the bundle. Actual checks and limitations are recorded in [validation](validation.md).
+
+## Local revision 1.1.3 — 13 October 2026
+
+The authorized SpoolIn persistence simplification supplies local evidence for responsibility-based storage boundaries, typed consolidation, permanent-evidence retention and synchronized acceptance mappings. Guidance is generalized across engines, architectures and file-backed workflows; SpoolIn's table count, names, topology and event shapes are not defaults. Existing security, concurrency, idempotency, UI-reference and readability requirements remain in force. Upstream manifests/notices and invocation policy are preserved; no external source text is copied. See [validation](validation.md) for actual checks and limits.
+
+## Local revision 1.1.4 — 13 October 2026
+
+User-approved browser-storage/session refinement adds conditional explicit persistence allowlists, secured non-persistent cookie lifecycles, credential-versus-CSRF distinctions, cache/history cleanup and version-qualified CWE/ASVS traceability. The rules generalize the SpoolIn decision without importing its key names, lifetimes, framework or service topology. Primary references inspected on 13 October 2026: [CWE-539](https://cwe.mitre.org/data/definitions/539.html), [CWE-614](https://cwe.mitre.org/data/definitions/614.html), [ASVS 5.0.0 cookie controls](https://github.com/OWASP/ASVS/blob/v5.0.0/5.0/en/0x12-V3-Web-Frontend-Security.md), [ASVS data protection](https://github.com/OWASP/ASVS/blob/v5.0.0/5.0/en/0x23-V14-Data-Protection.md), [OWASP browser storage](https://cheatsheetseries.owasp.org/cheatsheets/HTML5_Security_Cheat_Sheet.html#local-storage) and [cookie behavior](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie). Guidance is locally written; no private RFC business text or code is copied. Upstream manifests, notices, invocation metadata and unrelated guidance are retained.
+
+## Local revision 1.1.5 — 13 October 2026
+
+The authorized joint document review strengthens browser-lifecycle reconciliation and adds JSON diagnostic logging with explicit severity, safe fields, context/sink ownership and observable acceptance. [Mekari Log Format Standardization](https://jurnal.atlassian.net/wiki/spaces/EP/pages/48735256814/Mekari+Log+Format+Standardization), page 48735256814 version 26 (updated 2 June 2025), was inspected on 13 October 2026 for field/level conventions; private examples and employer SDK/infrastructure choices are not copied or required. [OWASP logging guidance](https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html) and [W3C trace context](https://www.w3.org/TR/trace-context/) support safe diagnostic construction and context separation. Guidance is locally written and conditional on the selected project's surfaces; no SpoolIn names, quotas, topology, schema or trace collector become defaults. Existing CWE/ASVS versioned mappings, upstream provenance, invocation policy and unrelated resources remain unchanged.

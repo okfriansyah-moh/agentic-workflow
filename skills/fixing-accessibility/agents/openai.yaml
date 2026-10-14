@@ -1,0 +1,4 @@
+interface:
+  display_name: "fixing-accessibility"
+  short_description: "Check semantics, keyboard, focus, and form feedback"
+  default_prompt: "Use $fixing-accessibility for the requested frontend design work within the current product scope."

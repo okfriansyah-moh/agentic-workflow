@@ -1,0 +1,39 @@
+{
+  "tools": [
+    {
+      "name": "detekt.jar",
+      "url": "https://repo.maven.apache.org/maven2/io/gitlab/arturbosch/detekt/detekt-cli/1.23.8/detekt-cli-1.23.8-all.jar",
+      "sha256": "3afe89a11120303c73c9bdda3d8fe558dd9070a6937d27819ddc04b275381245",
+      "upstream_sha1_verified": true
+    },
+    {
+      "name": "archunit.jar",
+      "url": "https://repo.maven.apache.org/maven2/com/tngtech/archunit/archunit/1.4.1/archunit-1.4.1.jar",
+      "sha256": "6a92458c544308e42ca534cfcbdb6f1947ea4a9ca8717e087cd671d31f2d9b0c",
+      "upstream_sha1_verified": true
+    },
+    {
+      "name": "slf4j-api.jar",
+      "url": "https://repo.maven.apache.org/maven2/org/slf4j/slf4j-api/2.0.17/slf4j-api-2.0.17.jar",
+      "sha256": "7b751d952061954d5abfed7181c1f645d336091b679891591d63329c622eb832",
+      "upstream_sha1_verified": true
+    },
+    {
+      "name": "gitleaks",
+      "url": "https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_darwin_arm64.tar.gz",
+      "version": "v8.30.1",
+      "sha256": "b40ab0ae55c505963e365f271a8d3846efbc170aa17f2607f13df610a9aeb6a5",
+      "published_digest_verified": true
+    },
+    {
+      "name": "osv-scanner",
+      "url": "https://github.com/google/osv-scanner/releases/download/v2.7.0/osv-scanner_darwin_arm64",
+      "version": "v2.7.0",
+      "sha256": "d4926ef8da134332543be276dff157e4c170f99ad91fc48e89448a8816bdf70b",
+      "published_digest_verified": true
+    }
+  ],
+  "semgrep_version": "1.180.0",
+  "rule_sha256": "8e54055b0af069debff5eab2c5f7fe6b3b8d567c152538a9606c8db04a46563a",
+  "web_package_lock_sha256": "3464d1cf704217dd3b12f7e2065397dab8c62c8b2f9a97ddbcd28709ec347179"
+}

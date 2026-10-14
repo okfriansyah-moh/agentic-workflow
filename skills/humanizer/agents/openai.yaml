@@ -1,0 +1,6 @@
+interface:
+  display_name: "Humanizer \u00b7 Muhammad Okfriansyah"
+  short_description: "Natural writing in Muhammad\u2019s conversational voice"
+  default_prompt: "Use $humanizer for this task."
+policy:
+  allow_implicit_invocation: true

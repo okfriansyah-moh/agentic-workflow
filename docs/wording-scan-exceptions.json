@@ -1,0 +1,14 @@
+{
+  "reason": "User policy permits policy/checker definitions, negative test inputs and unchanged upstream evidence. These paths are not output templates.",
+  "paths": [
+    "resources/wording/output-wording.md",
+    "resources/wording/check_output_wording.py",
+    "skills/humanizer/references/output-wording.md",
+    "skills/humanizer/scripts/check_output_wording.py",
+    "skills/humanizer/evals/test_output_wording.py",
+    "skills/design-system/evals/test_artifact_checker.py",
+    "skills/atdd-creation/evals/test_check_coverage.py",
+    "skills/impeccable/reference/upstream-evidence/design-format.md",
+    "skills/ui-ux-pro-max/references/upstream-evidence/astro-seo.csv"
+  ]
+}

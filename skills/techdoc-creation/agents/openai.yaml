@@ -1,0 +1,4 @@
+interface:
+  display_name: "Technical Document Creation"
+  short_description: "Create one application-focused engineering specification"
+  default_prompt: "Use $techdoc-creation to specify this application with its engineering structure, detailed responsibilities, contracts, data design and traceability."

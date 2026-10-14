@@ -1,0 +1,23 @@
+rules:
+  - id: node-no-eval
+    languages: [javascript, typescript]
+    message: Avoid evaluating runtime text as code; use validated structured inputs.
+    severity: ERROR
+    pattern: eval(...)
+  - id: node-no-shell-exec
+    languages: [javascript, typescript]
+    message: Use explicit executable and argument arrays with controlled inputs.
+    severity: ERROR
+    pattern: require('child_process').exec(...)
+  - id: kotlin-no-field-injection
+    languages: [kotlin]
+    message: Use constructor injection; field injection obscures required dependencies.
+    severity: ERROR
+    pattern: |
+      @Autowired
+      lateinit var $FIELD: $TYPE
+  - id: kotlin-no-runtime-exec
+    languages: [kotlin]
+    message: Review process invocation and pass a bounded argument array through the approved adapter.
+    severity: ERROR
+    pattern: Runtime.getRuntime().exec(...)

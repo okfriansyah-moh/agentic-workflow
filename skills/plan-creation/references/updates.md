@@ -1,0 +1,17 @@
+# Update or review an existing plan
+
+Inspect the current request, governing source changes, existing task IDs, dependency graph, coverage and actual completion evidence. Read the relevant sections, then expand where a changed obligation reaches another task or feature. Preserve user work and existing approved decisions. Correct current instructions in place; keep concise history only where it explains a changed obligation or prior evidence.
+
+For the package format, preserve stable IDs even when tasks move or reorder. Add new IDs after the existing allocation; record retired task IDs and replacements in the root retirement table. Update links and group membership consistently. A feature folder rename or numerical reorder needs an explicit old-to-new path map and link reconciliation across the root, groups, tasks and other consumers. Match each group H1 to its complete numbered folder name and sort the root register/navigation by those prefixes. Preserve task/group IDs, dependencies, status and evidence; changing the name does not change identity or establish a new execution result. Convert existing unprefixed folders only when the request authorizes that layout change; the current checker enforces the numbered format, so an unchanged older layout needs compatible checks and a disclosed validation limit. Never delete completed evidence to make the new plan appear fresh.
+
+For a source change, record old/new source identity, affected obligations/tasks/contracts and a reasoned impact disposition. Refresh source digests only after examining the change. Mark affected instructions Needs update until reconciled; mark old check evidence Stale when its applicability changed or remains unknown. Reopen Done tasks when required proof or behavior changes, preserving their earlier evidence. A recorded impact review may establish that specific evidence remains applicable; it does not fabricate a new run.
+
+Distinguish plan defects from changed requirements. If implementation diverges from a still-authoritative source, plan correction of the implementation. If an authorized source changed, update affected tasks/acceptance and subsequent source artifacts through their own requested workflows. Do not silently edit PRD, design, techdoc or ATDD while repairing the plan.
+
+Review requests compare each included obligation and expectation to tasks, each dependency to a real/planned producer, and each completion claim to evidence. Report precise locations, impact and suggested corrections. Make changes only when the request authorizes fixes.
+
+## Legacy formats
+
+An existing monolithic PLAN.md remains in its established format unless conversion is requested. Apply this skill's source, task-detail, coverage, readiness, review and evidence principles within that document. Use manual checks and any compatible existing validator; `check_plan.py` explicitly returns unsupported input rather than claiming to validate a different layout. Report this boundary.
+
+When conversion is requested, prepare an old-to-new ID/path map, preserve source/case IDs and historical evidence, separate feature groups and task records, update all internal consumers, and verify the converted package before removing superseded plan files. Existing external references may require a retained navigation stub rather than deletion. Conversion does not imply implementation, completed review, or permission to publish tickets.

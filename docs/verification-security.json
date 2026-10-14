@@ -1,0 +1,149 @@
+[
+  {
+    "case": "semgrep-good",
+    "argv": [
+      "<scanner-environment>/semgrep",
+      "scan",
+      "--config",
+      "profiles/security/semgrep.yml",
+      "--metrics",
+      "off",
+      "--error",
+      "--strict",
+      "--json",
+      "tests/fixtures/security/good"
+    ],
+    "exit_code": 0,
+    "passed": true,
+    "expected_exit": 0,
+    "stderr_tail": "               \n               \n\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n\u2502 Scan Status \u2502\n\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n  Scanning 2 files tracked by git with 4 Code rules:\n  Scanning 1 file with 2 ts rules.\n                \n                \n\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n\u2502 Scan Summary \u2502\n\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n\u2705 Scan completed successfully.\n \u2022 Findings: 0 (0 blocking)\n \u2022 Rules run: 2\n \u2022 Targets scanned: 1\n \u2022 Parsed lines: ~100.0%\n \u2022 No ignore information available\nRan 2 rules on 1 file: 0 findings.\n",
+    "findings": 0,
+    "parsed_files": 1
+  },
+  {
+    "case": "gitleaks-good",
+    "argv": [
+      "<verified-tools>/gitleaks",
+      "dir",
+      "--redact",
+      "--no-banner",
+      "--exit-code",
+      "1",
+      "--config",
+      "profiles/security/gitleaks.toml",
+      "tests/fixtures/security/good"
+    ],
+    "exit_code": 0,
+    "passed": true,
+    "expected_exit": 0,
+    "stderr_tail": "7:11PM INF scanned ~77 bytes (77 bytes) in 1.38ms\n7:11PM INF no leaks found\n"
+  },
+  {
+    "case": "osv-good",
+    "argv": [
+      "<verified-tools>/osv-scanner",
+      "scan",
+      "source",
+      "--recursive",
+      "--format",
+      "json",
+      "--all-packages",
+      "tests/fixtures/security/good"
+    ],
+    "exit_code": 0,
+    "passed": true,
+    "expected_exit": 0,
+    "stderr_tail": "Scanning dir tests/fixtures/security/good\nStarting filesystem walk for root: /\nScanned <source>/tests/fixtures/security/good/package-lock.json file and found 1 package\nEnd status: 1 dirs visited, 3 inodes visited, 1 Extract calls, 707.292\u00b5s elapsed, 707\u00b5s wall time\n",
+    "packages": 1,
+    "vulnerabilities": 0
+  },
+  {
+    "case": "semgrep-bad",
+    "argv": [
+      "<scanner-environment>/semgrep",
+      "scan",
+      "--config",
+      "profiles/security/semgrep.yml",
+      "--metrics",
+      "off",
+      "--error",
+      "--strict",
+      "--json",
+      "tests/fixtures/security/bad"
+    ],
+    "exit_code": 1,
+    "passed": true,
+    "expected_exit": 1,
+    "stderr_tail": "                                                                                                                    \n  Language   Rules   Files          Origin   Rules                                                                      \n \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500        \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500                                                                     \n  ts             2       1          Custom       4                                                                      \n  kotlin         2       1                                                                                              \n                                                                                                                        \n                \n                \n\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n\u2502 Scan Summary \u2502\n\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n\u2705 Scan completed successfully.\n \u2022 Findings: 2 (2 blocking)\n \u2022 Rules run: 4\n \u2022 Targets scanned: 2\n \u2022 Parsed lines: ~100.0%\n \u2022 No ignore information available\nRan 4 rules on 2 files: 2 findings.\n",
+    "findings": 2,
+    "parsed_files": 2
+  },
+  {
+    "case": "gitleaks-bad",
+    "argv": [
+      "<verified-tools>/gitleaks",
+      "dir",
+      "--redact",
+      "--no-banner",
+      "--exit-code",
+      "1",
+      "--config",
+      "profiles/security/gitleaks.toml",
+      "tests/fixtures/security/bad"
+    ],
+    "exit_code": 1,
+    "passed": true,
+    "expected_exit": 1,
+    "stderr_tail": "7:11PM INF scanned ~215 bytes (215 bytes) in 7ms\n7:11PM WRN leaks found: 1\n"
+  },
+  {
+    "case": "osv-bad",
+    "argv": [
+      "<verified-tools>/osv-scanner",
+      "scan",
+      "source",
+      "--recursive",
+      "--format",
+      "json",
+      "--all-packages",
+      "tests/fixtures/security/bad"
+    ],
+    "exit_code": 1,
+    "passed": true,
+    "expected_exit": 1,
+    "stderr_tail": "Scanning dir tests/fixtures/security/bad\nStarting filesystem walk for root: /\nScanned <source>/tests/fixtures/security/bad/package-lock.json file and found 1 package\nEnd status: 1 dirs visited, 5 inodes visited, 1 Extract calls, 620.542\u00b5s elapsed, 620\u00b5s wall time\n",
+    "packages": 1,
+    "vulnerabilities": 5
+  },
+  {
+    "case": "semgrep-invalid-config",
+    "argv": [
+      "<scanner-environment>/semgrep",
+      "scan",
+      "--config",
+      "tests/fixtures/security/invalid/package-lock.json",
+      "--metrics",
+      "off",
+      "--strict",
+      "tests/fixtures/security/good"
+    ],
+    "exit_code": 7,
+    "passed": true,
+    "expected_exit": "error",
+    "stderr_tail": "[ERROR] Invalid JSON file tests/fixtures/security/invalid/package-lock.json:\n\tExpecting property name enclosed in double quotes: line 1 column 2 (char 1)\n[ERROR] invalid configuration file found (1 configs were invalid)\n"
+  },
+  {
+    "case": "osv-invalid-inventory",
+    "argv": [
+      "<verified-tools>/osv-scanner",
+      "scan",
+      "source",
+      "--recursive",
+      "tests/fixtures/security/invalid"
+    ],
+    "exit_code": 128,
+    "passed": true,
+    "expected_exit": "error",
+    "stderr_tail": "Error during extraction: (extracting as javascript/packagelockjson) private/tmp/agent-workflow-build/tests/fixtures/security/invalid/package-lock.json: could not extract: invalid character 'm' looking for beginning of object key string\nNo package sources found, --help for usage information.\n"
+  }
+]
