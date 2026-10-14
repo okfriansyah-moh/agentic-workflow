@@ -32,7 +32,7 @@ The local Semgrep rules are a small reviewed baseline, not exhaustive security c
 
 ## Installation and native discovery
 
-Both real installations passed doctor with 71 manifest entries and no missing or modified managed files. Repeating installation changed zero files. The source package is under the requested agent-workflow folder and the movie-app copy is self-contained.
+Both real installations passed doctor with 71 manifest entries and no missing or modified managed files. Repeating installation changed zero files. A fresh local Git clone independently passed doctor (71 entries), task indexing (46 tasks/20 groups), and the project-local fast-stage smoke check; see verification-relocation.json. The source package is under the requested agent-workflow folder and the movie-app copy is self-contained.
 
 All 113 pre-existing movie-app files retain their original SHA-256 hashes. All 1,212 pre-existing global skill files/symlinks remain unchanged. Movie-app received a Git baseline for its approved documents; no application task status changed.
 

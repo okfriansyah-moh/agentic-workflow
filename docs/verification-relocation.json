@@ -1,0 +1,26 @@
+[
+  {
+    "command": "doctor",
+    "exit_code": 0,
+    "status": "healthy",
+    "skill_entries": 71,
+    "task_count": null,
+    "group_count": null
+  },
+  {
+    "command": "task-index",
+    "exit_code": 0,
+    "status": "ok",
+    "skill_entries": null,
+    "task_count": 46,
+    "group_count": 20
+  },
+  {
+    "command": "gate",
+    "exit_code": 0,
+    "status": "passed",
+    "skill_entries": null,
+    "task_count": null,
+    "group_count": null
+  }
+]
