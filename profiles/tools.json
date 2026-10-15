@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "managed_root": ".local/share/agent-workflow/tools",
+  "supported_os": [
+    "Darwin",
+    "Linux"
+  ],
+  "tools": {
+    "playwright-cli": {
+      "package": "@playwright/cli",
+      "source": "https://github.com/microsoft/playwright-cli",
+      "install": "npm-ci-locked",
+      "binary": "playwright-cli",
+      "browser": "chromium",
+      "activation": "UI acceptance journeys and browser verification"
+    },
+    "context7": {
+      "source": "https://context7.com/docs/resources/all-clients",
+      "install": "hosted-mcp",
+      "auth_default": "oauth",
+      "activation": "Current library or framework documentation",
+      "host_scopes": {
+        "codex": [
+          "global",
+          "repo"
+        ],
+        "claude": [
+          "global",
+          "repo"
+        ],
+        "cursor": [
+          "global",
+          "repo"
+        ],
+        "copilot": [
+          "global",
+          "repo"
+        ]
+      }
+    },
+    "strix": {
+      "package": "strix-agent",
+      "source": "https://github.com/usestrix/strix",
+      "install": "venv-hashed-wheels",
+      "binary": "strix",
+      "activation": "Explicitly requested, authorized scoped security assessment",
+      "required_runtime": [
+        "Python 3.13",
+        "Docker daemon",
+        "configured LLM provider"
+      ],
+      "default_scan_enabled": false
+    }
+  }
+}

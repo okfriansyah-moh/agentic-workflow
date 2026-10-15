@@ -1,0 +1,9 @@
+{
+  "source": "https://github.com/usestrix/strix",
+  "upstream_version": "1.7.0",
+  "upstream_license": "Apache-2.0",
+  "guidance_license": "Original local workflow guidance; no new redistribution license assigned",
+  "authored_version": "1.1.0",
+  "adaptation": "Original scoped instructions informed by official tool documentation and installed help; no upstream skill text copied. Runtime packages retain their upstream licenses.",
+  "tool_lock": "../../profiles/tools-lock.json"
+}
