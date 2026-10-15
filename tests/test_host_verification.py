@@ -11,9 +11,9 @@ from unittest.mock import patch
 from agent_workflow.host_probes import (blank_results, claude_metadata, delegation_graph_result, delegation_observation, json_events, native_edit_events, native_hook_events,
                                        native_skills, redact, role_observation, run_command, sha256_file,
                                        smoke_argv, smoke_prompt)
-from agent_workflow.host_verification import (check_verification_freshness, config_snapshot, create_fixture, cursor_runtime_inputs, fixture_snapshot, import_ui_evidence,
+from agent_workflow.host_verification import (CLAUDE_CONFIG_DEFAULTS, check_verification_freshness, claude_user_config_digest, config_snapshot, create_fixture, cursor_runtime_inputs, fixture_snapshot, import_ui_evidence,
                                              json_hash, read_json, selected_bundle, summarize_host_verifications,
-                                             verification_status, verify_host, verify_one, write_json, _hook_verdict)
+                                             runtime_support_inputs, support_identity, verification_status, verify_host, verify_one, write_json, _hook_verdict)
 
 
 class ProbeParserTests(unittest.TestCase):
@@ -74,6 +74,15 @@ class ProbeParserTests(unittest.TestCase):
             self.assertFalse(any('bypass' in item or item in ('--model', '--allow-all', '--allow-all-tools', '--yolo') for item in args))
         with self.assertRaises(ValueError):
             smoke_argv('cursor', '/runtime', '/fixture', 'prompt')
+
+    def test_native_limits_allow_persisted_delegation_with_supported_bounds(self):
+        args = smoke_argv('codex', '/runtime', '/fixture', 'prompt')
+        self.assertNotIn('--ephemeral', args)
+        self.assertEqual(args[1], 'exec')
+        args = smoke_argv('claude', '/runtime', '/fixture', 'prompt')
+        self.assertEqual(args[args.index('--max-budget-usd') + 1], '2.00')
+        args = smoke_argv('copilot', '/runtime', '/fixture', 'prompt')
+        self.assertEqual(args[args.index('--max-ai-credits') + 1], '30')
 
     def test_permission_grants_cover_one_fixture_file_and_named_reviewer(self):
         args = smoke_argv('claude', '/runtime', '/fixture', 'prompt')
@@ -390,6 +399,96 @@ class VerificationRecordTests(unittest.TestCase):
                 self.record['configuration'] = config_snapshot(host, self.repo, 'repo', self.bundle, self.manifest, self.home)
                 write_json(path, {'mcpServers': {'fixture': {}}})
                 self.assertTrue(any('configuration' in reason for reason in check_verification_freshness(self.record)))
+
+    def test_claude_usage_and_unrelated_project_cache_do_not_invalidate_config(self):
+        path = self.home / '.claude.json'
+        data = {'mcpServers': {'fixture': {'type': 'http', 'url': 'https://example.invalid/mcp'}},
+                'projects': {str(self.repo.resolve()): {'allowedTools': ['Read(./fixture.txt)']}}}
+        write_json(path, data)
+        before = config_snapshot('claude', self.repo, 'repo', self.bundle, self.manifest, self.home)
+        data.update(numStartups=3, skillUsage={'forge': 1}, cachedExperimentData={'fixture': True})
+        data['projects'][str(self.repo.resolve())].update(lastCost=0.4, lastSessionId='new-session', exampleFiles=['smoke.json'])
+        data['projects'][str(self.root / 'unrelated')] = {'mcpServers': {'other': {'command': 'other'}}}
+        write_json(path, data)
+        self.assertEqual(before, config_snapshot('claude', self.repo, 'repo', self.bundle, self.manifest, self.home))
+
+    def test_claude_new_default_project_record_is_semantically_unchanged(self):
+        path = self.home / '.claude.json'
+        before = claude_user_config_digest(path, self.repo)
+        write_json(path, {'numStartups': 1, 'projects': {str(self.repo.resolve()): {
+            'allowedTools': [], 'mcpServers': {}, 'hasTrustDialogAccepted': False, 'lastCost': 0.1}}})
+        self.assertEqual(before, claude_user_config_digest(path, self.repo))
+
+    def test_claude_supported_user_and_current_project_settings_remain_bound(self):
+        path = self.home / '.claude.json'
+        before = claude_user_config_digest(path, self.repo)
+        for scope in ('user', 'project'):
+            for key, default in CLAUDE_CONFIG_DEFAULTS.items():
+                with self.subTest(scope=scope, setting=key):
+                    changed = {'fixture': 'changed'} if isinstance(default, dict) else ['changed'] if isinstance(default, list) else True if default is False else 'plan'
+                    data = {key: changed} if scope == 'user' else {'projects': {str(self.repo.resolve()): {key: changed}}}
+                    write_json(path, data)
+                    self.assertNotEqual(before, claude_user_config_digest(path, self.repo))
+
+    def test_claude_malformed_current_project_config_is_rejected(self):
+        path = self.home / '.claude.json'
+        write_json(path, {'projects': {str(self.repo.resolve()): []}})
+        with self.assertRaisesRegex(ValueError, 'current-project'):
+            claude_user_config_digest(path, self.repo)
+
+    def test_copilot_native_binary_and_fallback_changes_invalidate_loader_proof(self):
+        runtime = self.root / 'copilot/npm-loader.js'
+        runtime.parent.mkdir()
+        runtime.write_text('unchanged vendor loader')
+        write_json(runtime.parent / 'package.json', {'version': '1'})
+        fallback = runtime.parent / 'index.js'
+        fallback.write_text('fallback v1')
+        binary = runtime.parent / 'node_modules/@github/copilot-darwin-arm64/copilot'
+        binary.parent.mkdir(parents=True)
+        write_json(binary.parent / 'package.json', {'exports': './copilot'})
+        binary.write_bytes(b'native v1')
+        self.record['host'] = 'copilot'
+        self.record['configuration'] = config_snapshot('copilot', self.repo, 'repo', self.bundle, self.manifest, self.home)
+        self.record['runtime'] = {'path': str(runtime), 'sha256': sha256_file(runtime), **support_identity('copilot', runtime)}
+        self.assertIn(str(binary.resolve()), runtime_support_inputs('copilot', runtime))
+        self.assertEqual(check_verification_freshness(self.record), [])
+        binary.write_bytes(b'native v2')
+        self.assertIn('Copilot application version or supporting runtime inputs changed', check_verification_freshness(self.record))
+        self.record['runtime'].update(support_identity('copilot', runtime))
+        fallback.write_text('fallback v2')
+        self.assertIn('Copilot application version or supporting runtime inputs changed', check_verification_freshness(self.record))
+
+    def test_copilot_changed_platform_export_and_selected_target_invalidate_runtime(self):
+        runtime = self.root / 'copilot/npm-loader.js'
+        runtime.parent.mkdir()
+        runtime.write_text('unchanged vendor loader')
+        metadata = runtime.parent / 'node_modules/@github/copilot-darwin-arm64/package.json'
+        write_json(metadata, {'exports': './copilot'})
+        (metadata.parent / 'copilot').write_bytes(b'original')
+        self.record['host'] = 'copilot'
+        self.record['configuration'] = config_snapshot('copilot', self.repo, 'repo', self.bundle, self.manifest, self.home)
+        self.record['runtime'] = {'path': str(runtime), 'sha256': sha256_file(runtime), **support_identity('copilot', runtime)}
+        write_json(metadata, {'exports': {'.': './alternate'}})
+        alternate = metadata.parent / 'alternate'
+        alternate.write_bytes(b'alternate v1')
+        self.assertIn('Copilot application version or supporting runtime inputs changed', check_verification_freshness(self.record))
+        self.record['runtime'].update(support_identity('copilot', runtime))
+        self.assertIn(str(alternate.resolve()), self.record['runtime']['support_files'])
+        self.assertEqual(check_verification_freshness(self.record), [])
+        alternate.write_bytes(b'alternate v2')
+        self.assertIn('Copilot application version or supporting runtime inputs changed', check_verification_freshness(self.record))
+
+    def test_copilot_unsupported_platform_exports_block_runtime_proof(self):
+        runtime = self.root / 'copilot/npm-loader.js'
+        runtime.parent.mkdir()
+        runtime.write_text('unchanged vendor loader')
+        metadata = runtime.parent / 'node_modules/@github/copilot-darwin-arm64/package.json'
+        write_json(metadata, {'exports': {'import': './alternate', 'default': './copilot'}})
+        self.record['host'] = 'copilot'
+        self.record['runtime'] = {'path': str(runtime), 'sha256': sha256_file(runtime), 'support_files': {}}
+        with self.assertRaisesRegex(ValueError, 'Unsupported'):
+            runtime_support_inputs('copilot', runtime)
+        self.assertTrue(any('unsupported' in reason for reason in check_verification_freshness(self.record)))
 
     def test_cursor_supporting_runtime_change_invalidates_unchanged_launcher(self):
         runtime = self.root / 'Cursor.app/Contents/MacOS/Cursor'
