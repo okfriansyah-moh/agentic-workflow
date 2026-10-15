@@ -1,0 +1,9 @@
+{
+  "source": "https://context7.com/docs/resources/all-clients",
+  "upstream_version": "hosted documentation inspected 2026-10-15",
+  "upstream_license": "MIT client source; hosted service terms apply",
+  "guidance_license": "Original local workflow guidance; no new redistribution license assigned",
+  "authored_version": "1.1.0",
+  "adaptation": "Original scoped instructions informed by official tool documentation and installed help; no upstream skill text copied. Runtime packages retain their upstream licenses.",
+  "tool_lock": "../../profiles/tools-lock.json"
+}

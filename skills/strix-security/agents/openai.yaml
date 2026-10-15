@@ -1,0 +1,5 @@
+interface:
+  display_name: "Strix Security"
+  short_description: "Review explicitly requested security assessments"
+policy:
+  allow_implicit_invocation: false
