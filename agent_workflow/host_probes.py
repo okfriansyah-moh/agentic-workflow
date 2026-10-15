@@ -12,6 +12,7 @@ import time
 
 CATEGORIES = ('discovery', 'role_invocation', 'skills', 'hooks', 'trust')
 SMOKE_ROLES = ('aw-forge', 'aw-backend', 'aw-review-verify')
+CODEX_COLLAB_TYPES = ('collab_agent_tool_call', 'collab_tool_call')
 SECRET_KEYS = re.compile(r'(?i)(token|password|secret|credential|authorization|cookie|api.?key)')
 
 
@@ -147,6 +148,40 @@ def claude_metadata(events, expected_roles, expected_skills, scope='global', fix
     return results
 
 
+def copilot_metadata(events, expected_roles, expected_skills, scope, fixture):
+    results = {}
+    for event in events:
+        data = event.get('data', {})
+        if not isinstance(data, dict):
+            continue
+        if event.get('type') == 'session.custom_agents_updated':
+            results['discovery'] = copilot_role_catalog(data, expected_roles, scope, fixture)
+        elif event.get('type') == 'session.skills_loaded' and isinstance(data.get('skills'), list):
+            results['skills'] = native_skills('copilot', data['skills'], expected_skills, scope, fixture)
+    return results
+
+
+def copilot_role_catalog(data, expected, scope, fixture):
+    entries = data.get('agents')
+    if not isinstance(entries, list) or any(not isinstance(item, dict) for item in entries):
+        return result('blocked', 'Native custom-agent catalog is malformed')
+    selected = {item.get('name'): item for item in entries if isinstance(item.get('name'), str)}
+    if any(sum(item.get('name') == name for item in entries) > 1 for name in expected):
+        return result('blocked', 'Native custom-agent catalog contains conflicting required role identities')
+    missing = sorted(set(expected) - set(selected))
+    details = {'missing': missing, 'role_sources': {name: {'source': selected[name].get('source'),
+                'path': selected[name].get('path')} for name in expected if name in selected}}
+    if data.get('errors') or missing:
+        return result('failed', 'Native custom-agent catalog reports errors or missing required roles', **details)
+    required_source = 'user' if scope == 'global' else 'project'
+    scoped = all(selected[name].get('source') == required_source and
+                 (scope == 'global' or _within(selected[name].get('path'), fixture)) for name in expected)
+    if not scoped:
+        return result('blocked', 'Native roles are available but their sources do not establish the requested installation scope',
+                      availability='passed', **details)
+    return result('passed', 'Required roles were returned by the native custom-agent catalog', **details)
+
+
 def role_observation(host, events, role):
     """Single-role diagnostic only; delegation_observation owns workflow acceptance."""
     if host == 'codex':
@@ -155,7 +190,7 @@ def role_observation(host, events, role):
             if event.get('method') == 'thread/started' and thread.get('agentRole') == role and thread.get('parentThreadId'):
                 return result('passed', 'Native child thread records the requested role', native_id=thread['id'])
             item = event.get('item', {})
-            if item.get('type') == 'collab_agent_tool_call' and item.get('tool') == 'spawn_agent':
+            if item.get('type') in CODEX_COLLAB_TYPES and item.get('tool') == 'spawn_agent':
                 if item.get('agent_type', item.get('agent_role')) == role and item.get('status') == 'completed' and item.get('receiver_thread_ids'):
                     return result('passed', 'Native spawn event completed for the requested role', native_id=item.get('id'))
     if host == 'claude':
@@ -186,7 +221,7 @@ def _codex_delegation(events):
         if event.get('method') == 'thread/started' and thread.get('agentRole') in SMOKE_ROLES and thread.get('id'):
             nodes[thread['id']] = {'id': thread['id'], 'role': thread['agentRole'], 'parent_id': thread.get('parentThreadId'), 'started': index}
         item = event.get('item', {})
-        if item.get('type') != 'collab_agent_tool_call':
+        if item.get('type') not in CODEX_COLLAB_TYPES:
             continue
         role = item.get('agent_type', item.get('agent_role'))
         if item.get('tool') == 'spawn_agent' and role in SMOKE_ROLES:
@@ -205,13 +240,14 @@ def _claude_delegation(events):
         role = event.get('agent_type', event.get('agent'))
         session = event.get('session_id')
         if event.get('type') == 'system' and event.get('subtype') == 'init' and role in SMOKE_ROLES and session:
-            nodes[session] = {'id': session, 'role': role, 'parent_id': None, 'started': index}
+            nodes[session] = {'id': session, 'role': role, 'parent_id': None, 'started': index, 'origin': 'session'}
         content = event.get('message', {}).get('content', [])
         for block in content if isinstance(content, list) else []:
             role = block.get('input', {}).get('subagent_type')
             if block.get('type') == 'tool_use' and block.get('name') in ('Agent', 'Task') and role in SMOKE_ROLES and block.get('id'):
                 identity = block['id']
-                nodes[identity] = {'id': identity, 'role': role, 'parent_id': event.get('parent_tool_use_id') or session, 'started': index}
+                nodes[identity] = {'id': identity, 'role': role, 'parent_id': event.get('parent_tool_use_id') or session,
+                                   'started': index, 'origin': 'subagent'}
             identity = block.get('tool_use_id')
             if block.get('type') == 'tool_result' and identity in nodes and not block.get('is_error', False):
                 nodes[identity]['completed'] = index
@@ -221,21 +257,63 @@ def _claude_delegation(events):
 
 
 def _copilot_delegation(events):
-    nodes = {}
+    nodes, completions = {}, {}
     for index, event in enumerate(events):
         data = event.get('data', {})
         session = data.get('sessionId', event.get('sessionId'))
         if event.get('type') == 'session.start' and data.get('agentName') in SMOKE_ROLES and session:
-            nodes[session] = {'id': session, 'role': data['agentName'], 'parent_id': None, 'started': index}
+            nodes[session] = {'id': session, 'role': data['agentName'], 'parent_id': None, 'started': index, 'origin': 'session'}
         identity = data.get('toolCallId')
-        if event.get('type') == 'subagent.started' and data.get('agentName') in SMOKE_ROLES and identity:
+        if event.get('type') == 'subagent.started' and data.get('agentName') in SMOKE_ROLES and isinstance(identity, str) and identity:
             nodes[identity] = {'id': identity, 'role': data['agentName'], 'started': index,
-                               'parent_id': data.get('parentToolCallId', data.get('parentSessionId', session))}
-        if event.get('type') == 'subagent.completed' and identity in nodes and data.get('success') is True:
-            nodes[identity]['completed'] = index
+                               'parent_id': data.get('parentToolCallId', data.get('parentSessionId', session)),
+                               'native_agent_id': event.get('agentId'), 'parent_native_agent_id': data.get('parentId'), 'origin': 'subagent'}
+        if event.get('type') == 'subagent.completed' and isinstance(identity, str) and identity in nodes:
+            completions.setdefault(identity, (index, data, event.get('agentId')))
         if event.get('type') in ('session.end', 'session.idle') and session in nodes:
             nodes[session]['completed'] = index
+    _bind_copilot_workers(nodes, completions, _copilot_task_calls(events))
     return list(nodes.values())
+
+
+def _copilot_task_calls(events):
+    calls = {}
+    for index, event in enumerate(events):
+        data = event.get('data', {})
+        identity = data.get('toolCallId')
+        if not isinstance(identity, str) or not identity:
+            continue
+        if event.get('type') == 'tool.execution_start' and data.get('toolName') == 'task':
+            arguments = data.get('arguments', {})
+            if isinstance(arguments, dict):
+                calls[identity] = {'role': arguments.get('agent_type'), 'parent_id': data.get('parentToolCallId'), 'started': index}
+        if event.get('type') == 'tool.execution_complete' and identity in calls:
+            calls[identity].setdefault('completed', index)
+            calls[identity]['success'] = calls[identity].get('success', True) and data.get('success') is True
+    return calls
+
+
+def _bind_copilot_workers(nodes, completions, calls):
+    agent_ids = {node['native_agent_id']: identity for identity, node in nodes.items() if isinstance(node.get('native_agent_id'), str)}
+    for identity, node in nodes.items():
+        native_parent = node.get('parent_native_agent_id')
+        if native_parent is not None:
+            node['parent_id'] = agent_ids.get(native_parent) if isinstance(native_parent, str) else None
+        if identity not in completions:
+            continue
+        index, data, native_id = completions[identity]
+        if data.get('cancelled') or data.get('success') is False:
+            continue
+        if node.get('native_agent_id') is None and data.get('success') is True:
+            node['completed'] = index
+            continue
+        call = calls.get(identity, {})
+        matches = (native_id == node.get('native_agent_id') and native_id is not None
+                   and call.get('role') == node['role'] and call.get('parent_id') == node.get('parent_id')
+                   and call.get('success') is True and call.get('started', index) < node['started']
+                   and call.get('completed', -1) > node['started'])
+        if matches:
+            node['completed'] = max(index, call['completed'])
 
 
 def delegation_graph_result(nodes):
@@ -248,6 +326,9 @@ def delegation_graph_result(nodes):
     forge, backend, reviewer = [roles[role][0] for role in SMOKE_ROLES]
     if len({node['id'] for node in (forge, backend, reviewer)}) != 3:
         return result('blocked', 'Implementation and review must use distinct native role identities', **details)
+    native_ids = [node.get('native_agent_id') for node in (forge, backend, reviewer)]
+    if all(native_ids) and len(set(native_ids)) != 3:
+        return result('blocked', 'Implementation and review reused a native agent identity', **details)
     if backend.get('parent_id') != forge['id'] or reviewer.get('parent_id') != forge['id']:
         return result('blocked', 'Native parent metadata does not connect both workers to the same Forge', **details)
     if backend['started'] <= forge['started'] or reviewer['started'] <= backend['completed'] or forge['completed'] <= reviewer['completed']:
@@ -257,6 +338,8 @@ def delegation_graph_result(nodes):
 
 def valid_lifecycle(node):
     if not isinstance(node, dict) or not isinstance(node.get('id'), str) or not node['id'] or node.get('role') not in SMOKE_ROLES:
+        return False
+    if node.get('native_agent_id') is not None and (not isinstance(node['native_agent_id'], str) or not node['native_agent_id']):
         return False
     start, end = node.get('started'), node.get('completed')
     return type(start) is int and start >= 0 and (end is None or type(end) is int and end > start)
@@ -270,16 +353,30 @@ def valid_implementation_edit(edit, backend):
             and backend['started'] < start <= end < backend['completed'])
 
 
-def delegation_observation(host, events, fixture=None):
+def delegation_observation(host, events, fixture=None, main_role=None, completion=None):
     parsers = {'codex': _codex_delegation, 'claude': _claude_delegation, 'copilot': _copilot_delegation}
     nodes = parsers[host](events) if host in parsers else []
     observed = delegation_graph_result(nodes)
-    if fixture is not None and observed['status'] == 'passed':
-        backend = next(node for node in nodes if node['role'] == 'aw-backend')
+    if main_role == 'aw-forge':
+        observed['requested_main_role'] = main_role
+        mains = [node for node in nodes if node['role'] == main_role and node.get('origin') == 'session']
+        children = [node for node in nodes if node['role'] == main_role and node.get('origin') == 'subagent']
+        nested = any(child.get('parent_id') == parent['id'] and type(child.get('completed')) is int
+                     and child['started'] > parent['started'] for child in children for parent in mains)
+        if nested:
+            observed.update(status='failed', reason='Native metadata connects a completed second Forge to the active main Forge; the single-orchestrator contract failed')
+        elif children:
+            observed.update(status='blocked', reason='Requested main Forge profile conflicts with an observed Forge child; native metadata does not establish an authorized single-Forge topology')
+        elif not mains:
+            observed.update(status='blocked', reason='Native metadata omits the selected main Forge identity; captured worker lifecycles remain partial evidence')
+    if fixture is not None:
         edits = native_edit_observations(host, events, fixture)
         observed['native_implementation_edits'] = edits
-        if len(edits) != 1 or not valid_implementation_edit(edits[0], backend):
+        backend = next((node for node in nodes if node['role'] == 'aw-backend'), None)
+        if observed['status'] == 'passed' and (len(edits) != 1 or not valid_implementation_edit(edits[0], backend)):
             observed.update(status='blocked', reason='The implementation edit is not within the backend lifecycle before independent review')
+    if completion is not None and (completion.get('exit_code') != 0 or completion.get('timed_out')):
+        observed.update(status='blocked', reason='Native delegation phase failed or timed out; partial lifecycle evidence cannot pass')
     return observed
 
 
