@@ -12,7 +12,7 @@ import sys
 import time
 import uuid
 
-from .host_probes import (CATEGORIES, blank_results, claude_metadata, delegation_graph_result, delegation_observation, native_edit_events, native_hook_events,
+from .host_probes import (CATEGORIES, blank_results, claude_metadata, copilot_metadata, delegation_graph_result, delegation_observation, native_edit_events, native_hook_events,
                           native_skills, result, run_command,
                           sha256_file, smoke_argv, smoke_prompt, valid_implementation_edit)
 
@@ -220,7 +220,7 @@ def _native_catalog(host, runtime, fixture, artifacts, expected, scope, timeout)
                 'skills': result('blocked', 'Native skills/list requires a supported app-server metadata connection; this probe does not start one against the real user home')}, []
     if host != 'copilot':
         return observed, []
-    observed['discovery'] = result('blocked', 'Copilot exposes its role catalog through the interactive /agent picker; its skill/instruction JSON commands do not list custom roles')
+    observed['discovery'] = result('blocked', 'Native custom-agent session metadata has not been captured; the interactive /agent picker is also available')
     captures = []
     for name in ('skill', 'instruction'):
         capture = run_command([str(runtime), '--no-auto-update', '-C', str(fixture), name, 'list', '--json'],
@@ -253,6 +253,7 @@ def _gate_artifacts(fixture):
 
 def _run_smoke(host, runtime, fixture, artifact_dir, expected_roles, expected_skills, timeout, nonce, scope):
     all_events, delegation_events, captures, phases = [], [], [], []
+    delegation_completion = None
     for phase in ('pass', 'fail'):
         before = {item['path'] for item in _gate_artifacts(fixture)}
         prompt = smoke_prompt(nonce, phase, host)
@@ -263,6 +264,7 @@ def _run_smoke(host, runtime, fixture, artifact_dir, expected_roles, expected_sk
         all_events.extend(events)
         if phase == 'pass':
             delegation_events = events
+            delegation_completion = capture['capture']
         gates = [item for item in _gate_artifacts(fixture) if item['path'] not in before]
         phases.append({'phase': phase, 'exit_code': capture['capture']['exit_code'], 'timed_out': capture['capture']['timed_out'], 'hook_events': native_hook_events(host, events),
                        'gate_artifacts': gates, 'native_edit_ids': native_edit_events(host, events, fixture), 'actual_value': read_json(fixture / 'smoke.json', {}).get('value'),
@@ -270,7 +272,10 @@ def _run_smoke(host, runtime, fixture, artifact_dir, expected_roles, expected_sk
         if capture['capture']['exit_code'] != 0 or phases[-1]['actual_value'] != phase:
             break  # Authentication, permission, trust and runtime errors never trigger hidden retries.
     found = claude_metadata(all_events, expected_roles, expected_skills, scope, fixture) if host == 'claude' else {}
-    found['role_invocation'] = delegation_observation(host, delegation_events, fixture)
+    if host == 'copilot':
+        found.update(copilot_metadata(all_events, expected_roles, expected_skills, scope, fixture))
+    main_role = 'aw-forge' if host in ('claude', 'copilot') else None
+    found['role_invocation'] = delegation_observation(host, delegation_events, fixture, main_role, delegation_completion)
     for value in found.values():
         value['artifacts'] = captures
     suffix = {'codex': '.codex/hooks.json', 'claude': '.claude/settings.json', 'copilot': '.github/hooks/agent-workflow.json'}[host]

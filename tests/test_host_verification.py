@@ -8,7 +8,7 @@ import time
 import unittest
 from unittest.mock import patch
 
-from agent_workflow.host_probes import (blank_results, claude_metadata, delegation_graph_result, delegation_observation, json_events, native_edit_events, native_hook_events,
+from agent_workflow.host_probes import (blank_results, claude_metadata, copilot_metadata, delegation_graph_result, delegation_observation, json_events, native_edit_events, native_hook_events,
                                        native_skills, redact, role_observation, run_command, sha256_file,
                                        smoke_argv, smoke_prompt)
 from agent_workflow.host_verification import (CLAUDE_CONFIG_DEFAULTS, check_verification_freshness, claude_user_config_digest, config_snapshot, create_fixture, cursor_runtime_inputs, fixture_snapshot, import_ui_evidence,
@@ -207,6 +207,117 @@ class DelegationProofTests(unittest.TestCase):
         phases[0]['hook_events'][0]['tool_id'] = 'edit-pass'
         phases[0]['gate_artifacts'].append({'status': 'passed'})
         self.assertEqual(_hook_verdict(phases, [], sources)['status'], 'failed')
+
+
+class MeasuredStreamTests(unittest.TestCase):
+    """Minimal vendor event shapes, with invented IDs and fixture paths."""
+    def copilot_events(self):
+        events = [{'type': 'tool.execution_start', 'data': {'toolName': 'task', 'toolCallId': 'call-forge',
+                   'arguments': {'agent_type': 'aw-forge'}}},
+                  {'type': 'subagent.started', 'agentId': 'native-forge', 'parentId': 'previous-event',
+                   'data': {'agentName': 'aw-forge', 'toolCallId': 'call-forge'}}]
+        for role, name in (('aw-backend', 'backend'), ('aw-review-verify', 'review')):
+            events.extend([{'type': 'tool.execution_start', 'agentId': 'native-forge', 'data': {
+                'toolName': 'task', 'toolCallId': 'call-' + name, 'parentToolCallId': 'call-forge', 'arguments': {'agent_type': role}}},
+                {'type': 'subagent.started', 'agentId': 'native-' + name, 'parentId': 'previous-event',
+                 'data': {'agentName': role, 'toolCallId': 'call-' + name, 'parentId': 'native-forge'}}])
+            if name == 'backend':
+                events.extend([{'type': 'tool.execution_start', 'agentId': 'native-backend', 'data': {
+                    'toolName': 'edit', 'toolCallId': 'edit1', 'parentToolCallId': 'call-backend', 'arguments': {'path': '/fixture/smoke.json'}}},
+                    {'type': 'tool.execution_complete', 'agentId': 'native-backend', 'data': {
+                        'toolCallId': 'edit1', 'parentToolCallId': 'call-backend', 'success': True}}])
+            events.extend([{'type': 'subagent.completed', 'agentId': 'native-' + name, 'data': {
+                'agentName': role, 'toolCallId': 'call-' + name}},
+                {'type': 'tool.execution_complete', 'agentId': 'native-forge', 'data': {
+                    'toolCallId': 'call-' + name, 'parentToolCallId': 'call-forge', 'success': True}}])
+        events.extend([{'type': 'tool.execution_complete', 'data': {'toolCallId': 'call-forge', 'success': True}},
+                       {'type': 'subagent.completed', 'agentId': 'native-forge', 'data': {'agentName': 'aw-forge', 'toolCallId': 'call-forge'}}])
+        return events
+
+    def test_codex_measured_alias_preserves_missing_spawn_and_identity_block(self):
+        wait = {'type': 'item.completed', 'item': {'type': 'collab_tool_call', 'tool': 'wait',
+                'sender_thread_id': 'launcher', 'receiver_thread_ids': [], 'agents_states': {}, 'status': 'completed'}}
+        self.assertEqual(delegation_observation('codex', [wait])['status'], 'blocked')
+        spawn = {'type': 'item.completed', 'item': {'type': 'collab_tool_call', 'tool': 'spawn_agent',
+                 'receiver_thread_ids': ['child'], 'status': 'completed'}}
+        self.assertEqual(role_observation('codex', [spawn], 'aw-review-verify')['status'], 'blocked')
+        spawn['item']['agent_type'] = 'aw-review-verify'
+        self.assertEqual(role_observation('codex', [spawn], 'aw-review-verify')['status'], 'passed')
+
+    def test_copilot_native_catalog_preserves_user_and_project_scope(self):
+        roles = ['aw-forge', 'aw-backend', 'aw-review-verify']
+        events = [{'type': 'session.custom_agents_updated', 'data': {'agents': [
+            {'name': name, 'source': 'user'} for name in roles], 'errors': [], 'warnings': []}},
+                  {'type': 'session.skills_loaded', 'data': {'skills': [
+                      {'name': 'forge', 'enabled': True, 'path': '/fixture/.github/skills/forge/SKILL.md', 'source': 'project'}]}}]
+        global_result = copilot_metadata(events, roles, ['forge'], 'global', '/fixture')
+        self.assertEqual(global_result['discovery']['status'], 'passed')
+        scoped = copilot_metadata(events, roles, ['forge'], 'repo', '/fixture')
+        self.assertEqual(scoped['discovery']['status'], 'blocked')
+        self.assertEqual(scoped['discovery']['availability'], 'passed')
+        self.assertEqual(scoped['skills']['status'], 'passed')
+        events[0]['data']['agents'].append(dict(events[0]['data']['agents'][0]))
+        self.assertEqual(copilot_metadata(events, roles, ['forge'], 'global', '/fixture')['discovery']['status'], 'blocked')
+        events[0]['data']['agents'].pop()
+        events[0]['data']['agents'].pop()
+        self.assertEqual(copilot_metadata(events, roles, ['forge'], 'global', '/fixture')['discovery']['status'], 'failed')
+
+    def test_copilot_correlates_task_success_and_parent_native_agent_ids(self):
+        observed = delegation_observation('copilot', self.copilot_events(), '/fixture')
+        self.assertEqual(observed['status'], 'passed')
+        self.assertEqual(observed['native_lifecycles'][1]['parent_id'], 'call-forge')
+        self.assertEqual(observed['native_implementation_edits'][0]['owner'], 'call-backend')
+
+    def test_copilot_completion_without_matching_task_success_does_not_pass(self):
+        for missing in (False, True):
+            events = self.copilot_events()
+            completion = next(event for event in events if event['type'] == 'tool.execution_complete' and event['data']['toolCallId'] == 'call-backend')
+            if missing:
+                events.remove(completion)
+            else:
+                completion['data']['success'] = False
+            self.assertEqual(delegation_observation('copilot', events, '/fixture')['status'], 'blocked')
+
+    def test_copilot_unknown_parent_or_cancelled_worker_does_not_pass(self):
+        for change in ('parent', 'cancelled'):
+            events = self.copilot_events()
+            for event in events:
+                if event['data'].get('toolCallId') == 'call-backend':
+                    if change == 'parent' and event['type'] == 'subagent.started':
+                        event['data']['parentId'] = 'unknown-native-agent'
+                    if change == 'cancelled' and event['type'] == 'subagent.completed':
+                        event['data']['cancelled'] = True
+            self.assertEqual(delegation_observation('copilot', events, '/fixture')['status'], 'blocked')
+
+    def test_requested_main_forge_and_observed_child_remain_unproven(self):
+        observed = delegation_observation('copilot', self.copilot_events(), '/fixture', main_role='aw-forge')
+        self.assertEqual(observed['status'], 'blocked')
+        self.assertIn('Requested main Forge profile conflicts', observed['reason'])
+
+    def test_native_main_forge_with_completed_child_forge_fails_contract(self):
+        events = [{'type': 'system', 'subtype': 'init', 'agent_type': 'aw-forge', 'session_id': 'main-forge'},
+                  {'type': 'assistant', 'session_id': 'main-forge', 'message': {'content': [
+                      {'type': 'tool_use', 'id': 'child-forge', 'name': 'Agent', 'input': {'subagent_type': 'aw-forge'}}]}},
+                  {'type': 'user', 'session_id': 'main-forge', 'message': {'content': [
+                      {'type': 'tool_result', 'tool_use_id': 'child-forge', 'is_error': False}]}},
+                  {'type': 'result', 'session_id': 'main-forge', 'is_error': False}]
+        observed = delegation_observation('claude', events, main_role='aw-forge')
+        self.assertEqual(observed['status'], 'failed')
+        self.assertIn('Native metadata connects', observed['reason'])
+
+    def test_timeout_cannot_pass_complete_native_lifecycles(self):
+        observed = delegation_observation('copilot', self.copilot_events(), '/fixture', completion={'exit_code': 124, 'timed_out': True})
+        self.assertEqual(observed['status'], 'blocked')
+
+    def test_claude_measured_init_missing_main_identity_retains_worker_proof(self):
+        events = DelegationProofTests().claude_events()
+        events[0].pop('agent_type')
+        events[0]['agents'] = ['aw-forge', 'aw-backend', 'aw-review-verify']
+        observed = delegation_observation('claude', events, '/fixture', main_role='aw-forge', completion={'exit_code': 0, 'timed_out': False})
+        self.assertEqual(observed['status'], 'blocked')
+        self.assertIn('omits the selected main Forge identity', observed['reason'])
+        self.assertEqual(len(observed['native_lifecycles']), 2)
+        self.assertEqual(len(observed['native_implementation_edits']), 1)
 
 
 class NativeCaptureFixtureTests(unittest.TestCase):
