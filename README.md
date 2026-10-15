@@ -2,7 +2,7 @@
 
 Version 1.1.0 provides eight native agent roles, 74 skills, worktree ownership, command receipts, quality gates and acceptance-evidence checks. Start work in your existing Codex, Claude Code, Copilot or Cursor chat. Python helpers coordinate files and verification; they do not launch a separate agent service.
 
-Use [the skill catalog](docs/SKILLS.md) to see every installed skill and its purpose. [Installation](docs/INSTALLATION.md), [host setup](docs/HOSTS.md), [coordination](docs/COORDINATION.md), [quality gates](docs/GATES.md) and [verification results](docs/VERIFICATION.md) describe the operational details.
+Use [the skill catalog](docs/SKILLS.md) to see every installed skill and its purpose. [Installation](docs/INSTALLATION.md), [host setup](docs/HOSTS.md), [coordination](docs/COORDINATION.md), [quality gates](docs/GATES.md) and [release 1.1 verification](docs/VERIFICATION-1.1.md) describe the operational details.
 
 ## Install and inspect
 
@@ -62,7 +62,7 @@ cd ../../..
 python3 scripts/check-fixtures.py --jvm-tools /path/to/verified/jars --output /tmp/workflow-fixtures.json
 ```
 
-See [verification](docs/VERIFICATION.md) for tool versions, jar digests and actual results. Fixture validation does not establish live application behavior or native hook trust. Keep source changes, a versioned release and explicit installation in that order. This source repository is local; publication has not been requested.
+See [release 1.1 verification](docs/VERIFICATION-1.1.md) for current rollout results and [historical fixture verification](docs/VERIFICATION.md) for the earlier tool versions and jar digests. Fixture validation does not establish live application behavior or native hook trust. Keep source changes, a versioned release and explicit installation in that order. This source repository is local; publication has not been requested.
 
 ## Release 1.1 commands
 

@@ -2,7 +2,7 @@
 name: workflow-install
 description: "Install or maintain a managed agent-workflow bundle globally or in a repository; inspect conflicts, portability, upgrades and removal."
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
 ---
 
 # workflow-install
@@ -13,7 +13,7 @@ Read the bundle README and run the local entrypoint with `--help` to use the ins
 
 1. Establish the installation scope from the request. A project installation includes its pinned bundle and a local launcher; a global installation supplies defaults and discovery. Reuse matching files; preserve unrelated content and report differing existing versions.
 2. Run `install --global` or `install --repo PATH` with an explicit source bundle. Use isolated temporary homes and repositories when testing the installer. Runtime tools and services are separate dependencies; installing a skill does not install a compiler, scanner, browser or account.
-3. Verify managed hashes, all 71 skill entries, native role discovery locations, supporting resources and project-relative links. A copied repository must resolve its scripts without the source checkout or original user home.
+3. Verify managed hashes and every skill entry against the selected bundle's manifest, including its declared total and source counts. Verify native role discovery locations, supporting resources and project-relative links. A copied repository must resolve its scripts without the source checkout or original user home.
 4. Apply upgrades only through an explicit `update`. Inspect edited-file conflicts, backups, selected version and rollback outcome. Repository configuration continues to select its own bundle after a global update.
 5. Run `doctor` through the same runtime used by the host app where available. Report config/schema checks separately from a live skill/agent/hook discovery test. Trust and reload requirements remain visible; never fabricate user trust.
 6. For `uninstall`, remove only unchanged managed content. Preserve user edits and unrelated hooks, settings, skills and instructions. Report retained paths and the reason.
