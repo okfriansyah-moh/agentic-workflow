@@ -1,5 +1,6 @@
 """Installer behavior against isolated homes and relocatable repositories."""
 import argparse
+from concurrent.futures import ThreadPoolExecutor
 import json
 import io
 import os
@@ -260,6 +261,144 @@ class InstallerTests(unittest.TestCase):
         invoke("global", {"cwd": str(self.repo)})
         invoke("repo", {"cwd": str(self.repo)})
         self.assertEqual(count.read_text(), "5")
+
+    def workflow_root(self, name):
+        root = self.base / name
+        (root / ".ai").mkdir(parents=True, exist_ok=True)
+        (root / ".ai/config.json").write_text("{}")
+        return root.resolve()
+
+    def test_cursor_hook_selects_native_workspace_when_user_hook_cwd_is_elsewhere(self):
+        root = self.workflow_root("workspace")
+        payload = {"workspace_roots": [str(root)], "tool_input": {"file_path": "smoke.json"}}
+        with patch.object(api.os, "getcwd", return_value=str(self.base / "home/.cursor")):
+            self.assertEqual(api.hook_repository(payload, "cursor", "global"), root)
+            self.assertEqual(api.hook_repository(dict(payload, cwd=str(self.base)), "cursor", "global"), root)
+            self.assertIsNone(api.hook_repository({}, "cursor", "global"))
+            self.assertIsNone(api.hook_repository(dict(payload, workspace_roots=[]), "cursor", "global"))
+
+    def test_cursor_multiroot_uses_file_or_working_directory_without_guessing(self):
+        first, second = self.workflow_root("first"), self.workflow_root("second")
+        payload = {"workspace_roots": [str(first), str(second)]}
+        target = dict(payload, tool_input={"file_path": str(second / "smoke.json")})
+        self.assertEqual(api.hook_repository(target, "cursor", "global"), second)
+        self.assertEqual(api.hook_repository(dict(payload, cwd=str(first)), "cursor", "global"), first)
+        for extra in ({}, {"tool_input": {"file_path": "smoke.json"}},
+                      {"tool_input": {"file_path": str(first / "a"), "path": str(second / "b")}}):
+            with self.subTest(extra=extra), self.assertRaises(ValueError):
+                api.hook_repository(dict(payload, **extra), "cursor", "global")
+        (second / ".ai/config.json").unlink()
+        with self.assertRaises(ValueError):
+            api.hook_repository(payload, "cursor", "global")
+        self.assertIsNone(api.hook_repository(target, "cursor", "global"))
+
+    def test_cursor_hook_rejects_workspace_escape_and_invalid_context(self):
+        root, other = self.workflow_root("workspace"), self.workflow_root("outside")
+        (root / "escape").symlink_to(other, target_is_directory=True)
+        for value in (str(other / "smoke.json"), "../outside/smoke.json", "escape/smoke.json"):
+            payload = {"workspace_roots": [str(root)], "tool_input": {"file_path": value}}
+            with self.subTest(value=value), self.assertRaises(ValueError):
+                api.hook_repository(payload, "cursor", "global")
+        for roots in (str(root), ["relative"], [str(root / "missing")], [None]):
+            with self.subTest(roots=roots), self.assertRaises(ValueError):
+                api.hook_repository({"workspace_roots": roots}, "cursor", "global")
+        child = root / "child"
+        child.mkdir()
+        self.assertEqual(api.hook_repository({"workspace_roots": [str(root), str(child)]}, "cursor", "global"), root)
+        self.assertEqual(api.hook_repository({"cwd": str(root), "tool_input": "*** Begin Patch"}, "codex", "global"), root)
+
+    def real_hook_fixture(self):
+        shutil.copy2(api.ROOT / "agent_workflow/gates.py", self.source / "agent_workflow/gates.py")
+        api.install(self.args())
+        program = ("import json; from pathlib import Path; "
+                   "count=Path('.ai/state/gate-count'); count.parent.mkdir(parents=True,exist_ok=True); "
+                   "count.write_text(str(int(count.read_text())+1 if count.exists() else 1)); "
+                   "good=json.loads(Path('smoke.json').read_text())['passing']; "
+                   "print('fixture gate passed' if good else 'fixture gate failed'); raise SystemExit(0 if good else 1)")
+        registry = {"schema_version": 1, "supported_suffixes": [], "checks": [
+            {"id": "fixture", "stage": "fast", "required": True, "argv": [sys.executable, "-c", program]}]}
+        (self.repo / ".ai/gates.json").write_text(json.dumps(registry))
+        (self.repo / "smoke.json").write_text('{"passing": true}')
+        return {"workspace_roots": [str(self.repo)], "conversation_id": "conversation", "generation_id": "generation",
+                "session_id": "conversation", "tool_use_id": "edit-1", "hook_event_name": "postToolUse",
+                "tool_name": "Write", "tool_input": {"file_path": str(self.repo / "smoke.json"), "content": "private-input"},
+                "tool_output": {"api_key": "private-output"}}
+
+    def call_host_hook(self, host, scope, payload):
+        with patch.object(sys, "stdin", io.StringIO(json.dumps(payload))), patch.object(api.os, "getcwd", return_value=str(self.base / "home/.cursor")):
+            return api.host_hook(argparse.Namespace(host=host, scope=scope))
+
+    def test_real_cursor_gate_and_claude_compatibility_wrappers_share_results(self):
+        payload = self.real_hook_fixture()
+        count = self.repo / ".ai/state/gate-count"
+        for passing, number in ((True, 1), (False, 2)):
+            (self.repo / "smoke.json").write_text(json.dumps({"passing": passing}))
+            payload["tool_use_id"] = f"edit-{number}"
+            for host, scope in (("cursor", "global"), ("claude", "global"), ("cursor", "repo"), ("claude", "repo")):
+                context = dict(payload)
+                if host == "claude":
+                    context.update(tool_name="Edit", hook_event_name="PostToolUse", cwd=str(self.repo))
+                result = self.call_host_hook(host, scope, context)
+                self.assertEqual(bool(result), not passing, (host, scope, result))
+                if not passing:
+                    self.assertIn("additional_context", result)
+                self.assertEqual(count.read_text(), str(number))
+        records = (self.repo / ".ai/state/hook-dedupe/records.json").read_text()
+        self.assertNotIn("private-input", records)
+        self.assertNotIn("private-output", records)
+        self.assertNotIn("conversation", records)
+        self.assertEqual({record["result"]["status"] for record in json.loads(records).values()}, {"passed", "error"})
+
+    def test_real_hook_rechecks_changed_input_distinct_events_and_missing_identity(self):
+        payload = self.real_hook_fixture()
+        self.assertEqual(self.call_host_hook("cursor", "global", payload), {})
+        (self.repo / "smoke.json").write_text('{"passing": false}')
+        self.assertIn("additional_context", self.call_host_hook("claude", "global", payload))
+        self.call_host_hook("cursor", "repo", dict(payload, tool_use_id="edit-2"))
+        self.call_host_hook("cursor", "repo", dict(payload, tool_name="Read"))
+        for host in ("cursor", "claude"):
+            self.call_host_hook(host, "global", dict(payload, tool_use_id=None))
+        native_claude = {key: value for key, value in payload.items() if key not in {"workspace_roots", "conversation_id", "generation_id"}}
+        native_claude["cwd"] = str(self.repo)
+        self.assertIn("hookSpecificOutput", self.call_host_hook("claude", "global", native_claude))
+        self.assertEqual((self.repo / ".ai/state/gate-count").read_text(), "7")
+
+    def test_ambiguous_cursor_payload_returns_feedback_without_running_gate(self):
+        payload = self.real_hook_fixture()
+        other = self.workflow_root("other")
+        payload.update(workspace_roots=[str(self.repo), str(other)], tool_input={})
+        for host in ("cursor", "claude"):
+            result = self.call_host_hook(host, "global", payload)
+            self.assertIn("one safe repository", result["additional_context"])
+        self.assertFalse((self.repo / ".ai/state/gate-count").exists())
+
+    def test_generated_global_and_project_wrappers_share_one_gate_execution(self):
+        payload = self.real_hook_fixture()
+        home = self.base / "home"
+        home.mkdir()
+        api.install(self.args(global_install=True, home=str(home)))
+        environment = dict(os.environ, HOME=str(home))
+        calls = []
+        for host, scope in (("cursor", "global"), ("claude", "global"), ("cursor", "repo"), ("claude", "repo")):
+            root = home if scope == "global" else self.repo
+            path = root / (".cursor/hooks.json" if host == "cursor" else ".claude/settings.json")
+            event = "postToolUse" if host == "cursor" else "PostToolUse"
+            entry = json.loads(path.read_text())["hooks"][event][0]
+            command = entry["command"] if host == "cursor" else entry["hooks"][0]["command"]
+            cwd = root / ("." + host) if scope == "global" else root
+            calls.append((command, cwd))
+        def invoke(item):
+            return subprocess.run(["/bin/sh", "-c", item[0]], cwd=item[1], env=environment,
+                                  input=json.dumps(payload), capture_output=True, text=True, timeout=30)
+        for passing, number in ((True, 1), (False, 2)):
+            (self.repo / "smoke.json").write_text(json.dumps({"passing": passing}))
+            payload["tool_use_id"] = f"edit-{number}"
+            with ThreadPoolExecutor(max_workers=4) as pool:
+                results = list(pool.map(invoke, calls))
+            for completed in results:
+                self.assertEqual(completed.returncode, 0, completed.stdout + completed.stderr)
+                self.assertEqual(bool(json.loads(completed.stdout)), not passing)
+            self.assertEqual((self.repo / ".ai/state/gate-count").read_text(), str(number))
 
     def test_declared_skill_digest_is_verified_before_install(self):
         path = self.source / "manifest.json"

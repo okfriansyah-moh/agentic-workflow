@@ -637,6 +637,79 @@ def locate_repo(cwd):
     return next((item for item in (path, *path.parents) if (item / ".ai/config.json").is_file()), None)
 
 
+def native_path(value, base=None):
+    if not isinstance(value, str) or not value or "\0" in value:
+        raise ValueError("Native hook path is missing or invalid")
+    path = Path(value)
+    if not path.is_absolute():
+        if base is None:
+            raise ValueError("Native hook path has no unambiguous workspace base")
+        path = base / path
+    return path.resolve()
+
+
+def effective_hook_host(host, payload):
+    cursor_context = (isinstance(payload.get("workspace_roots"), list)
+                      and (payload.get("cursor_version") or
+                           payload.get("conversation_id") and payload.get("generation_id")))
+    return "cursor" if host == "claude" and cursor_context else host
+
+
+def hook_file_values(payload):
+    inputs = payload.get("tool_input", {})
+    if isinstance(inputs, str):
+        try:
+            inputs = json.loads(inputs)
+        except ValueError:
+            inputs = {}
+    if not isinstance(inputs, dict):
+        raise ValueError("Native hook tool input is not a supported object")
+    return [value for data in (inputs, payload) for key in ("file_path", "path", "target_file")
+            if (value := data.get(key)) is not None]
+
+
+def hook_repository(payload, host, scope):
+    declared = payload.get("workspace_roots")
+    if declared is not None and not isinstance(declared, list):
+        raise ValueError("Native workspace roots must be a list")
+    if declared == []:
+        return None
+    roots = list(dict.fromkeys(native_path(value) for value in declared or []))
+    if any(not root.is_dir() for root in roots):
+        raise ValueError("Native workspace root is unavailable")
+    cwd = native_path(payload["cwd"]) if payload.get("cwd") else None
+    if cwd and roots and not any(cwd.is_relative_to(root) for root in roots):
+        cwd = None
+    base = cwd or (roots[0] if len(roots) == 1 else None)
+    paths = [native_path(value, base) for value in hook_file_values(payload)]
+    if paths:
+        if roots and any(not any(path.is_relative_to(root) for root in roots) for path in paths):
+            raise ValueError("Native edit is outside the declared workspace roots")
+        candidates = {locate_repo(path.parent) for path in paths}
+    elif cwd:
+        candidates = {locate_repo(cwd)}
+    elif roots:
+        candidates = {locate_repo(root) for root in roots}
+    elif declared is not None or host == "cursor" and scope == "global":
+        return None
+    else:
+        candidates = {locate_repo(os.getcwd())}
+    if len(candidates) != 1:
+        raise ValueError("Native hook context does not identify one workflow repository")
+    return candidates.pop()
+
+
+def normalized_hook_payload(root, host, payload):
+    identity = next((payload.get(key) for key in ("tool_use_id", "toolUseId", "tool_call_id", "event_id") if payload.get(key)), None)
+    session = payload.get("conversation_id") if host == "cursor" else None
+    session = session or payload.get("session_id", payload.get("sessionId"))
+    tool = payload.get("tool_name", payload.get("toolName", ""))
+    if host == "cursor" and tool == "Edit":
+        tool = "Write"
+    return {"cwd": str(root), "session_id": session, "tool_use_id": identity,
+            "tool_name": tool, "hook_event_name": "PostToolUse"}
+
+
 def local_call(root, arguments, payload=None, timeout=45):
     command = [sys.executable, str(root / ".ai/bin/agent-workflow"), *arguments]
     process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
@@ -670,11 +743,10 @@ def hook_result(root, host, payload):
 def event_identity(payload):
     identity = next((payload[key] for key in ("tool_use_id", "toolUseId", "tool_call_id", "event_id") if payload.get(key)), None)
     session = payload.get("session_id", payload.get("sessionId"))
-    if not identity and session and payload.get("timestamp"):
-        identity = payload["timestamp"]
-    if not identity:
+    if not isinstance(identity, str) or not isinstance(session, str) or not identity or not session:
         return None
-    return digest(encoded({"session": session, "identity": identity, "payload": payload}))
+    return digest(encoded({"session": session, "identity": identity,
+                           "tool": payload.get("tool_name"), "event": payload.get("hook_event_name")}))
 
 
 def deduplicated_hook(root, host, payload):
@@ -699,7 +771,7 @@ def deduplicated_hook(root, host, payload):
         if key in records:
             return records[key]["result"]
         result = hook_result(root, host, payload)
-        records[key] = {"created_at": time.time(), "result": result}
+        records[key] = {"created_at": time.time(), "result": {"status": result.get("status", "error")}}
         records = dict(sorted(records.items(), key=lambda item: item[1]["created_at"])[-100:])
         atomic(directory / "records.json", encoded(records), 0o600)
         return result
@@ -707,18 +779,28 @@ def deduplicated_hook(root, host, payload):
 
 def host_hook(args):
     payload = json.load(sys.stdin) if not sys.stdin.isatty() else {}
-    root = locate_repo(payload.get("cwd", os.getcwd()))
+    if not isinstance(payload, dict):
+        return hook_feedback(args.host, "Workflow hook received unsupported native context. Run the fast gate explicitly.")
+    host = effective_hook_host(args.host, payload)
+    try:
+        root = hook_repository(payload, host, args.scope)
+    except (ValueError, OSError, RuntimeError):
+        return hook_feedback(host, "Workflow hook could not identify one safe repository from the native workspace and edit paths. Run the fast gate explicitly in the intended repository.")
     if root is None:
         return {}
-    result = deduplicated_hook(root, args.host, payload)
+    result = deduplicated_hook(root, host, normalized_hook_payload(root, host, payload))
     if result.get("status") in {"failed", "blocked", "error"}:
         message = "Workflow fast checks need attention. Run .ai/bin/agent-workflow gate --repo . --stage fast for details."
-        if args.host in {"codex", "claude"}:
-            return {"hookSpecificOutput": {"hookEventName": "PostToolUse", "additionalContext": message}}
-        if args.host == "copilot":
-            return {"additionalContext": message}
-        return {"additional_context": message}
+        return hook_feedback(host, message)
     return {}
+
+
+def hook_feedback(host, message):
+    if host in {"codex", "claude"}:
+        return {"hookSpecificOutput": {"hookEventName": "PostToolUse", "additionalContext": message}}
+    if host == "copilot":
+        return {"additionalContext": message}
+    return {"additional_context": message}
 
 
 def register(subparsers):
