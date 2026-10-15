@@ -82,17 +82,72 @@ def runtime_identity(host, runtime, artifact_dir, timeout, probe_version=True):
         return {'path': str(runtime), 'version': version, 'sha256': sha256_file(runtime), 'surface': surface,
                 'support_files': support, 'support_sha256': json_hash(support)}, None
     if not probe_version:
-        return {'path': str(runtime), 'version': None, 'sha256': sha256_file(runtime), 'surface': surface}, None
+        return {'path': str(runtime), 'version': None, 'sha256': sha256_file(runtime), 'surface': surface,
+                **support_identity(host, runtime)}, None
     capture = run_command([str(runtime), '--version'], Path(artifact_dir).parent, artifact_dir, 'runtime-version', min(timeout, 15))
     data = capture['capture']
     return {'path': str(runtime), 'version': data['stdout'].strip() if data['exit_code'] == 0 else None,
-            'sha256': sha256_file(runtime), 'surface': surface}, capture['artifact']
+            'sha256': sha256_file(runtime), 'surface': surface, **support_identity(host, runtime)}, capture['artifact']
 
 
 def cursor_runtime_inputs(runtime):
     contents = Path(runtime).parents[1]
     paths = [contents / name for name in ('Info.plist', 'Resources/app/package.json', 'Resources/app/product.json')]
     return {str(path): sha256_file(path) if path.is_file() else None for path in paths}
+
+
+def runtime_support_inputs(host, runtime):
+    if host == 'cursor':
+        return cursor_runtime_inputs(runtime)
+    if host != 'copilot':
+        return {}
+    package = Path(runtime).resolve().parent
+    paths = [package / 'package.json', package / 'index.js']
+    for metadata in sorted(package.glob('node_modules/@github/copilot-*/package.json')):
+        paths.extend(copilot_platform_inputs(metadata))
+    return {str(path): sha256_file(path) if path.is_file() else None for path in paths}
+
+
+def copilot_platform_inputs(metadata):
+    data = read_json(metadata)
+    export = data.get('exports') if isinstance(data, dict) else None
+    if isinstance(export, dict) and set(export) == {'.'}:
+        export = export['.']
+    if not isinstance(export, str) or not export.startswith('./'):
+        raise ValueError(f'Unsupported Copilot platform package export layout: {metadata}')
+    target = (metadata.parent / export).resolve()
+    if not target.is_relative_to(metadata.parent.resolve()):
+        raise ValueError(f'Copilot platform export escapes its package: {metadata}')
+    return [metadata, target]
+
+
+def support_identity(host, runtime):
+    if host not in ('cursor', 'copilot'):
+        return {}
+    inputs = runtime_support_inputs(host, runtime)
+    return {'support_files': inputs, 'support_sha256': json_hash(inputs)}
+
+
+CLAUDE_CONFIG_DEFAULTS = {
+    'mcpServers': {}, 'mcpContextUris': [], 'allowedTools': [], 'disallowedTools': [],
+    'permissions': {}, 'permissionMode': None, 'enableAllProjectMcpServers': False,
+    'enabledMcpjsonServers': [], 'disabledMcpjsonServers': [], 'enabledMcpServers': [],
+    'disabledMcpServers': [], 'hasTrustDialogAccepted': False, 'hasClaudeMdExternalIncludesApproved': False,
+}
+
+
+def claude_user_config_digest(path, project):
+    data = read_json(path, {})
+    if not isinstance(data, dict) or not isinstance(data.get('projects', {}), dict):
+        raise ValueError('Claude user/project configuration must be JSON objects')
+    project = Path(project).resolve()
+    selected = [value for name, value in data.get('projects', {}).items() if Path(name).expanduser().resolve() == project]
+    if any(not isinstance(value, dict) for value in selected):
+        raise ValueError('Claude current-project configuration must be a JSON object')
+    def settings(value):
+        return {name: value.get(name, default) for name, default in CLAUDE_CONFIG_DEFAULTS.items()}
+    variants = sorted({json_hash(settings(value)) for value in selected or [{}]})
+    return json_hash({'user': settings(data), 'current_project_variants': variants})
 
 
 def config_snapshot(host, root, scope, bundle, manifest, home=None):
@@ -121,7 +176,10 @@ def config_snapshot(host, root, scope, bundle, manifest, home=None):
             candidates.extend(location / name for name in ('.local/share/agent-workflow/config.json', '.local/bin/agent-workflow'))
         for path in candidates:
             key = label + ':' + str(path.relative_to(location))
-            files[key] = sha256_file(path) if path.is_file() else None
+            if host == 'claude' and path == home / '.claude.json':
+                files[key] = claude_user_config_digest(path, root)
+            else:
+                files[key] = sha256_file(path) if path.is_file() else None
     files['bundle:manifest.json'] = sha256_file(Path(bundle) / 'manifest.json')
     for directory in ('agent_workflow', 'scripts', 'adapters', 'profiles', 'resources'):
         for path in sorted((Path(bundle) / directory).rglob('*')):
@@ -266,8 +324,8 @@ def import_ui_evidence(path, record, attested):
             raise ValueError(f'UI evidence does not match {field}')
     if evidence.get('runtime_sha256') != record['runtime']['sha256']:
         raise ValueError('UI evidence runtime is stale or belongs to another executable')
-    if record['host'] == 'cursor' and evidence.get('runtime_support_sha256') != json_hash(runtime.get('support_files')):
-        raise ValueError('UI evidence Cursor application metadata is stale or missing')
+    if record['host'] in ('cursor', 'copilot') and evidence.get('runtime_support_sha256') != json_hash(runtime.get('support_files')):
+        raise ValueError('UI evidence supporting runtime metadata is stale or missing')
     if evidence.get('provider') not in ('cua', 'native-host-ui') or not evidence.get('observer') or not evidence.get('tool_call_ids'):
         raise ValueError('UI evidence needs an identified native capture provider, observer and tool-call IDs')
     if not isinstance(evidence.get('captured_at'), (int, float)) or not -60 <= time.time() - evidence['captured_at'] <= 86400:
@@ -387,8 +445,11 @@ def check_verification_freshness(record):
     path = runtime.get('path')
     if not path or not Path(path).is_file() or sha256_file(path) != runtime.get('sha256'):
         stale.append('Runtime executable is missing or changed')
-    if record.get('host') == 'cursor' and path and cursor_runtime_inputs(path) != runtime.get('support_files'):
-        stale.append('Cursor application version or supporting runtime inputs changed')
+    try:
+        if record.get('host') in ('cursor', 'copilot') and path and runtime_support_inputs(record['host'], path) != runtime.get('support_files'):
+            stale.append(f'{record["host"].title()} application version or supporting runtime inputs changed')
+    except (OSError, ValueError) as exc:
+        stale.append(f'Supporting runtime inputs are unreadable or unsupported: {exc}')
     try:
         manifest = read_json(Path(record['bundle']) / 'manifest.json')
         current = config_snapshot(record['host'], record['root'], record['scope'], record['bundle'], manifest, record['home'])

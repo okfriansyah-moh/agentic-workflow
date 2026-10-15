@@ -378,7 +378,7 @@ def fixture_read_paths(fixture):
 
 def smoke_argv(host, runtime, fixture, prompt, main_role='aw-forge'):
     if host == 'codex':
-        return [runtime, 'exec', '--json', '--ephemeral', '--cd', str(fixture), prompt]
+        return [runtime, 'exec', '--json', '--cd', str(fixture), prompt]
     if host == 'claude':
         target = '/' + str((Path(fixture) / 'smoke.json').resolve())
         reads = ' '.join(f'Read(/{path})' for path in fixture_read_paths(fixture))
@@ -386,13 +386,13 @@ def smoke_argv(host, runtime, fixture, prompt, main_role='aw-forge'):
         return [runtime, '--agent', main_role, '--print', '--verbose', '--output-format', 'stream-json',
                 '--include-hook-events', '--forward-subagent-text',
                 '--permission-prompts', 'none', '--allowedTools', grants, '--disallowedTools', 'Bash',
-                '--max-budget-usd', '0.50', prompt]
+                '--max-budget-usd', '2.00', prompt]
     if host == 'copilot':
         target = str((Path(fixture) / 'smoke.json').resolve())
         reads = [value for path in fixture_read_paths(fixture) for value in ('--allow-tool', f'read({path})')]
         return [runtime, '--agent', main_role, '--no-auto-update', '-C', str(fixture), '--output-format', 'json',
                 '--allow-tool', f'write({target})', *reads, '--deny-tool', 'shell',
-                '--max-ai-credits', '1', '--max-autopilot-continues', '0', '--prompt', prompt]
+                '--max-ai-credits', '30', '--max-autopilot-continues', '0', '--prompt', prompt]
     raise ValueError('Cursor UI requires native UI evidence; no substitute CLI is assumed')
 
 
