@@ -305,15 +305,98 @@ class InstallerTests(unittest.TestCase):
         self.assertEqual(result["hosts"]["codex"]["saved_verification"]["status"], "stale")
         self.assertEqual(result["hosts"]["codex"]["runtime_loading"], "unverified")
 
-    def test_cursor_role_frontmatter_has_unquoted_native_names(self):
-        for role in api.roles(api.ROOT):
-            text = api.role_text(role, "cursor", "bundle")
-            self.assertIn(f"name: aw-{role['id']}\n", text)
-            self.assertIn(f"description: {role['description']}\n", text)
-            self.assertNotIn('name: "', text)
-        bad = {"name": "unsafe", "description": "Description: YAML mapping", "instructions": "Read"}
-        with self.assertRaisesRegex(ValueError, "plain single-line"):
-            api.role_text(bad, "cursor", "bundle")
+    def test_claude_cursor_compatibility_has_eight_matching_plain_role_ids(self):
+        roles = api.roles(api.ROOT)
+        self.assertEqual(len(roles), 8)
+        names = set()
+        for role in roles:
+            headers = []
+            for host in ("claude", "cursor"):
+                text = api.role_text(role, host, "bundle")
+                header = text.split("---\n", 2)[1]
+                headers.append(header)
+                self.assertIn(f"name: aw-{role['id']}\n", header)
+                self.assertIn(f"description: {role['description']}\n", header)
+                self.assertNotIn('name: "', header)
+                names.add(header.splitlines()[0])
+            self.assertEqual(*headers)
+        self.assertEqual(len(names), 8)
+
+    def test_plain_role_frontmatter_rejects_ambiguous_yaml(self):
+        role = {"name": "unsafe", "description": "Review approved changes", "instructions": "Read"}
+        for host in ("claude", "cursor"):
+            for description in ("Description: YAML mapping", "Description # comment", "true", "null"):
+                with self.subTest(host=host, description=description), self.assertRaisesRegex(ValueError, "plain single-line"):
+                    api.role_text({**role, "description": description}, host, "bundle")
+            with self.assertRaisesRegex(ValueError, "role name"):
+                api.role_text({**role, "id": "worker\nextra: value"}, host, "bundle")
+        copilot = api.role_text({**role, "description": "Description: YAML mapping"}, "copilot", "bundle")
+        self.assertIn('name: "aw-unsafe"\n', copilot)
+        self.assertIn('description: "Description: YAML mapping"\n', copilot)
+        self.assertIn("include-custom-instructions: true\n", copilot)
+
+    def personal_global_profiles(self):
+        personal = {}
+        for host in ("claude", "cursor"):
+            directory = self.repo / f".{host}"
+            (directory / "agents").mkdir(parents=True)
+            for name in ("backend", "forge", "frontend", "review", "operations"):
+                path = directory / "agents" / f"{name}.md"
+                path.write_text(f"---\nname: {name}\n---\nPersonal {name}.\n")
+                path.chmod(0o600)
+                personal[path] = (path.read_bytes(), path.stat().st_mode & 0o777)
+        settings = self.repo / ".claude/settings.json"
+        settings.write_text(json.dumps({"permissions": {"deny": ["Bash(private-command)"]}, "personal": True}))
+        settings.chmod(0o600)
+        instructions = self.repo / ".claude/CLAUDE.md"
+        instructions.write_text("Personal workflow instructions.\n")
+        return personal, settings, instructions
+
+    def test_quoted_claude_global_upgrade_preserves_personal_roles_and_settings(self):
+        catalog = [{**role, "skills": ["sample"]} for role in api.roles(api.ROOT)]
+        (self.source / "agents/catalog.json").write_text(json.dumps({"roles": catalog}))
+        personal, settings, instructions = self.personal_global_profiles()
+        render = api.role_text
+        def legacy(role, host, prefix):
+            text = render(role, host, prefix)
+            if host == "claude":
+                text = text.replace(f"name: aw-{role['id']}\n", f"name: {json.dumps('aw-' + role['id'])}\n", 1)
+                text = text.replace(f"description: {role['description']}\n", f"description: {json.dumps(role['description'])}\n", 1)
+            return text
+        with patch.object(api, "role_text", side_effect=legacy):
+            self.assertEqual(api.install(self.args(global_install=True))["status"], "installed")
+        original_roles = {path: path.read_bytes() for path in (self.repo / ".claude/agents").glob("aw-*.md")}
+        before_settings = settings.read_bytes()
+        self.assertEqual(api.install(self.args(global_install=True))["status"], "blocked")
+        updated = api.install(self.args(command="update", global_install=True))
+        self.assertEqual(updated["status"], "installed")
+        self.assertEqual(updated["conflicts"], [])
+        self.assertEqual(updated["changed"], 8)
+        for role in catalog:
+            headers = [(self.repo / f".{host}/agents/aw-{role['id']}.md").read_text().split("---\n", 2)[1]
+                       for host in ("claude", "cursor")]
+            self.assertEqual(*headers)
+        self.assertEqual(api.install(self.args(global_install=True))["changed"], 0)
+        self.assertEqual(api.doctor(self.args(global_install=True))["status"], "healthy")
+        self.assertEqual(settings.read_bytes(), before_settings)
+        self.assertEqual(settings.stat().st_mode & 0o777, 0o600)
+        self.assertIn("Personal workflow instructions.", instructions.read_text())
+        for path, (content, mode) in personal.items():
+            self.assertEqual((path.read_bytes(), path.stat().st_mode & 0o777), (content, mode))
+        self.assertEqual(api.rollback(self.args(global_install=True, backup=updated["backup"]))["status"], "rolled-back")
+        for path, content in original_roles.items():
+            self.assertEqual(path.read_bytes(), content)
+        self.assertEqual(settings.read_bytes(), before_settings)
+
+    def test_edited_global_claude_profile_blocks_update(self):
+        api.install(self.args(global_install=True))
+        profile = self.repo / ".claude/agents/aw-forge.md"
+        changed = profile.read_text() + "Personal role adjustment.\n"
+        profile.write_text(changed)
+        result = api.install(self.args(command="update", global_install=True))
+        self.assertEqual(result["status"], "blocked")
+        self.assertEqual(result["changed"], 0)
+        self.assertEqual(profile.read_text(), changed)
 
     def test_codex_toml_and_copilot_instruction_opt_in(self):
         import tomllib
