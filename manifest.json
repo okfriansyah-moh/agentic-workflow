@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
-  "version": "1.0.0",
+  "version": "1.1.0",
   "bundle": {
     "name": "agent-workflow",
-    "version": "1.0.0"
+    "version": "1.1.0"
   },
   "counts": {
     "reuse": 47,
-    "new": 11,
+    "new": 14,
     "adapt": 7,
     "upstream-adapt": 6,
-    "total": 71
+    "total": 74
   },
   "skills": [
     {
@@ -2027,7 +2027,7 @@
       "owner": "qa-evidence",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "a8d708df79308634dbb20df1e58d132592a354ae5d067441444e6d7f9f8571bd"
+        "value": "bb35736593ddc4ecaeea80ed6a500c7ce6f77929b1941630efcb8544f46b212c"
       },
       "conditional_dependencies": [
         "verify-test-evidence"
@@ -2057,7 +2057,7 @@
       "owner": "review-verify",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "16b2efbd8d8323c8eb607ec680cfa89b80980e3ab1dc648fd83ceac787c8d0ec"
+        "value": "3df4ece2054c95807c78d0c602be575eb7364ddbbd6643ebd67ce57c27a33e6a"
       },
       "conditional_dependencies": []
     },
@@ -2257,6 +2257,109 @@
         "code-review",
         "coding-standards"
       ]
+    },
+    {
+      "name": "playwright-cli",
+      "category": "tool-integration",
+      "source": {
+        "kind": "new",
+        "label": "agent-workflow/playwright-cli",
+        "version": "1.1.0",
+        "license": "Private local workflow instructions; upstream tools retain their own licenses.",
+        "references": [
+          "https://github.com/microsoft/playwright-cli"
+        ]
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [],
+      "conditional_dependencies": [
+        "record-test-video",
+        "verify-test-evidence",
+        "antislop-ui"
+      ],
+      "activation": {
+        "when": [
+          "\"Drive the managed Playwright CLI for real browser journeys, screenshots, traces and readable video evidence.\""
+        ],
+        "unless": [
+          "Required executable, account or scope is unavailable; report the prerequisite."
+        ]
+      },
+      "owner": "qa-evidence",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "6366c69aba69ce1c4fbbdbc828ff89b48a7ff234490169179405cd5f5465b45e"
+      }
+    },
+    {
+      "name": "context7",
+      "category": "tool-integration",
+      "source": {
+        "kind": "new",
+        "label": "agent-workflow/context7",
+        "version": "1.1.0",
+        "license": "Private local workflow instructions; upstream tools retain their own licenses.",
+        "references": [
+          "https://context7.com/docs/resources/all-clients"
+        ]
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [],
+      "conditional_dependencies": [],
+      "activation": {
+        "when": [
+          "\"Retrieve current library documentation through the configured Context7 MCP server when implementation depends on version-specific APIs.\""
+        ],
+        "unless": [
+          "Required executable, account or scope is unavailable; report the prerequisite."
+        ]
+      },
+      "owner": "forge",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "5083361c75700fd191a0aa9c97e4506dccb2bb7388bd64b551e12fbfd7e2c674"
+      }
+    },
+    {
+      "name": "strix-security",
+      "category": "tool-integration",
+      "source": {
+        "kind": "new",
+        "label": "agent-workflow/strix-security",
+        "version": "1.1.0",
+        "license": "Private local workflow instructions; upstream tools retain their own licenses.",
+        "references": [
+          "https://github.com/usestrix/strix"
+        ]
+      },
+      "targets": [
+        "global",
+        "repository"
+      ],
+      "dependencies": [],
+      "conditional_dependencies": [
+        "security-audit",
+        "worktree-integration"
+      ],
+      "activation": {
+        "when": [
+          "\"Prepare or review an explicitly requested Strix security assessment for an authorized target; ingest findings without treating them as verified acceptance.\""
+        ],
+        "unless": [
+          "Required executable, account or scope is unavailable; report the prerequisite."
+        ]
+      },
+      "owner": "security",
+      "checksum": {
+        "algorithm": "sha256-tree-v1",
+        "value": "b492ed5b03167e0eef1418963d51da6511c3acaac4ca73c98dd3d57a8301b46a"
+      }
     }
   ],
   "external_dependencies": [
@@ -2287,16 +2390,52 @@
       "installed_by_workflow": false
     },
     {
-      "name": "Browser/Playwright and ffmpeg",
-      "purpose": "Actual browser checks and recording inspection",
+      "name": "Profile toolchains and scanners",
+      "purpose": "Configured checks; see the project profile",
+      "installed_by_workflow": false
+    },
+    {
+      "name": "Playwright CLI and Chromium",
+      "purpose": "Browser inspection and capture",
       "required_for": [
+        "playwright-cli",
         "record-test-video"
+      ],
+      "installed_by_workflow": "Explicit tools install playwright-cli operation",
+      "version_registry": "profiles/tools-lock.json"
+    },
+    {
+      "name": "ffmpeg and ffprobe",
+      "purpose": "Independent original-frame extraction and video inspection",
+      "required_for": [
+        "verify-test-evidence"
       ],
       "installed_by_workflow": false
     },
     {
-      "name": "Profile toolchains and scanners",
-      "purpose": "Configured checks; see the project profile",
+      "name": "Context7 hosted MCP",
+      "purpose": "Version-specific library documentation",
+      "required_for": [
+        "context7"
+      ],
+      "installed_by_workflow": "Explicit tools install context7 writes managed MCP fields; host OAuth remains separate",
+      "version_registry": "profiles/tools-lock.json"
+    },
+    {
+      "name": "Strix",
+      "purpose": "Explicitly scoped security assessments",
+      "required_for": [
+        "strix-security"
+      ],
+      "installed_by_workflow": "Explicit tools install strix provisions a pinned isolated environment without running scans",
+      "version_registry": "profiles/tools-lock.json"
+    },
+    {
+      "name": "Docker daemon and assessment provider credentials",
+      "purpose": "Strix assessment prerequisites",
+      "required_for": [
+        "strix-security"
+      ],
       "installed_by_workflow": false
     }
   ],

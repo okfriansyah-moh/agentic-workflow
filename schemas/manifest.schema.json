@@ -20,8 +20,7 @@
     },
     "skills": {
       "type": "array",
-      "minItems": 71,
-      "maxItems": 71,
+      "minItems": 1,
       "items": {
         "type": "object",
         "required": [
@@ -33,6 +32,22 @@
           "owner",
           "checksum"
         ]
+      }
+    },
+    "counts": {
+      "type": "object",
+      "required": [
+        "total"
+      ],
+      "properties": {
+        "total": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
       }
     }
   }

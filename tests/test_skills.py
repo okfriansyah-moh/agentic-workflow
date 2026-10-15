@@ -29,7 +29,8 @@ class SkillPackageTests(unittest.TestCase):
     def test_discovery_and_graph_resolve_all_entries(self):
         manifest = json.loads((ROOT / 'manifest.json').read_text())
         entries = {item['name']: item for item in manifest['skills']}
-        self.assertEqual(71, len(entries))
+        self.assertEqual(manifest['counts']['total'], len(entries))
+        self.assertEqual(manifest['version'], manifest['bundle']['version'])
         self.assertEqual(set(entries), {p.name for p in (ROOT / 'skills').iterdir() if p.is_dir()})
         categories = {}
         for name, item in entries.items():
@@ -41,7 +42,8 @@ class SkillPackageTests(unittest.TestCase):
             self.assertEqual(tree_hash(ROOT / 'skills' / name), item['checksum']['value'])
             self.assertTrue(set(item['dependencies']).issubset(entries))
             self.assertTrue(set(item['conditional_dependencies']).issubset(entries))
-        self.assertEqual({'reuse': 47, 'new': 11, 'adapt': 7, 'upstream-adapt': 6}, categories)
+        self.assertEqual({k: v for k, v in manifest['counts'].items() if k != 'total'}, categories)
+        self.assertEqual(sum(categories.values()), manifest['counts']['total'])
         def visit(name, trail):
             self.assertNotIn(name, trail, 'Hard skill dependency cycle')
             for dep in entries[name]['dependencies']:
