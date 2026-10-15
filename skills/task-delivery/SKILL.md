@@ -15,6 +15,8 @@ If the user has already authorized push and draft PR creation for this workflow,
 
 Create or update one draft PR for the integration branch using the host's supported tools or CLI. Include concrete behavior, verified revision, actual checks, evidence links and known limitations. Use pr for prose when useful; do not predict Sonar or reviewer outcomes. Attach the PR to the current chat when the host provides that action.
 
-PR merge, deployment, production mutations and messages to external teams remain separately authorized. Return branch/revision, PR URL if created, evidence and any exact blocked action. Avoid global add/force-push or replacing unrelated history.
+PR merge, deployment, production mutations and external messages require authorization covering those actions. Existing explicit standing authorization satisfies that requirement when the destination and requested outcome are established. Return branch/revision, PR URL if created, evidence and any exact blocked action. Avoid global add/force-push or replacing unrelated history.
+
+Honor explicit standing authorization within its stated scope, including covered edits, installs, commands, worktrees, delegation, checks, commits and delivery. Continue covered actions without per-action approval. Use the request and project conventions for routine decisions; ask only for essential missing information or actions outside that authorization. Standing authorization never turns failed required checks into a pass or grants unrelated work.
 
 Apply the [shared wording policy](../../resources/wording/output-wording.md) to authored output. Read supporting skills only for the current task.

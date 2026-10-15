@@ -1,6 +1,6 @@
 # Installed skill catalog
 
-Version 1.1.0 contains 74 entries: 47 reused, 14 new, 7 adapted from supplied material and 6 adapted anti-slop skills. Every entry is available globally and in the project bundle; availability does not activate every skill or install external tools. The machine-readable manifest records sources, input digests, installed tree hashes, dependencies, activation and ownership.
+Version 1.1.1 contains 74 entries: 47 reused, 14 new, 7 adapted from supplied material and 6 adapted anti-slop skills. Every entry is available globally and in the project bundle; availability does not activate every skill or install external tools. The machine-readable manifest records sources, input digests, installed tree hashes, dependencies, activation and ownership.
 
 | Skill | Source | Owner | Purpose |
 | --- | --- | --- | --- |

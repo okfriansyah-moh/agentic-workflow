@@ -1,6 +1,6 @@
 # Portable agent workflow
 
-Version 1.1.0 provides eight native agent roles, 74 skills, worktree ownership, command receipts, quality gates and acceptance-evidence checks. Start work in your existing Codex, Claude Code, Copilot or Cursor chat. Python helpers coordinate files and verification; they do not launch a separate agent service.
+Version 1.1.1 provides eight native agent roles, 74 skills, worktree ownership, command receipts, quality gates and acceptance-evidence checks. Start work in your existing Codex, Claude Code, Copilot or Cursor chat. Python helpers coordinate files and verification; they do not launch a separate agent service.
 
 Use [the skill catalog](docs/SKILLS.md) to see every installed skill and its purpose. [Installation](docs/INSTALLATION.md), [host setup](docs/HOSTS.md), [coordination](docs/COORDINATION.md), [quality gates](docs/GATES.md) and [release 1.1 verification](docs/VERIFICATION-1.1.md) describe the operational details.
 
@@ -17,7 +17,7 @@ python3 scripts/agent-workflow doctor --repo /path/to/project
 
 Use the `general` profile for another stack. Configure its actual checks before implementation; unsupported language checks are reported as blocked. The installer does not install application dependencies, scanners, browsers or accounts. It preserves existing user content and reports conflicts. Host trust and reload requirements remain visible.
 
-Each project contains its selected version at `.ai/bundles/1.1.0/`, native role adapters, skill discovery links, and `.ai/bin/agent-workflow`. Commit these together. Links point inside the project; no source-repository path is needed after a clone. A project pin governs its workflow even when the global bundle changes.
+Each project contains its selected version at `.ai/bundles/1.1.1/`, native role adapters, skill discovery links, and `.ai/bin/agent-workflow`. Commit these together. Links point inside the project; no source-repository path is needed after a clone. A project pin governs its workflow even when the global bundle changes.
 
 ```sh
 python3 .ai/bin/agent-workflow doctor --repo .
@@ -34,7 +34,7 @@ To execute a task group: “Use Forge to implement the eligible tasks in G02. Cl
 
 To resume: “Resume the retained workflow. Reconcile task files, Git revisions, claims, receipts and evidence before continuing. Reuse valid work and report the precise next action for stale or blocked work.”
 
-These are usage examples, not instructions to dispatch movie-app tasks during installation. The installation indexes all 46 existing tasks without starting them. PRD, technical design, design system and ATDD remain unchanged. A draft PR requires a configured remote; PR merge, deployment and external-team messages are separate actions.
+These are usage examples, not instructions to dispatch movie-app tasks during installation. The installation indexes all 46 existing tasks without starting them. PRD, technical design, design system and ATDD remain unchanged. A draft PR requires a configured remote. Merge, deployment, production changes and external messages require authorization covering those actions; explicit standing authorization counts within the requested outcome and established destination.
 
 ## Maintain the installation
 
@@ -74,3 +74,7 @@ agent-workflow verify-host --host codex --scope both --repo /path/to/project --l
 ```
 
 Read [tool setup](docs/TOOLS.md), [native host verification](docs/HOSTS.md) and the [release results](docs/VERIFICATION-1.1.md). Context7 host authentication and exact hook trust are reported separately from configuration. Strix stays inactive until an assessment is explicitly scoped.
+
+## Release 1.1.1 autonomy
+
+The workflow honors explicit standing authorization without repeated action approvals. `doctor` reports sanitized permission defaults and override candidates for each host separately from native verification. Installation and diagnostics preserve host permission settings. See [unattended execution](docs/HOSTS.md#unattended-execution) for opt-in host settings, session overrides and bounded native checks. Release 1.1 verification records above remain historical evidence.

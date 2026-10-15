@@ -2,7 +2,7 @@
 name: workflow-install
 description: "Install or maintain a managed agent-workflow bundle globally or in a repository; inspect conflicts, portability, upgrades and removal."
 metadata:
-  version: "1.1.0"
+  version: "1.1.1"
 ---
 
 # workflow-install
@@ -19,5 +19,7 @@ Read the bundle README and run the local entrypoint with `--help` to use the ins
 6. For `uninstall`, remove only unchanged managed content. Preserve user edits and unrelated hooks, settings, skills and instructions. Report retained paths and the reason.
 
 Completion requires an actual install/doctor receipt, scope/version inventory, unresolved conflicts, available command path, and exact next steps for unavailable hosts.
+
+Honor explicit standing authorization within its stated scope, including covered edits, installs, commands, worktrees, delegation, checks, commits and delivery. Continue covered actions without per-action approval. Use the request and project conventions for routine decisions; ask only for essential missing information or actions outside that authorization. Standing authorization never turns failed required checks into a pass or grants unrelated work.
 
 Apply the [shared wording policy](../../resources/wording/output-wording.md) to authored output. Read supporting skills only for the current task.

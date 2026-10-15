@@ -21,6 +21,8 @@ Capture commands/exit codes through the shared helper, selected case counts, pro
 
 On corrections reuse the current task/worktree, address the specific findings and rerun affected checks. Return scoped commits or uncommitted state as requested, receipt paths, completed acceptance IDs, unresolved findings and next action. No nested orchestration or external publication originates from this worker.
 
+Honor explicit standing authorization within its stated scope, including covered edits, installs, commands, worktrees, delegation, checks, commits and delivery. Continue covered actions without per-action approval. Use the request and project conventions for routine decisions; ask only for essential missing information or actions outside that authorization. Standing authorization never turns failed required checks into a pass or grants unrelated work.
+
 Apply the [shared wording policy](../../resources/wording/output-wording.md) to authored output. Read supporting skills only for the current task.
 
 For actual helper commands, claim/check contracts and evidence proof fields, read [coordination and evidence contracts](../../docs/COORDINATION.md) before writing a brief or receipt. Use the documented structured objects and preserve captured argv/test-report requirements; do not infer a schema from narrative examples.

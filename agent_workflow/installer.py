@@ -134,7 +134,7 @@ sys.exit(main())
 def instruction_body(source, version, global_install):
     body = (source / "adapters/AGENTS.md").read_text().replace("{version}", version)
     if global_install:
-        body = "## Portable workflow\n\nUse a repository's `.ai/config.json` and root AGENTS.md when present. Its pinned bundle governs all workflow checks. Otherwise use the installed agent-workflow skill catalog under `~/.local/share/agent-workflow/bundles/" + version + "/docs/SKILLS.md`. Keep personal and repository instructions intact. Use native subagents only when delegated work is authorized; keep reviewers independent.\n"
+        body = "## Portable workflow\n\nUse a repository's `.ai/config.json` and root AGENTS.md when present. Its pinned bundle governs all workflow checks. Otherwise use the installed agent-workflow skill catalog under `~/.local/share/agent-workflow/bundles/" + version + "/docs/SKILLS.md`. Keep personal and repository instructions intact. Use native subagents only when delegated work is authorized; keep reviewers independent. Honor explicit standing authorization within its stated scope; continue covered actions without asking again. Resolve routine choices from the request and project conventions, and ask only for essential missing information.\n"
     return START + "\n" + body.rstrip() + "\n" + END + "\n"
 
 
@@ -618,7 +618,10 @@ def doctor(args):
     hosts = {}
     for host in HOSTS:
         binary = shutil.which("cursor-agent" if host == "cursor" else host)
-        hosts[host] = {"executable": binary, "runtime_loading": "unverified", "trust": "host approval/reload may be required; never bypassed"}
+        from .autonomy import autonomy_diagnostics
+        hosts[host] = {"executable": binary, "runtime_loading": "unverified",
+                       "autonomy": autonomy_diagnostics(host, Path(args.home or Path.home()), None if global_install else root),
+                       "trust": "Native trust/reload state is unobserved; honor existing authorization."}
     try:
         from .host_verification import summarize_host_verifications
     except ModuleNotFoundError as error:

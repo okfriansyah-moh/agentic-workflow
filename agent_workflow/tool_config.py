@@ -185,7 +185,7 @@ def probe_context7():
     try:
         initialized, session = rpc_request({'jsonrpc': '2.0', 'id': 1, 'method': 'initialize',
             'params': {'protocolVersion': read_lock()['context7']['protocol_version'],
-                       'capabilities': {}, 'clientInfo': {'name': 'agent-workflow', 'version': '1.1.0'}}})
+                       'capabilities': {}, 'clientInfo': {'name': 'agent-workflow', 'version': '1.1.1'}}})
         if 'error' in initialized:
             return {'status': 'protocol-error', 'authentication': authentication}
         rpc_request({'jsonrpc': '2.0', 'method': 'notifications/initialized'}, session)

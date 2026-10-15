@@ -158,8 +158,8 @@ def config_snapshot(host, root, scope, bundle, manifest, home=None):
         directory = '.copilot' if host == 'copilot' and label == 'global' else '.github' if host == 'copilot' else '.' + host
         names = {'codex': ('config.toml', 'hooks.json', 'AGENTS.md'),
                  'claude': ('settings.json', 'settings.local.json', 'CLAUDE.md'),
-                 'cursor': ('hooks.json', 'mcp.json', 'rules/agent-workflow.mdc'),
-                 'copilot': ('hooks/agent-workflow.json', 'copilot-instructions.md', 'config.json', 'mcp-config.json', 'mcp.json')}[host]
+                 'cursor': ('hooks.json', 'mcp.json', 'rules/agent-workflow.mdc', 'cli-config.json', 'permissions.json'),
+                 'copilot': ('hooks/agent-workflow.json', 'copilot-instructions.md', 'settings.json', 'config.json', 'mcp-config.json', 'mcp.json')}[host]
         candidates = [location / directory / name for name in names]
         if host == 'claude' and label == 'global':
             candidates.append(location / '.claude.json')
@@ -180,6 +180,12 @@ def config_snapshot(host, root, scope, bundle, manifest, home=None):
                 files[key] = claude_user_config_digest(path, root)
             else:
                 files[key] = sha256_file(path) if path.is_file() else None
+    from .autonomy import autonomy_diagnostics
+    autonomy = autonomy_diagnostics(host, home, root if scope == 'repo' else None)
+    files['autonomy:local-settings-resolution'] = autonomy.get('local_settings_resolution')
+    for candidate in autonomy['candidates']:
+        path = Path(candidate['path'])
+        files['autonomy:' + str(path)] = sha256_file(path) if path.is_file() else None
     files['bundle:manifest.json'] = sha256_file(Path(bundle) / 'manifest.json')
     for directory in ('agent_workflow', 'scripts', 'adapters', 'profiles', 'resources'):
         for path in sorted((Path(bundle) / directory).rglob('*')):
@@ -251,13 +257,13 @@ def _gate_artifacts(fixture):
     return artifacts
 
 
-def _run_smoke(host, runtime, fixture, artifact_dir, expected_roles, expected_skills, timeout, nonce, scope):
+def _run_smoke(host, runtime, fixture, artifact_dir, expected_roles, expected_skills, timeout, nonce, scope, unattended_authorized=False):
     all_events, delegation_events, captures, phases = [], [], [], []
     delegation_completion = None
     for phase in ('pass', 'fail'):
         before = {item['path'] for item in _gate_artifacts(fixture)}
         prompt = smoke_prompt(nonce, phase, host)
-        argv = smoke_argv(host, str(runtime), fixture, prompt, 'aw-forge' if phase == 'pass' else 'aw-backend')
+        argv = smoke_argv(host, str(runtime), fixture, prompt, 'aw-forge' if phase == 'pass' else 'aw-backend', unattended_authorized)
         capture = run_command(argv, fixture, artifact_dir, phase + '-native-smoke', timeout)
         captures.append(capture['artifact'])
         events = capture['capture']['events']
@@ -375,7 +381,7 @@ def _verify_fixture(args, scope, bundle, manifest, directory, record):
     found, artifacts = _native_catalog(args.host, runtime, fixture, directory, expected_skills, scope, args.timeout)
     record['results'].update(found)
     record['artifacts'].extend(artifacts)
-    smoke, artifacts, phases = _run_smoke(args.host, runtime, fixture, directory, expected_roles, expected_skills, args.timeout, record['id'], scope)
+    smoke, artifacts, phases = _run_smoke(args.host, runtime, fixture, directory, expected_roles, expected_skills, args.timeout, record['id'], scope, getattr(args, 'unattended_authorized', False))
     record['results'].update(smoke)
     for value in record['results'].values():
         value['proof_boundary'] = 'native-disposable-fixture'
@@ -406,6 +412,8 @@ def verify_one(args, scope):
     snapshot = config_snapshot(args.host, root, scope, bundle, manifest, home)
     record = {'schema_version': 1, 'id': run_id, 'host': args.host, 'scope': scope, 'root': str(root),
               'home': str(home), 'bundle': str(bundle), 'runtime': identity, 'configuration': snapshot,
+              'unattended_authorized': bool(getattr(args, 'unattended_authorized', False)),
+              'approval_observation': {'status': 'unverified', 'reason': 'Inspect retained native events and actual UI prompts; configuration alone does not establish prompt-free execution.'},
               'created_at': time.time(), 'results': blank_results('Native verification has not run'),
               'artifacts': [version_artifact] if version_artifact else [], 'live_requested': bool(args.live)}
     if not args.live:
@@ -528,6 +536,8 @@ def register(subparsers):
     parser.add_argument('--host', required=True, choices=HOSTS)
     parser.add_argument('--scope', required=True, choices=('global', 'repo', 'both'))
     parser.add_argument('--live', action='store_true')
+    parser.add_argument('--unattended-authorized', action='store_true',
+                        help='Explicit user authorization for unattended disposable native checks; broadens only session permissions')
     parser.add_argument('--repo', default='.')
     parser.add_argument('--runtime', help='Exact CLI or application executable; never inferred from another installed version')
     parser.add_argument('--timeout', type=int, default=90)

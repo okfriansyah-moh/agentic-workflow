@@ -17,8 +17,10 @@ For multi-task execution use Forge as the single coordinator. For one bounded ta
 
 Verify acceptance at the stated boundaries and obtain independent review of the changed behavior. Feed all findings into that review/correction loop. Keep document readiness, runtime eligibility, completed task checks and integrated feature evidence distinct.
 
-Once required checks succeed, use task-delivery within existing authorization. A missing remote blocks the publishing part but does not erase local completion. PR merge, deployments and messages to teams are separate actions.
+Once required checks succeed, use task-delivery within existing authorization. A missing remote blocks the publishing part but does not erase local completion. PR merge, deployments, production changes and external messages are covered only when the user has authorized those actions; explicit standing authorization counts when the destination and requested outcome are established.
 
 Return the concrete outcome, applicable checks and limitations. Do not fetch issue trackers, create company-specific wiki pages, send notifications or ask repeat approvals merely because the supplied source workflow did those things.
+
+Honor explicit standing authorization within its stated scope, including covered edits, installs, commands, worktrees, delegation, checks, commits and delivery. Continue covered actions without per-action approval. Use the request and project conventions for routine decisions; ask only for essential missing information or actions outside that authorization. Standing authorization never turns failed required checks into a pass or grants unrelated work.
 
 Apply the [shared wording policy](../../resources/wording/output-wording.md) to authored output. Read supporting skills only for the current task.

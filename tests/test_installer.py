@@ -156,6 +156,49 @@ class InstallerTests(unittest.TestCase):
         original.unlink()
         self.assertEqual(api.doctor(self.args(global_install=True))["status"], "blocked")
 
+    def test_unattended_defaults_survive_repeat_update_and_rollback(self):
+        for global_install in (False, True):
+            with self.subTest(global_install=global_install):
+                target = self.base / ('global-home' if global_install else 'autonomy-project')
+                target.mkdir()
+                settings = {
+                    '.codex/config.toml': 'approval_policy="never"\nsandbox_mode="danger-full-access"\nmodel="personal"\n',
+                    '.claude/settings.json': json.dumps({'permissions': {'defaultMode': 'bypassPermissions', 'deny': ['private-rule']}, 'personal': True}),
+                    '.copilot/settings.json': json.dumps({'defaultPermissionMode': 'allow-all', 'defaultMode': 'autopilot', 'personal': True}),
+                    '.cursor/cli-config.json': json.dumps({'approvalMode': 'unrestricted', 'sandbox': {'mode': 'disabled'}, 'personal': True}),
+                    '.cursor/permissions.json': json.dumps({'approvalMode': 'unrestricted', 'personal': True}),
+                }
+                for relative, text in settings.items():
+                    path = target / relative
+                    path.parent.mkdir(exist_ok=True)
+                    path.write_text(text)
+                args = self.args(global_install=global_install, repo=str(target), home=str(target))
+                self.manifest('1.0.0')
+                self.assertEqual(api.install(args)['status'], 'installed')
+                self.assertEqual(api.install(args)['changed'], 0)
+                self.manifest('1.1.1')
+                args.command = 'update'
+                updated = api.install(args)
+                self.assertEqual(updated['status'], 'installed')
+                self.assertEqual(api.install(args)['changed'], 0)
+                diagnostic = api.doctor(args)
+                self.assertIn('autonomy', diagnostic['hosts']['cursor'])
+                args.backup = updated['backup']
+                self.assertEqual(api.rollback(args)['status'], 'rolled-back')
+                for relative, text in settings.items():
+                    value = (target / relative).read_text()
+                    if relative == '.claude/settings.json':
+                        self.assertEqual(json.loads(value)['permissions'], json.loads(text)['permissions'])
+                        self.assertTrue(json.loads(value)['personal'])
+                    elif relative == '.codex/config.toml':
+                        import tomllib
+                        parsed = tomllib.loads(value)
+                        self.assertEqual(parsed['approval_policy'], 'never')
+                        self.assertEqual(parsed['sandbox_mode'], 'danger-full-access')
+                        self.assertEqual(parsed['model'], 'personal')
+                    else:
+                        self.assertEqual(value, text)
+
     def test_explicit_update_and_rollback(self):
         api.install(self.args(profile="movie-app"))
         self.manifest("1.1.0")
