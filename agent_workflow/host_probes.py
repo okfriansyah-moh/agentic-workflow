@@ -473,7 +473,7 @@ def fixture_read_paths(fixture):
     return paths
 
 
-def smoke_argv(host, runtime, fixture, prompt, main_role='aw-forge'):
+def smoke_argv(host, runtime, fixture, prompt, main_role='aw-forge', unattended_authorized=False):
     if host == 'codex':
         return [runtime, 'exec', '--json', '--cd', str(fixture), prompt]
     if host == 'claude':
@@ -482,13 +482,16 @@ def smoke_argv(host, runtime, fixture, prompt, main_role='aw-forge'):
         grants = f'{reads} Edit({target}) Agent(aw-backend) Agent(aw-review-verify)'
         return [runtime, '--agent', main_role, '--print', '--verbose', '--output-format', 'stream-json',
                 '--include-hook-events', '--forward-subagent-text',
-                '--permission-prompts', 'none', '--allowedTools', grants, '--disallowedTools', 'Bash',
+                '--permission-prompts', 'none',
+                *(['--permission-mode', 'bypassPermissions'] if unattended_authorized else
+                  ['--allowedTools', grants, '--disallowedTools', 'Bash']),
                 '--max-budget-usd', '2.00', prompt]
     if host == 'copilot':
         target = str((Path(fixture) / 'smoke.json').resolve())
         reads = [value for path in fixture_read_paths(fixture) for value in ('--allow-tool', f'read({path})')]
         return [runtime, '--agent', main_role, '--no-auto-update', '-C', str(fixture), '--output-format', 'json',
-                '--allow-tool', f'write({target})', *reads, '--deny-tool', 'shell',
+                *(['--allow-all'] if unattended_authorized else
+                  ['--allow-tool', f'write({target})', *reads, '--deny-tool', 'shell']),
                 '--max-ai-credits', '30', '--max-autopilot-continues', '0', '--prompt', prompt]
     raise ValueError('Cursor UI requires native UI evidence; no substitute CLI is assumed')
 

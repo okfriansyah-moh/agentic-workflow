@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "version": "1.1.0",
+  "version": "1.1.1",
   "bundle": {
     "name": "agent-workflow",
-    "version": "1.1.0"
+    "version": "1.1.1"
   },
   "counts": {
     "reuse": 47,
@@ -37,7 +37,7 @@
       "owner": "forge",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "3cc177c229965d2e1bca5d99d0b6d0d6fc5bf91e53b4cc4f30348f20961fb155"
+        "value": "6298e58ad58e0d7cbcc6a766d5c64e23d13dc5b117272d686b2b2b624cb5a192"
       },
       "conditional_dependencies": [
         "failure"
@@ -1518,7 +1518,7 @@
       "owner": "operations",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "dae21acab05a891ca37c01e090fa6fe0dec92ed7ed4d3bcff58631adb3c65c59"
+        "value": "ee5fdf9aff36e10f9bb72657a854d457a5b8a9380f1c5eca5f0c2e8e78737e80"
       },
       "conditional_dependencies": []
     },
@@ -1858,7 +1858,7 @@
       "owner": "forge",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "5286cfbb52023a7d942fc5471657b8e5b8491fa878a0cfbbb8fa33c3991d6d15"
+        "value": "8e64be3f2ab64f32617471b9598374116eff79d1a8a030a83d82a71a46e379f5"
       },
       "conditional_dependencies": [
         "design-system"
@@ -1892,7 +1892,7 @@
       "owner": "forge",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "86f46af1cfe9e7aa6cb6feb48e4b67f5cafe4c549c6b2f2a4c2194fd23d35620"
+        "value": "845d9432efa427f1d8005588387feb5c3f46e2ee6255921fca3a7ddc3296d9a4"
       },
       "conditional_dependencies": [
         "atdd-creation",
@@ -1930,7 +1930,7 @@
       "owner": "forge",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "3cbd0f9d7c34c9392e3ab332960b1a5990be4b0f38cb766af86713fb4c597721"
+        "value": "04ef4d9bbd98535d105c6e8778722f0bb7d2fa88fc5be5041a3039de675b4d0d"
       },
       "conditional_dependencies": [
         "failure",
@@ -1965,7 +1965,7 @@
       "owner": "forge",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "97bc3c583631ae4a3f89cbe4c3d0faa514eb2f58a22b51ced3f6f3ea9a7b903b"
+        "value": "52f587642a9f25e61a354dcc58c72402b1482b6d91c7f4cb4e8bb6ae0e4eed9c"
       },
       "conditional_dependencies": []
     },

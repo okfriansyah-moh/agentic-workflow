@@ -19,9 +19,11 @@ Each worker implements only its brief, returns captured checks and changed-file 
 
 The integrator merges accepted commits in dependency order under an exclusive integration claim, preserving valid contributions, then checks combined behavior. Only its verified feature evidence establishes integrated acceptance. Literal Git union merging is unsuitable for application code.
 
-On resume reconcile task files, Git tips/base ancestry, claims and receipt input fingerprints. Stale successful records are not completion. Forge alone updates task execution status/evidence fields; PRD, technical design, design-system and ATDD content remain unchanged without separate authorization.
+On resume reconcile task files, Git tips/base ancestry, claims and receipt input fingerprints. Stale successful records are not completion. Forge alone updates task execution status/evidence fields; Change PRD, technical design, design-system and ATDD content only when the request or explicit standing authorization covers those changes.
 
 Continue through task-delivery when its actions are already authorized and a remote exists. Missing remote/trust/tools is a precise limitation, not permission to fabricate success or bypass checks. Return task statuses, checks, branch/revision, evidence, findings and recovery action.
+
+Honor explicit standing authorization within its stated scope, including covered edits, installs, commands, worktrees, delegation, checks, commits and delivery. Continue covered actions without per-action approval. Use the request and project conventions for routine decisions; ask only for essential missing information or actions outside that authorization. Standing authorization never turns failed required checks into a pass or grants unrelated work.
 
 Apply the [shared wording policy](../../resources/wording/output-wording.md) to authored output. Read supporting skills only for the current task.
 

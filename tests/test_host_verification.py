@@ -75,6 +75,20 @@ class ProbeParserTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             smoke_argv('cursor', '/runtime', '/fixture', 'prompt')
 
+    def test_unattended_native_permissions_require_explicit_flag(self):
+        args = smoke_argv('copilot', '/runtime', '/fixture', 'prompt', unattended_authorized=True)
+        self.assertIn('--allow-all', args)
+        self.assertNotIn('--deny-tool', args)
+        self.assertEqual(args[args.index('--max-ai-credits') + 1], '30')
+        args = smoke_argv('claude', '/runtime', '/fixture', 'prompt', unattended_authorized=True)
+        self.assertEqual(args[args.index('--permission-mode') + 1], 'bypassPermissions')
+        self.assertNotIn('--disallowedTools', args)
+        self.assertEqual(args[args.index('--max-budget-usd') + 1], '2.00')
+        for host in ('claude', 'copilot'):
+            args = smoke_argv(host, '/runtime', '/fixture', 'prompt')
+            self.assertNotIn('--allow-all', args)
+            self.assertNotIn('bypassPermissions', args)
+
     def test_native_limits_allow_persisted_delegation_with_supported_bounds(self):
         args = smoke_argv('codex', '/runtime', '/fixture', 'prompt')
         self.assertNotIn('--ephemeral', args)
