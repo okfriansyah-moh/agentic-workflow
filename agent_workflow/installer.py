@@ -156,7 +156,13 @@ def role_text(role, host, prefix):
     if host == "codex":
         fields = {"name": name, "description": role["description"], "developer_instructions": instructions}
         return "\n".join(key + " = " + json.dumps(value) for key, value in fields.items()) + "\n"
-    header = f"---\nname: {json.dumps(name)}\ndescription: {json.dumps(role['description'])}\n"
+    if host == "cursor":
+        description = " ".join(role["description"].split())
+        if not re.fullmatch(r"[A-Za-z][A-Za-z0-9 ,.;()/&'-]*", description):
+            raise ValueError("Cursor role descriptions require plain single-line text without YAML delimiters")
+        header = f"---\nname: {name}\ndescription: {description}\n"
+    else:
+        header = f"---\nname: {json.dumps(name)}\ndescription: {json.dumps(role['description'])}\n"
     if host == "copilot":
         header += "include-custom-instructions: true\n"
     return header + "---\n\n" + instructions
@@ -267,30 +273,53 @@ def render_hooks(path, spec, old):
     return encoded(data)
 
 
+def prepare_reused_skill(path, spec, old):
+    if not path.is_dir() or path.is_symlink():
+        return None
+    existing_hash = tree_digest(path)
+    if old and old.get("kind") != "reused-skill":
+        raise ValueError("Managed skill link was replaced by a directory")
+    if old and existing_hash != old["checksum"]:
+        raise ValueError("Reused skill has local edits; retained personal version")
+    if existing_hash not in {spec["checksum"], spec.get("source_checksum")}:
+        raise ValueError("Existing skill differs; retained personal version")
+    return None, {"kind": "reused-skill", "checksum": existing_hash}, True
+
+
+def validate_existing(current, old, update):
+    if current is None:
+        return
+    if not old or current != {key: old.get(key) for key in current}:
+        raise ValueError("Existing unmanaged or locally modified content")
+    if not update:
+        raise ValueError("Managed version changed; use explicit update")
+
+
+def prepare_managed_text(path, current, spec, old):
+    if current and current["kind"] != "file":
+        raise ValueError("Instruction or settings path is not a regular file")
+    data = render_block(path, spec, old) if spec["kind"] == "block" else render_hooks(path, spec, old)
+    return data, file_state(spec), bool(current and path.read_bytes() == data)
+
+
 def prepare_item(root, relative, spec, old, update):
     path = safe_path(root, relative)
     current = snapshot(path)
-    kind = spec["kind"]
-    if kind in {"block", "hooks"}:
-        if current and current["kind"] != "file":
-            raise ValueError("Instruction or settings path is not a regular file")
-        if kind == "block":
-            data = render_block(path, spec, old)
-        else:
-            data = render_hooks(path, spec, old)
-        return data, file_state(spec), bool(current and path.read_bytes() == data)
+    if spec["kind"] in {"block", "hooks"}:
+        return prepare_managed_text(path, current, spec, old)
     wanted = file_state(spec)
+    if (old or {}).get("kind") == "reused-skill":
+        if current and current["kind"] != "directory":
+            raise ValueError("Reused skill directory was replaced; retained local content")
     if current == wanted:
         return None, old or dict(wanted, reused=True), True
-    if kind == "link" and path.is_dir() and not path.is_symlink() and not old:
-        existing_hash = tree_digest(path)
-        if existing_hash in {spec["checksum"], spec.get("source_checksum")}:
-            return None, {"kind": "reused-skill", "checksum": existing_hash}, True
-        raise ValueError("Existing skill differs; retained personal version")
-    if current and (not old or current != {key: old[key] for key in current}):
-        raise ValueError("Existing unmanaged or locally modified content")
-    if old and current and not update:
-        raise ValueError("Managed version changed; use explicit update")
+    if spec["kind"] == "link":
+        reused = prepare_reused_skill(path, spec, old)
+        if reused is not None:
+            return reused
+    validate_existing(current, old, update)
+    if (old or {}).get("restore"):
+        wanted["restore"] = old["restore"]
     return spec.get("data"), wanted, False
 
 
@@ -397,7 +426,15 @@ def install(args):
 
 
 def install_locked(args, source, root, state_root, global_install):
+    from .skill_resolution import unresolved_transactions
+    pending = unresolved_transactions(state_root)
+    if pending:
+        return {"status": "blocked", "reason": "Recover interrupted skill resolution with rollback", "transactions": pending}
     previous = load(state_root / "install-state.json", {"files": {}})
+    from .skill_resolution import restoration_conflicts
+    restoration_errors = restoration_conflicts(root, previous["files"])
+    if restoration_errors:
+        return {"status": "blocked", "changed": 0, "conflicts": restoration_errors}
     profile = args.profile or load(state_root / "config.json", {}).get("profile", "general")
     version, files = inventory(source, root, state_root, global_install, profile)
     if previous.get("version") and previous["version"] != version and args.command != "update":
@@ -418,11 +455,16 @@ def install_locked(args, source, root, state_root, global_install):
         return {"status": "blocked", "conflicts": conflicts, "changed": 0}
     state = {"schema_version": 1, "version": version, "scope": "global" if global_install else "repository", "files": managed, "conflicts": conflicts}
     backup = apply_changes(root, state_root, changes, state) if changes else None
+    if not changes and state != previous:
+        atomic(state_root / "install-state.json", encoded(state))
     return {"status": "installed", "version": version, "scope": state["scope"], "changed": len(changes), "reused": reused, "conflicts": conflicts, "backup": backup, "host_loading": "not verified; see doctor and docs/HOSTS.md"}
 
 
 def remove_managed(root, relative, record):
     path = safe_path(root, relative)
+    if record.get("restore"):
+        from .skill_resolution import restore_owned
+        return restore_owned(root, relative, record)
     if record.get("reused") or record["kind"] == "reused-skill":
         return "preserved reused content"
     if record["kind"] == "block":
@@ -461,11 +503,20 @@ def uninstall(args):
     retained, removed = [], 0
     with (state_root / ".install.lock").open("a") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
+        from .skill_resolution import unresolved_transactions
+        pending_transactions = unresolved_transactions(state_root)
+        if pending_transactions:
+            return {"status": "blocked", "reason": "Recover interrupted skill resolution with rollback", "transactions": pending_transactions}
         state = load(state_root / "install-state.json", {})
         if not state:
             return {"status": "not-installed", "removed": 0}
+        from .skill_resolution import restoration_conflicts
+        conflicts = restoration_conflicts(root, state["files"], allow_restored=True)
+        if conflicts:
+            return {"status": "blocked", "removed": 0, "retained": conflicts}
         pending = {}
-        for relative, record in reversed(list(state["files"].items())):
+        ordered = sorted(state["files"].items(), key=lambda item: bool(item[1].get("restore")))
+        for relative, record in reversed(ordered):
             reason = remove_managed(root, relative, record)
             if reason:
                 retained.append({"path": relative, "reason": reason})
@@ -490,6 +541,9 @@ def rollback_locked(args, root, state_root):
     if not backup.resolve().is_relative_to(expected_root.resolve()):
         raise ValueError("Backup must belong to this installation")
     transaction = load(backup / "transaction.json")
+    if transaction.get("kind") == "skill-resolution":
+        from .skill_resolution import rollback_resolution
+        return rollback_resolution(root, state_root, backup, transaction)
     state = load(state_root / "install-state.json", {})
     conflicts = []
     for relative, record in transaction["files"].items():
@@ -506,8 +560,13 @@ def rollback_locked(args, root, state_root):
 def check_owned(root, relative, record):
     path = safe_path(root, relative)
     if record["kind"] in {"file", "link"}:
-        expected = {key: value for key, value in record.items() if key != "reused"}
+        expected = {key: value for key, value in record.items() if key not in {"reused", "restore"}}
+        if record.get("restore"):
+            from .skill_resolution import restoration_conflicts
+            return not restoration_conflicts(root, {relative: record})
         return snapshot(path) == expected
+    if record["kind"] == "reused-skill":
+        return path.is_dir() and not path.is_symlink() and tree_digest(path) == record["checksum"]
     if record["kind"] == "block":
         return path.is_file() and block_in(path.read_text()) == record["text"]
     if record["kind"] == "hooks":
@@ -519,7 +578,9 @@ def check_owned(root, relative, record):
 def doctor(args):
     root, state_root, global_install = destination(args)
     state = load(state_root / "install-state.json", {})
-    findings = []
+    from .skill_resolution import unresolved_transactions
+    findings = [{"path": f"install-backups/{name}", "status": "recovery-required"}
+                for name in unresolved_transactions(state_root)]
     for relative, record in state.get("files", {}).items():
         try:
             valid = check_owned(root, relative, record)
@@ -538,6 +599,16 @@ def doctor(args):
     for host in HOSTS:
         binary = shutil.which("cursor-agent" if host == "cursor" else host)
         hosts[host] = {"executable": binary, "runtime_loading": "unverified", "trust": "host approval/reload may be required; never bypassed"}
+    try:
+        from .host_verification import summarize_host_verifications
+    except ModuleNotFoundError as error:
+        if error.name != "agent_workflow.host_verification":
+            raise
+        saved_hosts = {}
+    else:
+        saved_hosts = summarize_host_verifications(root, state_root, global_install)
+    for host, verification in saved_hosts.items():
+        hosts.setdefault(host, {})["saved_verification"] = verification
     return {"status": "healthy" if state and not findings else "blocked", "scope": "global" if global_install else "repository", "bundle": config, "skill_entries": len(manifest.get("skills", [])), "findings": findings, "preserved_conflicts": state.get("conflicts", []), "hosts": hosts, "python": sys.version.split()[0]}
 
 
