@@ -1,0 +1,415 @@
+"""Bounded native-host probes and strict parsing of native metadata/events."""
+from __future__ import annotations
+
+import hashlib
+import json
+import os
+from pathlib import Path
+import re
+import signal
+import subprocess
+import time
+
+CATEGORIES = ('discovery', 'role_invocation', 'skills', 'hooks', 'trust')
+SMOKE_ROLES = ('aw-forge', 'aw-backend', 'aw-review-verify')
+SECRET_KEYS = re.compile(r'(?i)(token|password|secret|credential|authorization|cookie|api.?key)')
+
+
+def sha256_file(path):
+    digest = hashlib.sha256()
+    with Path(path).open('rb') as stream:
+        for block in iter(lambda: stream.read(1024 * 1024), b''):
+            digest.update(block)
+    return digest.hexdigest()
+
+
+def redact(value):
+    if isinstance(value, dict):
+        return {key: '[redacted]' if SECRET_KEYS.search(key) else redact(item) for key, item in value.items()}
+    if isinstance(value, list):
+        return [redact(item) for item in value]
+    if isinstance(value, str):
+        text = re.sub(r'\b(?:sk-[A-Za-z0-9_-]{12,}|gh[pousr]_[A-Za-z0-9_]{16,})\b', '[redacted]', value)
+        text = re.sub(r'(?i)(bearer\s+)[^\s"\']+', r'\1[redacted]', text)
+        text = re.sub(r'''(?i)((?:["']?)(?:api.?key|token|password|secret|authorization|credential)(?:["']?)\s*[:=]\s*)(["'])(.*?)\2''',
+                      r'\1\2[redacted]\2', text)
+        for key, secret in os.environ.items():
+            if SECRET_KEYS.search(key) and len(secret) >= 8:
+                text = text.replace(secret, '[redacted]')
+        return text
+    return value
+
+
+def json_events(text):
+    events = []
+    for line in text.splitlines():
+        try:
+            item = json.loads(line)
+        except ValueError:
+            continue
+        if isinstance(item, dict):
+            events.append(item)
+    return events
+
+
+def sanitized_output(text):
+    lines = []
+    for line in text.splitlines():
+        try:
+            value = json.loads(line)
+            lines.append(json.dumps(redact(value)))
+        except ValueError:
+            lines.append(redact(line))
+    return '\n'.join(lines)
+
+
+def run_command(argv, cwd, artifact_dir, label, timeout=90):
+    """Retain bounded, sanitized output; terminate the whole process group on timeout."""
+    artifact_dir = Path(artifact_dir)
+    artifact_dir.mkdir(parents=True, exist_ok=True)
+    started = time.time()
+    try:
+        process = subprocess.Popen(argv, cwd=cwd, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
+                                   stderr=subprocess.PIPE, start_new_session=True)
+        try:
+            stdout, stderr = process.communicate(timeout=timeout)
+            code, timed_out = process.returncode, False
+        except subprocess.TimeoutExpired:
+            os.killpg(process.pid, signal.SIGTERM)
+            try:
+                stdout, stderr = process.communicate(timeout=2)
+            except subprocess.TimeoutExpired:
+                os.killpg(process.pid, signal.SIGKILL)
+                stdout, stderr = process.communicate()
+            code, timed_out = 124, True
+    except OSError as exc:
+        stdout, stderr, code, timed_out = b'', str(exc).encode(), 127, False
+    decoded = stdout.decode('utf-8', errors='replace')
+    events = json_events(decoded)
+    retained = {'argv': redact(argv), 'cwd': str(cwd), 'exit_code': code, 'timed_out': timed_out,
+                'started_at': started, 'finished_at': time.time(),
+                'stdout_sha256': hashlib.sha256(stdout).hexdigest(), 'stderr_sha256': hashlib.sha256(stderr).hexdigest(),
+                'events': redact(events), 'stdout': sanitized_output(decoded)[:1000000],
+                'stderr': sanitized_output(stderr.decode('utf-8', errors='replace'))[:200000],
+                'truncated': len(stdout) > 1000000 or len(stderr) > 200000}
+    path = artifact_dir / f'{label}.json'
+    path.write_text(json.dumps(retained, indent=2) + '\n')
+    return {'capture': retained, 'artifact': {'path': str(path), 'sha256': sha256_file(path)}}
+
+
+def result(status, reason, artifacts=(), **details):
+    return {'status': status, 'reason': reason, 'artifacts': list(artifacts), **details}
+
+
+def blank_results(reason):
+    return {category: result('blocked', reason) for category in CATEGORIES}
+
+
+def native_skills(host, payload, expected, scope, fixture):
+    if host == 'copilot' and isinstance(payload, list):
+        entries = payload
+    elif host == 'codex' and isinstance(payload, dict) and isinstance(payload.get('data'), list):
+        entries = [skill for group in payload['data'] for skill in group.get('skills', [])]
+    else:
+        return result('blocked', 'No supported native skill catalog was captured')
+    enabled = {entry.get('name') for entry in entries if entry.get('enabled') is True}
+    missing = sorted(set(expected) - enabled)
+    if missing:
+        return result('failed', 'Native catalog omits required enabled skills', missing=missing)
+    if scope == 'repo':
+        project = {entry.get('name') for entry in entries if entry.get('enabled') is True and _within(entry.get('path', ''), fixture)}
+        missing_project = sorted(set(expected) - project)
+        if missing_project:
+            return result('blocked', 'Skills are visible globally but project-native discovery is incomplete', missing=missing_project)
+    return result('passed', 'Required enabled skills were returned by native discovery', observed_count=len(enabled))
+
+
+def _within(path, root):
+    try:
+        return bool(path) and Path(path).resolve().is_relative_to(Path(root).resolve())
+    except (ValueError, TypeError):
+        return False
+
+
+def claude_metadata(events, expected_roles, expected_skills, scope='global', fixture=None):
+    initial = next((item for item in events if item.get('type') == 'system' and item.get('subtype') == 'init'), None)
+    if initial is None:
+        return {}
+    results = {}
+    for category, field, expected in (('discovery', 'agents', expected_roles), ('skills', 'skills', expected_skills)):
+        values = initial.get(field)
+        if isinstance(values, list) and all(isinstance(value, str) for value in values):
+            missing = sorted(set(expected) - set(values))
+            results[category] = result('failed' if missing else 'passed', 'Native session initialization catalog', missing=missing)
+            if category == 'skills' and scope == 'repo' and not missing:
+                results[category] = result('blocked', 'Native skill names establish availability but omit selected project source paths',
+                                           availability='passed', observed_count=len(values), expected_scope=str(fixture))
+    return results
+
+
+def role_observation(host, events, role):
+    """Single-role diagnostic only; delegation_observation owns workflow acceptance."""
+    if host == 'codex':
+        for event in events:
+            thread = event.get('params', {}).get('thread', {})
+            if event.get('method') == 'thread/started' and thread.get('agentRole') == role and thread.get('parentThreadId'):
+                return result('passed', 'Native child thread records the requested role', native_id=thread['id'])
+            item = event.get('item', {})
+            if item.get('type') == 'collab_agent_tool_call' and item.get('tool') == 'spawn_agent':
+                if item.get('agent_type', item.get('agent_role')) == role and item.get('status') == 'completed' and item.get('receiver_thread_ids'):
+                    return result('passed', 'Native spawn event completed for the requested role', native_id=item.get('id'))
+    if host == 'claude':
+        calls = set()
+        for event in events:
+            content = event.get('message', {}).get('content', [])
+            if not isinstance(content, list):
+                continue
+            for block in content:
+                if block.get('type') == 'tool_use' and block.get('name') in ('Agent', 'Task') and block.get('input', {}).get('subagent_type') == role:
+                    calls.add(block.get('id'))
+                if block.get('type') == 'tool_result' and block.get('tool_use_id') in calls and block.get('is_error', False) is False:
+                    return result('passed', 'Native Agent/Task invocation returned a successful tool result', native_id=block['tool_use_id'])
+    if host == 'copilot':
+        for event in events:
+            data = event.get('data', {})
+            if event.get('type') == 'subagent.started' and data.get('agentName') == role and data.get('toolCallId'):
+                completed = any(item.get('type') == 'subagent.completed' and item.get('data', {}).get('toolCallId') == data['toolCallId'] for item in events)
+                if completed:
+                    return result('passed', 'Native subagent lifecycle completed for the requested role', native_id=data['toolCallId'])
+    return result('blocked', 'No successful native role lifecycle was captured; assistant prose is not role evidence')
+
+
+def _codex_delegation(events):
+    nodes = {}
+    for index, event in enumerate(events):
+        thread = event.get('params', {}).get('thread', {})
+        if event.get('method') == 'thread/started' and thread.get('agentRole') in SMOKE_ROLES and thread.get('id'):
+            nodes[thread['id']] = {'id': thread['id'], 'role': thread['agentRole'], 'parent_id': thread.get('parentThreadId'), 'started': index}
+        item = event.get('item', {})
+        if item.get('type') != 'collab_agent_tool_call':
+            continue
+        role = item.get('agent_type', item.get('agent_role'))
+        if item.get('tool') == 'spawn_agent' and role in SMOKE_ROLES:
+            for identity in item.get('receiver_thread_ids', []):
+                nodes.setdefault(identity, {'id': identity, 'role': role, 'parent_id': item.get('sender_thread_id'), 'started': index})
+        states = item.get('agents_states', {})
+        for identity, state in states.items() if isinstance(states, dict) else []:
+            if identity in nodes and state.get('status') == 'completed':
+                nodes[identity].setdefault('completed', index)
+    return list(nodes.values())
+
+
+def _claude_delegation(events):
+    nodes = {}
+    for index, event in enumerate(events):
+        role = event.get('agent_type', event.get('agent'))
+        session = event.get('session_id')
+        if event.get('type') == 'system' and event.get('subtype') == 'init' and role in SMOKE_ROLES and session:
+            nodes[session] = {'id': session, 'role': role, 'parent_id': None, 'started': index}
+        content = event.get('message', {}).get('content', [])
+        for block in content if isinstance(content, list) else []:
+            role = block.get('input', {}).get('subagent_type')
+            if block.get('type') == 'tool_use' and block.get('name') in ('Agent', 'Task') and role in SMOKE_ROLES and block.get('id'):
+                identity = block['id']
+                nodes[identity] = {'id': identity, 'role': role, 'parent_id': event.get('parent_tool_use_id') or session, 'started': index}
+            identity = block.get('tool_use_id')
+            if block.get('type') == 'tool_result' and identity in nodes and not block.get('is_error', False):
+                nodes[identity]['completed'] = index
+        if event.get('type') == 'result' and session in nodes and not event.get('is_error', False):
+            nodes[session]['completed'] = index
+    return list(nodes.values())
+
+
+def _copilot_delegation(events):
+    nodes = {}
+    for index, event in enumerate(events):
+        data = event.get('data', {})
+        session = data.get('sessionId', event.get('sessionId'))
+        if event.get('type') == 'session.start' and data.get('agentName') in SMOKE_ROLES and session:
+            nodes[session] = {'id': session, 'role': data['agentName'], 'parent_id': None, 'started': index}
+        identity = data.get('toolCallId')
+        if event.get('type') == 'subagent.started' and data.get('agentName') in SMOKE_ROLES and identity:
+            nodes[identity] = {'id': identity, 'role': data['agentName'], 'started': index,
+                               'parent_id': data.get('parentToolCallId', data.get('parentSessionId', session))}
+        if event.get('type') == 'subagent.completed' and identity in nodes and data.get('success') is True:
+            nodes[identity]['completed'] = index
+        if event.get('type') in ('session.end', 'session.idle') and session in nodes:
+            nodes[session]['completed'] = index
+    return list(nodes.values())
+
+
+def delegation_graph_result(nodes):
+    if not isinstance(nodes, list) or any(not valid_lifecycle(node) for node in nodes):
+        return result('blocked', 'Native lifecycle records are malformed', native_lifecycles=[], required_roles=list(SMOKE_ROLES))
+    roles = {role: [node for node in nodes if node['role'] == role] for role in SMOKE_ROLES}
+    details = {'required_roles': list(SMOKE_ROLES), 'native_lifecycles': nodes}
+    if any(len(roles[role]) != 1 or type(roles[role][0].get('completed')) is not int for role in SMOKE_ROLES):
+        return result('blocked', 'One completed native Forge, backend and independent reviewer lifecycle is required; requested roles and assistant prose are insufficient', **details)
+    forge, backend, reviewer = [roles[role][0] for role in SMOKE_ROLES]
+    if len({node['id'] for node in (forge, backend, reviewer)}) != 3:
+        return result('blocked', 'Implementation and review must use distinct native role identities', **details)
+    if backend.get('parent_id') != forge['id'] or reviewer.get('parent_id') != forge['id']:
+        return result('blocked', 'Native parent metadata does not connect both workers to the same Forge', **details)
+    if backend['started'] <= forge['started'] or reviewer['started'] <= backend['completed'] or forge['completed'] <= reviewer['completed']:
+        return result('blocked', 'Native lifecycle order does not establish implementation followed by independent review', **details)
+    return result('passed', 'Native Forge delegated implementation and subsequent independent review to distinct child roles', **details)
+
+
+def valid_lifecycle(node):
+    if not isinstance(node, dict) or not isinstance(node.get('id'), str) or not node['id'] or node.get('role') not in SMOKE_ROLES:
+        return False
+    start, end = node.get('started'), node.get('completed')
+    return type(start) is int and start >= 0 and (end is None or type(end) is int and end > start)
+
+
+def valid_implementation_edit(edit, backend):
+    if not isinstance(edit, dict):
+        return False
+    start, end = edit.get('started'), edit.get('completed')
+    return (edit.get('owner') == backend['id'] and type(start) is int and type(end) is int
+            and backend['started'] < start <= end < backend['completed'])
+
+
+def delegation_observation(host, events, fixture=None):
+    parsers = {'codex': _codex_delegation, 'claude': _claude_delegation, 'copilot': _copilot_delegation}
+    nodes = parsers[host](events) if host in parsers else []
+    observed = delegation_graph_result(nodes)
+    if fixture is not None and observed['status'] == 'passed':
+        backend = next(node for node in nodes if node['role'] == 'aw-backend')
+        edits = native_edit_observations(host, events, fixture)
+        observed['native_implementation_edits'] = edits
+        if len(edits) != 1 or not valid_implementation_edit(edits[0], backend):
+            observed.update(status='blocked', reason='The implementation edit is not within the backend lifecycle before independent review')
+    return observed
+
+
+def native_edit_observations(host, events, fixture):
+    identities = set(native_edit_events(host, events, fixture))
+    edits = {}
+    for index, event in enumerate(events):
+        item = event.get('item', {})
+        if host == 'codex' and item.get('id') in identities:
+            edit = edits.setdefault(item['id'], {'id': item['id'], 'owner': event.get('threadId', event.get('thread_id')), 'started': index})
+            if event.get('type') == 'item.completed':
+                edit['completed'] = index
+        if host == 'claude':
+            content = event.get('message', {}).get('content', [])
+            for block in content if isinstance(content, list) else []:
+                if block.get('type') == 'tool_use' and block.get('id') in identities:
+                    edits[block['id']] = {'id': block['id'], 'owner': event.get('parent_tool_use_id'), 'started': index}
+                if block.get('type') == 'tool_result' and block.get('tool_use_id') in edits and not block.get('is_error', False):
+                    edits[block['tool_use_id']]['completed'] = index
+        data = event.get('data', {})
+        if host == 'copilot' and event.get('type') == 'tool.execution_start' and data.get('toolCallId') in identities:
+            edits[data['toolCallId']] = {'id': data['toolCallId'], 'owner': data.get('parentToolCallId'), 'started': index}
+        if host == 'copilot' and event.get('type') == 'tool.execution_complete' and data.get('toolCallId') in edits and data.get('success') is True:
+            edits[data['toolCallId']]['completed'] = index
+    return list(edits.values())
+
+
+def native_edit_events(host, events, fixture):
+    edits, pending = [], {}
+    expected = (Path(fixture) / 'smoke.json').resolve()
+    for event in events:
+        item = event.get('item', {})
+        if host == 'codex' and event.get('type') == 'item.completed' and item.get('type') in ('file_change', 'fileChange'):
+            changes = item.get('changes', [])
+            if item.get('status') == 'completed' and any(_edit_path(change.get('path'), fixture) == expected for change in changes):
+                edits.append(item.get('id'))
+        if host == 'claude':
+            content = event.get('message', {}).get('content', [])
+            for block in content if isinstance(content, list) else []:
+                if block.get('type') == 'tool_use' and block.get('name') in ('Write', 'Edit'):
+                    if _edit_path(block.get('input', {}).get('file_path'), fixture) == expected:
+                        pending[block.get('id')] = True
+                if block.get('type') == 'tool_result' and block.get('tool_use_id') in pending and not block.get('is_error', False):
+                    edits.append(block['tool_use_id'])
+        if host == 'copilot':
+            data = event.get('data', {})
+            if event.get('type') == 'tool.execution_start' and data.get('toolName') in ('write', 'edit', 'create'):
+                arguments = data.get('arguments', {})
+                if isinstance(arguments, dict) and _edit_path(arguments.get('path'), fixture) == expected:
+                    pending[data.get('toolCallId')] = True
+            if event.get('type') == 'tool.execution_complete' and data.get('toolCallId') in pending and data.get('success') is True:
+                edits.append(data['toolCallId'])
+    return [identity for identity in edits if identity]
+
+
+def _edit_path(value, fixture):
+    if not isinstance(value, str) or not value:
+        return None
+    path = Path(value)
+    return (path if path.is_absolute() else Path(fixture) / path).resolve()
+
+
+def native_hook_events(host, events):
+    hooks = []
+    for event in events:
+        if host == 'codex' and event.get('method') == 'hook/completed':
+            run = event.get('params', {}).get('run', {})
+            if run.get('eventName') == 'postToolUse' and run.get('id'):
+                hooks.append({'id': run['id'], 'status': run.get('status'), 'source': run.get('sourcePath'),
+                              'tool_id': run.get('toolUseId', run.get('tool_use_id')), 'output': run.get('entries', [])})
+        elif host == 'claude' and event.get('type') == 'system' and event.get('subtype') == 'hook_response':
+            if event.get('hook_event') == 'PostToolUse' and event.get('hook_id'):
+                hooks.append({'id': event['hook_id'], 'status': 'completed' if event.get('exit_code') == 0 else 'failed',
+                              'source': event.get('source_path', event.get('hook_name')), 'tool_id': event.get('tool_use_id'),
+                              'output': event.get('stdout', '')})
+        elif host == 'copilot' and event.get('type') == 'hook.end':
+            data = event.get('data', {})
+            if data.get('hookType') == 'postToolUse' and data.get('hookId'):
+                hooks.append({'id': data['hookId'], 'status': data.get('status'), 'source': data.get('source'),
+                              'tool_id': data.get('toolCallId'), 'output': data.get('output')})
+    return hooks
+
+
+def fixture_read_paths(fixture):
+    root = Path(fixture).resolve()
+    paths = [root / name for name in ('smoke.json', 'AGENTS.md', '.ai/config.json')]
+    config = root / '.ai/config.json'
+    if config.is_file():
+        bundle = (root / '.ai' / json.loads(config.read_text())['bundle']).resolve()
+        if not bundle.is_relative_to(root / '.ai'):
+            raise ValueError('Fixture read grants must remain inside its selected bundle')
+        paths.extend(bundle / 'skills' / name / 'SKILL.md' for name in ('forge', 'task-implement', 'code-review'))
+        paths.append(bundle / 'docs/COORDINATION.md')
+    return paths
+
+
+def smoke_argv(host, runtime, fixture, prompt, main_role='aw-forge'):
+    if host == 'codex':
+        return [runtime, 'exec', '--json', '--ephemeral', '--cd', str(fixture), prompt]
+    if host == 'claude':
+        target = '/' + str((Path(fixture) / 'smoke.json').resolve())
+        reads = ' '.join(f'Read(/{path})' for path in fixture_read_paths(fixture))
+        grants = f'{reads} Edit({target}) Agent(aw-backend) Agent(aw-review-verify)'
+        return [runtime, '--agent', main_role, '--print', '--verbose', '--output-format', 'stream-json',
+                '--include-hook-events', '--forward-subagent-text',
+                '--permission-prompts', 'none', '--allowedTools', grants, '--disallowedTools', 'Bash',
+                '--max-budget-usd', '0.50', prompt]
+    if host == 'copilot':
+        target = str((Path(fixture) / 'smoke.json').resolve())
+        reads = [value for path in fixture_read_paths(fixture) for value in ('--allow-tool', f'read({path})')]
+        return [runtime, '--agent', main_role, '--no-auto-update', '-C', str(fixture), '--output-format', 'json',
+                '--allow-tool', f'write({target})', *reads, '--deny-tool', 'shell',
+                '--max-ai-credits', '1', '--max-autopilot-continues', '0', '--prompt', prompt]
+    raise ValueError('Cursor UI requires native UI evidence; no substitute CLI is assumed')
+
+
+def smoke_prompt(nonce, phase, host):
+    delegation = ('Use the selected aw-forge main role. ' if host in ('claude', 'copilot') else
+                  'Delegate this bounded smoke to exactly one native aw-forge role and wait for its completed result. ')
+    delegation += ('Forge must delegate the one smoke.json edit to aw-backend and wait for completion, '
+                   'then delegate a read-only inspection of the changed file to a separate aw-review-verify worker and wait. '
+                   'Forge coordinates and does not edit; no worker may spawn Forge. ') if phase == 'pass' else ''
+    if phase == 'fail':
+        delegation = ('Use the selected aw-backend main role for the one failing fixture edit. ' if host in ('claude', 'copilot') else
+                      'Delegate the one failing fixture edit to aw-backend and wait; no Forge is needed for this separate hook check. ')
+    return (f'Authorized bounded agent-workflow host smoke {nonce}. Work only inside this temporary fixture. '
+            'This fresh fixture is the pre-isolated smoke lane; the harness owns its captured checks and receipts. '
+            'Only native delegation, the fixture edit, read-only review and hooks are assigned; no Git, claim, task-status or delivery work is assigned. '
+            f'{delegation}The backend worker must use the native file-edit tool once to replace smoke.json with {{"value":"{phase}"}}. '
+            'Do not impersonate a role, reuse the implementer as reviewer, start another orchestration loop, or use a fallback role. '
+            'Do not use a shell to edit, alter configuration, approve trust, run a gate directly, read credentials, change models, '
+            'or execute application tasks. Let the installed PostToolUse hook run normally. '
+            'Report any unavailable native role, denied operation, trust prompt, or authentication failure and stop; do not retry.')
