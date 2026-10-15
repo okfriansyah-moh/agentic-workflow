@@ -323,10 +323,27 @@ def prepare_item(root, relative, spec, old, update):
     return spec.get("data"), wanted, False
 
 
+def validate_release_counts(manifest):
+    bundle_version = manifest.get("bundle", {}).get("version")
+    if bundle_version and manifest.get("version") != bundle_version:
+        raise ValueError("Package and bundle versions differ")
+    counts = manifest.get("counts")
+    if counts is None:
+        return
+    categories = {}
+    for skill in manifest["skills"]:
+        kind = skill["source"]["kind"]
+        categories[kind] = categories.get(kind, 0) + 1
+    expected = dict(categories, total=len(manifest["skills"]))
+    if counts != expected or any(type(value) is not int or value < 0 for value in counts.values()):
+        raise ValueError("Skill counts do not match the selected release")
+
+
 def validate_source(source):
     manifest = load(source / "manifest.json")
     if not isinstance(manifest, dict) or not isinstance(manifest.get("skills"), list):
         raise ValueError("Source requires a skill manifest")
+    validate_release_counts(manifest)
     names = [item["name"] for item in manifest["skills"]]
     if len(names) != len(set(names)):
         raise ValueError("Duplicate skill entries")

@@ -1,6 +1,6 @@
 # Portable agent workflow
 
-Version 1.0.0 provides eight native agent roles, 71 skills, worktree ownership, command receipts, quality gates and acceptance-evidence checks. Start work in your existing Codex, Claude Code, Copilot or Cursor chat. Python helpers coordinate files and verification; they do not launch a separate agent service.
+Version 1.1.0 provides eight native agent roles, 74 skills, worktree ownership, command receipts, quality gates and acceptance-evidence checks. Start work in your existing Codex, Claude Code, Copilot or Cursor chat. Python helpers coordinate files and verification; they do not launch a separate agent service.
 
 Use [the skill catalog](docs/SKILLS.md) to see every installed skill and its purpose. [Installation](docs/INSTALLATION.md), [host setup](docs/HOSTS.md), [coordination](docs/COORDINATION.md), [quality gates](docs/GATES.md) and [verification results](docs/VERIFICATION.md) describe the operational details.
 
@@ -17,7 +17,7 @@ python3 scripts/agent-workflow doctor --repo /path/to/project
 
 Use the `general` profile for another stack. Configure its actual checks before implementation; unsupported language checks are reported as blocked. The installer does not install application dependencies, scanners, browsers or accounts. It preserves existing user content and reports conflicts. Host trust and reload requirements remain visible.
 
-Each project contains its selected version at `.ai/bundles/1.0.0/`, native role adapters, skill discovery links, and `.ai/bin/agent-workflow`. Commit these together. Links point inside the project; no source-repository path is needed after a clone. A project pin governs its workflow even when the global bundle changes.
+Each project contains its selected version at `.ai/bundles/1.1.0/`, native role adapters, skill discovery links, and `.ai/bin/agent-workflow`. Commit these together. Links point inside the project; no source-repository path is needed after a clone. A project pin governs its workflow even when the global bundle changes.
 
 ```sh
 python3 .ai/bin/agent-workflow doctor --repo .
@@ -63,3 +63,14 @@ python3 scripts/check-fixtures.py --jvm-tools /path/to/verified/jars --output /t
 ```
 
 See [verification](docs/VERIFICATION.md) for tool versions, jar digests and actual results. Fixture validation does not establish live application behavior or native hook trust. Keep source changes, a versioned release and explicit installation in that order. This source repository is local; publication has not been requested.
+
+## Release 1.1 commands
+
+```sh
+agent-workflow resolve-skills --global --hosts claude cursor --skills design-system ui-ux-pro-max --use-bundle
+agent-workflow tools install all
+agent-workflow tools status --probe
+agent-workflow verify-host --host codex --scope both --repo /path/to/project --live
+```
+
+Read [tool setup](docs/TOOLS.md), [native host verification](docs/HOSTS.md) and the [release results](docs/VERIFICATION-1.1.md). Context7 host authentication and exact hook trust are reported separately from configuration. Strix stays inactive until an assessment is explicitly scoped.

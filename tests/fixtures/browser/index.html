@@ -1,0 +1,11 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Workflow review fixture</title>
+<style>
+*{box-sizing:border-box}:root{font-family:system-ui,sans-serif;color:#172d35;background:#eef2ed;font-size:16px}body{margin:0}main{max-width:660px;margin:64px auto;padding:32px;background:white;border:1px solid #c8d5cb;border-radius:12px}h1{font-family:Georgia,serif;font-size:38px;line-height:1.1;margin:0 0 16px}p{line-height:1.6;color:#40515a}button{font:inherit;color:white;background:#15664e;border:0;padding:12px 18px;border-radius:6px;cursor:pointer}button:focus-visible{outline:3px solid #b87b14;outline-offset:3px}.status{display:block;margin:18px 0;font-weight:600}.case{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#40515a}@media(max-width:760px){main{margin:20px 16px;padding:24px}h1{font-size:32px}}body.bad main{width:1150px;max-width:none;margin:0;padding:8px}body.bad p{font-size:9px;color:#d2d2d2}body.bad button{background:#cfcfcf;color:#ddd;font-size:10px;padding:3px}
+</style></head><body><main><span class="case">AW11 · Browser evidence fixture</span><h1>Record an observable result</h1><p id="description">Use the button to reserve one review slot. The visible confirmation must match the action, and the layout must remain readable on a narrow screen.</p><button id="reserve" type="button">Reserve a slot</button><output class="status" id="status" aria-live="polite">No slot reserved</output></main>
+<script>
+const bad=new URLSearchParams(location.search).get('variant')==='bad';document.body.classList.toggle('bad',bad);
+const reserve=document.querySelector('#reserve');
+if(bad){reserve.textContent='';reserve.innerHTML='<span aria-hidden="true">↗</span>';}
+reserve.addEventListener('click',()=>{if(!bad)document.querySelector('#status').textContent='One slot reserved';});
+</script></body></html>

@@ -15,7 +15,8 @@
         "forge",
         "task-full-workflow",
         "dependency-analysis",
-        "task-delivery"
+        "task-delivery",
+        "context7"
       ],
       "permissions": {
         "read": true,
@@ -37,7 +38,8 @@
         "jpa-hibernate",
         "node-backend",
         "api-design",
-        "dto"
+        "dto",
+        "context7"
       ],
       "permissions": {
         "read": true,
@@ -59,7 +61,9 @@
         "fixing-accessibility",
         "antislop-ui",
         "antislop-human",
-        "antislop-layoutmobile"
+        "antislop-layoutmobile",
+        "context7",
+        "playwright-cli"
       ],
       "permissions": {
         "read": true,
@@ -78,7 +82,8 @@
         "acceptance-verification",
         "test-generation",
         "record-test-video",
-        "verify-test-evidence"
+        "verify-test-evidence",
+        "playwright-cli"
       ],
       "permissions": {
         "read": true,
@@ -97,7 +102,8 @@
         "security-audit",
         "security-requirement-extraction",
         "stride-analysis-patterns",
-        "quality-gates"
+        "quality-gates",
+        "strix-security"
       ],
       "permissions": {
         "read": true,
@@ -138,7 +144,9 @@
         "code-quality",
         "quality-gates",
         "verify-test-evidence",
-        "antislop"
+        "antislop",
+        "playwright-cli",
+        "context7"
       ],
       "permissions": {
         "read": true,

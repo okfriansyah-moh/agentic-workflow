@@ -5,12 +5,14 @@ import json
 import sys
 import subprocess
 
+from . import __version__
+
 
 def main(argv=None):
     parser = argparse.ArgumentParser(prog="agent-workflow")
-    parser.add_argument("--version", action="version", version="agent-workflow 1.0.0")
+    parser.add_argument("--version", action="version", version=f"agent-workflow {__version__}")
     commands = parser.add_subparsers(dest="command", required=True)
-    for name in ("installer", "coordination", "gates"):
+    for name in ("installer", "coordination", "gates", "skill_resolution", "tools", "host_verification"):
         importlib.import_module(f"agent_workflow.{name}").register(commands)
     args = parser.parse_args(argv)
     try:

@@ -1,6 +1,6 @@
 # Installed skill catalog
 
-Version 1.0.0 contains 71 entries: 47 reused, 11 new, 7 adapted from supplied material and 6 adapted anti-slop skills. Every entry is available globally and in the project bundle; availability does not activate every skill or install external tools. The machine-readable manifest records sources, input digests, installed tree hashes, dependencies, activation and ownership.
+Version 1.1.0 contains 74 entries: 47 reused, 14 new, 7 adapted from supplied material and 6 adapted anti-slop skills. Every entry is available globally and in the project bundle; availability does not activate every skill or install external tools. The machine-readable manifest records sources, input digests, installed tree hashes, dependencies, activation and ownership.
 
 | Skill | Source | Owner | Purpose |
 | --- | --- | --- | --- |
@@ -75,6 +75,9 @@ Version 1.0.0 contains 71 entries: 47 reused, 11 new, 7 adapted from supplied ma
 | [antislop-human](../skills/antislop-human/SKILL.md) | upstream-adapt | review-verify | Verify that changed UI works for users with different input, vision and motion needs. |
 | [antislop-layoutmobile](../skills/antislop-layoutmobile/SKILL.md) | upstream-adapt | review-verify | Verify responsive reflow, content sizing, touch interactions and mobile navigation across meaningful viewport widths. |
 | [antislop-code](../skills/antislop-code/SKILL.md) | upstream-adapt | review-verify | Review comment hygiene while preserving necessary explanations and leaving executable code quality to its owning skills. |
+| [playwright-cli](../skills/playwright-cli/SKILL.md) | new | qa-evidence | Drive the managed Playwright CLI for real browser journeys, screenshots, traces and readable video evidence. |
+| [context7](../skills/context7/SKILL.md) | new | forge | Retrieve current library documentation through the configured Context7 MCP server when implementation depends on version-specific APIs. |
+| [strix-security](../skills/strix-security/SKILL.md) | new | security | Prepare or review an explicitly requested Strix security assessment for an authorized target; ingest findings without treating them as verified acceptance. |
 
 ## Activation and responsibility
 

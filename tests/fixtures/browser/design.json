@@ -1,0 +1,1 @@
+{"id":"AW11-DESIGN","expected":{"max_width":660,"minimum_body_font_px":16,"mobile_horizontal_overflow":false,"button_accessible_name":"Reserve a slot","button_result":"One slot reserved","paragraph_contrast_minimum":4.5},"viewports":[{"width":1280,"height":900},{"width":375,"height":812}],"cases":["AW11-UI-01","AW11-UI-02"]}
