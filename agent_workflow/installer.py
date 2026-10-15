@@ -156,10 +156,13 @@ def role_text(role, host, prefix):
     if host == "codex":
         fields = {"name": name, "description": role["description"], "developer_instructions": instructions}
         return "\n".join(key + " = " + json.dumps(value) for key, value in fields.items()) + "\n"
-    if host == "cursor":
+    if host in {"claude", "cursor"}:
+        if not re.fullmatch(r"aw-[a-z][a-z0-9-]*", name):
+            raise ValueError("Claude/Cursor role name requires a lowercase identifier")
         description = " ".join(role["description"].split())
-        if not re.fullmatch(r"[A-Za-z][A-Za-z0-9 ,.;()/&'-]*", description):
-            raise ValueError("Cursor role descriptions require plain single-line text without YAML delimiters")
+        if (not re.fullmatch(r"[A-Za-z][A-Za-z0-9 ,.;()/&'-]*", description)
+                or description.lower() in {"true", "false", "null", "yes", "no", "on", "off"}):
+            raise ValueError("Claude/Cursor role descriptions require plain single-line text without YAML delimiters or reserved scalars")
         header = f"---\nname: {name}\ndescription: {description}\n"
     else:
         header = f"---\nname: {json.dumps(name)}\ndescription: {json.dumps(role['description'])}\n"
