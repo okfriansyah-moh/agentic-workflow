@@ -25,8 +25,8 @@ class InstallerTests(unittest.TestCase):
         self.repo.mkdir()
         for name in ("agent_workflow", "adapters", "skills/sample", "agents", "profiles"):
             (self.source / name).mkdir(parents=True, exist_ok=True)
-        for name in ("__init__.py", "cli.py", "installer.py"):
-            shutil.copy2(api.ROOT / "agent_workflow" / name, self.source / "agent_workflow" / name)
+        for module in (api.ROOT / "agent_workflow").glob("*.py"):
+            shutil.copy2(module, self.source / "agent_workflow" / module.name)
         for name in ("coordination", "gates"):
             (self.source / "agent_workflow" / f"{name}.py").write_text("def register(parser):\n    pass\n")
         shutil.copy2(api.ROOT / "adapters/AGENTS.md", self.source / "adapters/AGENTS.md")
@@ -102,8 +102,58 @@ class InstallerTests(unittest.TestCase):
         existing = self.repo / ".codex/skills/sample"
         shutil.copytree(self.source / "skills/sample", existing)
         api.install(self.args(global_install=True))
+        repeated = api.install(self.args(global_install=True))
+        self.assertEqual(repeated["conflicts"], [])
+        self.assertEqual(repeated["changed"], 0)
+        self.assertEqual(api.doctor(self.args(global_install=True))["status"], "healthy")
         api.uninstall(self.args(global_install=True))
         self.assertTrue((existing / "SKILL.md").exists())
+
+    def test_reused_original_hashes_repeat_for_47_skills_and_detect_later_edits(self):
+        entries = []
+        for index in range(47):
+            name = f"fixture-{index:02d}"
+            original = self.repo / ".codex/skills" / name
+            original.mkdir(parents=True)
+            (original / "SKILL.md").write_text(f"Original skill {index}.\n")
+            portable = self.source / "skills" / name
+            shutil.copytree(original, portable)
+            (portable / "SKILL.md").write_text(f"Portable skill {index}.\n")
+            entries.append({"name": name, "source": {"source_sha256": api.tree_digest(original)}})
+        entries.append({"name": "sample"})
+        (self.source / "manifest.json").write_text(json.dumps({"version": "1.0.0", "skills": entries}))
+        first = api.install(self.args(global_install=True))
+        self.assertEqual(first["conflicts"], [])
+        state_path = self.repo / ".local/share/agent-workflow/install-state.json"
+        state = json.loads(state_path.read_text())
+        state["conflicts"] = [{"path": f".codex/skills/fixture-{i:02d}", "reason": "Old false conflict"} for i in range(47)]
+        state_path.write_text(json.dumps(state))
+        repeated = api.install(self.args(global_install=True))
+        self.assertEqual(repeated["conflicts"], [])
+        self.assertEqual(repeated["changed"], 0)
+        self.assertEqual(json.loads(state_path.read_text())["conflicts"], [])
+        self.assertEqual(api.doctor(self.args(global_install=True))["status"], "healthy")
+        changed = self.repo / ".codex/skills/fixture-03/SKILL.md"
+        changed.write_text("Personal change after reuse.\n")
+        diagnostic = api.doctor(self.args(global_install=True))
+        self.assertEqual(diagnostic["status"], "blocked")
+        self.assertIn(".codex/skills/fixture-03", {item["path"] for item in diagnostic["findings"]})
+        repeated = api.install(self.args(global_install=True))
+        self.assertEqual(len(repeated["conflicts"]), 1)
+        self.assertEqual(changed.read_text(), "Personal change after reuse.\n")
+
+    def test_doctor_reused_skill_replacement_or_deletion_is_detected(self):
+        original = self.repo / ".codex/skills/sample"
+        shutil.copytree(self.source / "skills/sample", original)
+        api.install(self.args(global_install=True))
+        shutil.rmtree(original)
+        original.symlink_to(self.source / "skills/sample")
+        result = api.doctor(self.args(global_install=True))
+        self.assertEqual(result["status"], "blocked")
+        reinstall = api.install(self.args(global_install=True))
+        self.assertTrue(any(item["path"] == ".codex/skills/sample" for item in reinstall["conflicts"]))
+        original.unlink()
+        self.assertEqual(api.doctor(self.args(global_install=True))["status"], "blocked")
 
     def test_explicit_update_and_rollback(self):
         api.install(self.args(profile="movie-app"))
@@ -244,6 +294,26 @@ class InstallerTests(unittest.TestCase):
         with patch.object(api.fcntl, "flock", side_effect=concurrent_update_then_lock):
             api.uninstall(self.args())
         self.assertFalse(fresh.exists())
+
+    def test_doctor_includes_saved_host_verification_without_probing(self):
+        import types
+        module = types.ModuleType("agent_workflow.host_verification")
+        module.summarize_host_verifications = lambda root, state_root, global_install: {"codex": {"status": "stale", "reason": "Native configuration changed"}}
+        api.install(self.args())
+        with patch.dict(sys.modules, {"agent_workflow.host_verification": module}):
+            result = api.doctor(self.args())
+        self.assertEqual(result["hosts"]["codex"]["saved_verification"]["status"], "stale")
+        self.assertEqual(result["hosts"]["codex"]["runtime_loading"], "unverified")
+
+    def test_cursor_role_frontmatter_has_unquoted_native_names(self):
+        for role in api.roles(api.ROOT):
+            text = api.role_text(role, "cursor", "bundle")
+            self.assertIn(f"name: aw-{role['id']}\n", text)
+            self.assertIn(f"description: {role['description']}\n", text)
+            self.assertNotIn('name: "', text)
+        bad = {"name": "unsafe", "description": "Description: YAML mapping", "instructions": "Read"}
+        with self.assertRaisesRegex(ValueError, "plain single-line"):
+            api.role_text(bad, "cursor", "bundle")
 
     def test_codex_toml_and_copilot_instruction_opt_in(self):
         import tomllib
