@@ -3,10 +3,12 @@ from __future__ import annotations
 
 import json
 import os
+import subprocess
 from pathlib import Path
 import tomllib
 
 
+CLAUDE_ROOT_LOCAL_SUPPORTED = os.name != 'nt'
 MANAGED_CLAUDE_SETTINGS = (Path('/Library/Application Support/ClaudeCode/managed-settings.json')
                            if os.sys.platform == 'darwin' else Path('/etc/claude-code/managed-settings.json'))
 
@@ -15,7 +17,7 @@ VALUES = {
     'sandbox_mode': {'danger-full-access', 'workspace-write', 'read-only'},
     'defaultMode': {'default', 'acceptEdits', 'plan', 'dontAsk', 'bypassPermissions', 'autopilot', 'interactive'},
     'defaultPermissionMode': {'default', 'allow-all', 'deny-all'},
-    'approvalMode': {'unrestricted', 'allowlist', 'auto-review'},
+    'approvalMode': {'manual', 'unrestricted', 'allowlist'},
     'mode': {'disabled', 'enabled'},
 }
 
@@ -62,11 +64,45 @@ def _summary(records, expected):
     return {'status': status, 'observed_defaults': settings, 'sources': sources}
 
 
+def _claude_local_sources(repo, home):
+    """Resolve the current CLI's root-local file, retaining the older cwd-local file."""
+    starting = repo / '.claude/settings.local.json'
+    paths = [(starting, 'project-local')]
+    root = next((path for path in (repo, *repo.parents) if (path / '.git').exists()), None)
+    if root is None or not CLAUDE_ROOT_LOCAL_SUPPORTED or root == home.resolve():
+        return paths, True
+    try:
+        # Claude keeps local settings beside shared settings for repositories it does not own.
+        entries = (root, root / '.git', root / '.claude')
+        if any(path.exists() and path.stat().st_uid != os.getuid() for path in entries):
+            return paths, True
+        observed = subprocess.run(['git', '-C', str(repo), 'worktree', 'list', '--porcelain', '-z'],
+                                  stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+                                  text=True, timeout=5, env={**os.environ, 'GIT_OPTIONAL_LOCKS': '0'})
+        first = observed.stdout.split('\0', 1)[0]
+        if observed.returncode or not first.startswith('worktree '):
+            return paths, False
+        main = Path(first.removeprefix('worktree '))
+        if not main.is_absolute() or not main.is_dir():
+            return paths, False
+        main = main.resolve()
+        if main == home.resolve() or any(path.exists() and path.stat().st_uid != os.getuid()
+                                         for path in (main, main / '.git', main / '.claude')):
+            return paths, True
+        local = main / '.claude/settings.local.json'
+        if local != starting:
+            paths.append((local, 'repository-local'))
+        return paths, True
+    except (OSError, ValueError, subprocess.TimeoutExpired):
+        return paths, False
+
+
 def autonomy_diagnostics(host, home, repo=None, environ=None):
     """Report whitelisted file defaults and override candidates without launching a host."""
     home, repo = Path(home), Path(repo).resolve() if repo else None
     environ = os.environ if environ is None else environ
     records, caveats = [], ['Active session, CLI flags, organization policy and OS controls are unobserved.']
+    local_sources_resolved = True
 
     def read(path, layer, fields, nested=None):
         record, data = _read(path, layer, fields, nested)
@@ -98,13 +134,15 @@ def autonomy_diagnostics(host, home, repo=None, environ=None):
         directory = Path(environ.get('CLAUDE_CONFIG_DIR') or home / '.claude').expanduser()
         paths = [(directory / 'settings.json', 'user')]
         if repo:
-            paths += [(repo / '.claude/settings.json', 'project'), (repo / '.claude/settings.local.json', 'project-local')]
+            local_paths, local_sources_resolved = _claude_local_sources(repo, home)
+            paths += [(repo / '.claude/settings.json', 'project'), *local_paths]
         # Platform policy locations are fixed; no command or remote policy query is performed.
         paths += [(MANAGED_CLAUDE_SETTINGS, 'managed')]
         for path, layer in paths:
             read(path, layer, fields, ('permissions',))
         defaults, expected = records, {'defaultMode': 'bypassPermissions'}
         caveats.append('Deny/ask rules and managed permission restrictions may still block actions; rule contents are omitted.')
+        caveats.append('Current CLI repository-local settings use the main checkout on supported owned repositories; older cwd-local settings are also read. SDK and older runtime selection remain unobserved.')
     elif host == 'copilot':
         directory = Path(environ.get('COPILOT_HOME') or home / '.copilot').expanduser()
         read(directory / 'settings.json', 'user', ('defaultPermissionMode', 'defaultMode'))
@@ -123,6 +161,11 @@ def autonomy_diagnostics(host, home, repo=None, environ=None):
     result = {'configuration': _summary(defaults, expected), 'candidates': records,
               'live_verification': {'status': 'unverified', 'reason': 'No native session was observed by this read-only diagnostic.'},
               'limitations': caveats}
+    if host == 'claude':
+        result['local_settings_resolution'] = 'resolved' if local_sources_resolved else 'unknown'
+        if not local_sources_resolved:
+            result['configuration']['status'] = 'unknown'
+            result['limitations'].append('Git repository-local settings could not be resolved; no unattended configuration is inferred.')
     if host == 'cursor':
         result['desktop_configuration'] = _summary(records[1:], {'approvalMode': 'unrestricted'})
     return result

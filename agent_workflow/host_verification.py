@@ -181,7 +181,9 @@ def config_snapshot(host, root, scope, bundle, manifest, home=None):
             else:
                 files[key] = sha256_file(path) if path.is_file() else None
     from .autonomy import autonomy_diagnostics
-    for candidate in autonomy_diagnostics(host, home, root if scope == 'repo' else None)['candidates']:
+    autonomy = autonomy_diagnostics(host, home, root if scope == 'repo' else None)
+    files['autonomy:local-settings-resolution'] = autonomy.get('local_settings_resolution')
+    for candidate in autonomy['candidates']:
         path = Path(candidate['path'])
         files['autonomy:' + str(path)] = sha256_file(path) if path.is_file() else None
     files['bundle:manifest.json'] = sha256_file(Path(bundle) / 'manifest.json')

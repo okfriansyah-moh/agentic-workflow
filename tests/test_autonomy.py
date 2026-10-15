@@ -1,5 +1,6 @@
 """Autonomy diagnostics inspect safe defaults without changing a host or its policy."""
 import json
+import subprocess
 from pathlib import Path
 import tempfile
 import unittest
@@ -71,6 +72,90 @@ class AutonomyTests(unittest.TestCase):
         self.write(self.home / '.claude/settings.json', {'permissions': {'defaultMode': 'bypassPermissions'}})
         self.write(self.home / 'managed-settings.json', {'permissions': {'disableBypassPermissionsMode': 'disable'}})
         self.assertEqual(self.diagnose('claude')['configuration']['status'], 'restricted')
+
+    def git(self, *args):
+        return subprocess.run(['git', '-C', str(self.repo), *args], check=True, capture_output=True, text=True)
+
+    def test_claude_linked_worktree_reads_main_local_and_fingerprints_it(self):
+        from agent_workflow.host_verification import config_snapshot
+        self.git('init')
+        self.git('-c', 'user.name=Fixture', '-c', 'user.email=fixture@example.test', 'commit', '--allow-empty', '-m', 'Fixture')
+        linked = self.home / 'linked'
+        self.git('worktree', 'add', '-b', 'linked', str(linked))
+        self.write(self.home / '.claude/settings.json', {'permissions': {'defaultMode': 'bypassPermissions'}})
+        main_local = self.repo / '.claude/settings.local.json'
+        self.write(main_local, {'permissions': {'defaultMode': 'plan', 'deny': ['private-main-rule']}})
+        self.write(linked / '.claude/settings.local.json', {'permissions': {'defaultMode': 'bypassPermissions'}})
+        result = autonomy_diagnostics('claude', self.home, linked, environ={})
+        self.assertEqual(result['local_settings_resolution'], 'resolved')
+        self.assertEqual(result['configuration']['status'], 'restricted')
+        self.assertEqual(result['configuration']['sources']['defaultMode'], str(main_local))
+        self.assertEqual(result['configuration']['observed_defaults']['defaultMode'], 'plan')
+        self.assertNotIn('private-main-rule', json.dumps(result))
+        bundle = self.home / 'bundle'
+        self.write(bundle / 'manifest.json', {'version': '1.1.1', 'skills': []})
+        first = config_snapshot('claude', linked, 'repo', bundle, {'skills': []}, self.home)
+        self.write(main_local, {'permissions': {'defaultMode': 'acceptEdits'}})
+        second = config_snapshot('claude', linked, 'repo', bundle, {'skills': []}, self.home)
+        self.assertNotEqual(first['sha256'], second['sha256'])
+        self.assertIn('autonomy:' + str(main_local), first['files'])
+
+    def test_claude_subdirectory_reads_repository_local_after_older_cwd_local(self):
+        self.git('init')
+        self.git('-c', 'user.name=Fixture', '-c', 'user.email=fixture@example.test', 'commit', '--allow-empty', '-m', 'Fixture')
+        self.write(self.home / '.claude/settings.json', {'permissions': {'defaultMode': 'bypassPermissions'}})
+        self.write(self.repo / '.claude/settings.local.json', {'permissions': {'defaultMode': 'plan'}})
+        nested = self.repo / 'nested'
+        self.write(nested / '.claude/settings.local.json', {'permissions': {'defaultMode': 'acceptEdits'}})
+        result = autonomy_diagnostics('claude', self.home, nested, environ={})
+        self.assertEqual(result['configuration']['observed_defaults']['defaultMode'], 'plan')
+        self.assertEqual(len([item for item in result['candidates'] if item['layer'] in ('project-local', 'repository-local')]), 2)
+
+    def test_claude_unresolved_git_source_never_reports_unattended(self):
+        self.write(self.home / '.claude/settings.json', {'permissions': {'defaultMode': 'bypassPermissions'}})
+        (self.repo / '.git').mkdir()
+        with patch('agent_workflow.autonomy.subprocess.run', side_effect=subprocess.TimeoutExpired('git', 5)):
+            result = self.diagnose('claude')
+        self.assertEqual(result['configuration']['status'], 'unknown')
+        self.assertEqual(result['local_settings_resolution'], 'unknown')
+
+    def test_claude_windows_local_file_stays_beside_shared_settings(self):
+        self.git('init')
+        self.git('-c', 'user.name=Fixture', '-c', 'user.email=fixture@example.test', 'commit', '--allow-empty', '-m', 'Fixture')
+        nested = self.repo / 'nested'
+        self.write(self.home / '.claude/settings.json', {'permissions': {'defaultMode': 'bypassPermissions'}})
+        self.write(self.repo / '.claude/settings.local.json', {'permissions': {'defaultMode': 'plan'}})
+        self.write(nested / '.claude/settings.local.json', {'permissions': {'defaultMode': 'acceptEdits'}})
+        with patch('agent_workflow.autonomy.CLAUDE_ROOT_LOCAL_SUPPORTED', False):
+            result = autonomy_diagnostics('claude', self.home, nested, environ={})
+        self.assertEqual(result['configuration']['observed_defaults']['defaultMode'], 'acceptEdits')
+
+    def test_claude_home_repository_keeps_local_beside_shared_settings(self):
+        subprocess.run(['git', '-C', str(self.home), 'init'], check=True, capture_output=True)
+        self.write(self.home / '.claude/settings.json', {'permissions': {'defaultMode': 'bypassPermissions'}})
+        self.write(self.home / '.claude/settings.local.json', {'permissions': {'defaultMode': 'plan'}})
+        self.write(self.repo / '.claude/settings.local.json', {'permissions': {'defaultMode': 'acceptEdits'}})
+        result = self.diagnose('claude')
+        self.assertEqual(result['configuration']['observed_defaults']['defaultMode'], 'acceptEdits')
+
+    def test_claude_other_owner_keeps_local_beside_shared_settings(self):
+        self.git('init')
+        self.git('-c', 'user.name=Fixture', '-c', 'user.email=fixture@example.test', 'commit', '--allow-empty', '-m', 'Fixture')
+        self.write(self.home / '.claude/settings.json', {'permissions': {'defaultMode': 'bypassPermissions'}})
+        self.write(self.repo / '.claude/settings.local.json', {'permissions': {'defaultMode': 'plan'}})
+        nested = self.repo / 'nested'
+        self.write(nested / '.claude/settings.local.json', {'permissions': {'defaultMode': 'acceptEdits'}})
+        with patch('agent_workflow.autonomy.os.getuid', return_value=-1):
+            result = autonomy_diagnostics('claude', self.home, nested, environ={})
+        self.assertEqual(result['configuration']['observed_defaults']['defaultMode'], 'acceptEdits')
+
+    def test_cursor_manual_mode_is_restricted_on_both_surfaces(self):
+        self.write(self.home / '.cursor/permissions.json', {'approvalMode': 'manual'})
+        self.write(self.home / '.cursor/cli-config.json', {'approvalMode': 'manual', 'sandbox': {'mode': 'disabled'}})
+        result = self.diagnose('cursor')
+        self.assertEqual(result['configuration']['status'], 'restricted')
+        self.assertEqual(result['desktop_configuration']['status'], 'restricted')
+        self.assertEqual(result['configuration']['observed_defaults']['approvalMode'], 'manual')
 
     def test_copilot_uses_current_user_settings_and_home_override(self):
         directory = self.home / 'copilot-user'
