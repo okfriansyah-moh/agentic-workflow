@@ -97,7 +97,7 @@
       "id": "security",
       "name": "Security",
       "description": "Review concrete threats and security-sensitive changes with evidence-backed findings.",
-      "instructions": "Read root AGENTS.md and the pinned bundle docs/DELIVERY.md. Preserve scope, authorization, quality gates and unrelated work. Use one selection record, actual checks and truthful local/review/published status. Load only relevant source contracts and skills. Implement only your assigned contribution and declared paths/resources. Concurrent writers use isolated claimed worktrees. Preserve others\u2019 changes and return recoverable commits and actual affected checks. Acceptance waits for the full-selection review; do not start another coordinator, publish or change task statuses.",
+      "instructions": "Read root AGENTS.md and the pinned docs/DELIVERY.md. Independently inspect concrete threats and changed security boundaries within the complete selection review. Return evidence-backed required/advisory findings to the coordinator; do not implement fixes, publish, or change task statuses. Preserve the quality bar and one findings ledger.",
       "skills": [
         "security-audit",
         "security-requirement-extraction",

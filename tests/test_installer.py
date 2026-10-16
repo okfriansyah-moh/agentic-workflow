@@ -272,6 +272,20 @@ class InstallerTests(unittest.TestCase):
         self.assertIn("AGENTS.md", paths)
         self.assertIn(".claude/settings.json", paths)
 
+    def test_service_edits_select_all_actual_movie_app_consumers(self):
+        from agent_workflow import gate_selection
+        profile = json.loads((api.ROOT / "profiles/movie-app.json").read_text())
+        self.assertIsNotNone(gate_selection.component_graph(profile))
+        for service in ("core", "catalog", "media"):
+            path = "services/" + service + "/src/Handler.kt"
+            with self.subTest(service=service), patch.object(gate_selection, "changed_paths", return_value={path}):
+                selected, reason = gate_selection.select_components(self.repo, profile, "HEAD", True)
+                self.assertIsNone(selected)
+                self.assertIn("Shared", reason)
+        with patch.object(gate_selection, "changed_paths", return_value={"frontend/src/App.svelte"}):
+            selected, _ = gate_selection.select_components(self.repo, profile, "HEAD", True)
+            self.assertEqual(selected, {"frontend"})
+
     def enable_edit_checks(self):
         path = self.repo / ".ai/config.json"
         config = json.loads(path.read_text())
