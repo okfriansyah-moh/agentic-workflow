@@ -125,6 +125,165 @@ class SelectionTests(GitFixture):
         with self.assertRaisesRegex(CoordinationError, 'Two correction'):
             selection(lane, 'accept', {'selection_id': item['id'], 'owner': 'integrator'})
 
+    def review_again(self, item, receipt_path, review_path, change=None, **review_fields):
+        receipt = read_json(receipt_path)
+        if change is not None:
+            (self.repo / 'src/a.txt').write_text(change + '\n')
+            git(self.repo, 'commit', '-am', 'correct selected behavior')
+            result = capture_receipt(self.repo, {'claim_id': receipt['claim_id'], 'owner': item['owner'],
+                                                'selection_id': item['id'], 'commands': item['required_checks']})
+            receipt_path, receipt = result['receipt'], result['result']
+        review = {**read_json(review_path), 'tested_revision': receipt['tested_revision'],
+                  'input_fingerprint': receipt['input_fingerprint'], **review_fields}
+        write_json(review_path, review)
+        return receipt_path
+
+    def test_serial_review_corrections_survive_resume_and_phase_rename(self):
+        item, receipt, review = self.checked_selection()
+        finding = {'id': 'missing-success', 'required': True, 'status': 'open'}
+        self.review_again(item, receipt, review, verdict='changes-required', findings=[finding])
+        initial = self.action(item, 'accept', receipt=receipt, review=str(review), group_id='initial')
+        self.assertEqual(initial['status'], 'blocked')
+        self.assertEqual(initial['failed_corrections'], 0)
+        repeated = self.action(item, 'accept', receipt=receipt, review=str(review), group_id='renamed-initial')
+        self.assertEqual(repeated['failed_corrections'], 0)
+        for number in (1, 2):
+            receipt = self.review_again(item, receipt, review, change=f'insufficient correction {number}')
+            result = self.action(item, 'accept', receipt=receipt, review=str(review), group_id=f'renamed-phase-{number}')
+            self.assertEqual(result['failed_corrections'], number)
+            resumed = resume(self.repo)
+            self.assertEqual(resumed['corrections'][item['id']], number)
+        self.assertEqual(self.action(item, 'status')['status'], 'blocked')
+        self.assertEqual(len(result['selection']['failure_history']), 3)
+        resumed_lane = self.root / 'resumed-selection'
+        git(self.repo, 'worktree', 'add', '-b', 'resume-selection', str(resumed_lane))
+        self.assertEqual(resume(resumed_lane)['corrections'][item['id']], 2)
+        with self.assertRaisesRegex(CoordinationError, 'Two correction'):
+            selection(resumed_lane, 'accept', {'selection_id': item['id'], 'owner': item['owner']})
+        self.review_again(item, receipt, review, verdict='accepted', findings=[{**finding, 'status': 'resolved'}])
+        with self.assertRaisesRegex(CoordinationError, 'Two correction'):
+            self.action(item, 'accept', receipt=receipt, review=str(review), group_id='final-rename')
+        with self.assertRaisesRegex(CoordinationError, 'resume'):
+            self.start(dependencies={})
+
+    def test_invalid_reviews_and_check_captures_never_consume_or_reset_corrections(self):
+        item, receipt, review = self.checked_selection()
+        finding = {'id': 'permission-gap', 'required': True, 'status': 'open'}
+        self.review_again(item, receipt, review, verdict='changes-required', findings=[finding], reviewer=item['owner'])
+        with self.assertRaisesRegex(CoordinationError, 'reviewer'):
+            self.action(item, 'accept', receipt=receipt, review=str(review))
+        self.review_again(item, receipt, review, reviewer='independent')
+        initial = self.action(item, 'accept', receipt=receipt, review=str(review))
+        self.assertEqual(initial['failed_corrections'], 0)
+        receipt = self.review_again(item, receipt, review, change='first attempted correction')
+        document = read_json(review)
+        write_json(review, {**document, 'input_fingerprint': 'stale'})
+        with self.assertRaisesRegex(CoordinationError, 'fingerprint'):
+            self.action(item, 'accept', receipt=receipt, review=str(review))
+        with self.assertRaisesRegex(CoordinationError, 'owner'):
+            selection(self.repo, 'accept', {'selection_id': item['id'], 'owner': 'another', 'receipt': receipt, 'review': str(review)})
+        fake = self.repo / '.ai/evidence/forged.json'
+        write_json(fake, {**read_json(receipt), 'status': 'passed', 'errors': ['forged']})
+        with self.assertRaisesRegex(CoordinationError, 'unchanged receipt'):
+            self.action(item, 'accept', receipt=str(fake), review=str(review))
+        self.assertEqual(resume(self.repo)['corrections'].get(item['id'], 0), 0)
+        self.assertEqual(len(resume(self.repo)['selections'][0]['failure_history']), 1)
+        write_json(review, document)
+        result = self.action(item, 'accept', receipt=receipt, review=str(review))
+        self.assertEqual(result['failed_corrections'], 1)
+        write_json(review, {**document, 'input_fingerprint': 'stale-again'})
+        with self.assertRaisesRegex(CoordinationError, 'fingerprint'):
+            self.action(item, 'accept', receipt=receipt, review=str(review))
+        self.assertEqual(resume(self.repo)['corrections'][item['id']], 1)
+
+    def test_required_review_findings_cannot_disappear_before_acceptance(self):
+        item, receipt, review = self.checked_selection()
+        finding = {'id': 'required-regression', 'required': True, 'status': 'open'}
+        self.review_again(item, receipt, review, verdict='changes-required', findings=[finding])
+        self.action(item, 'accept', receipt=receipt, review=str(review))
+        receipt = self.review_again(item, receipt, review, change='insufficient regression correction')
+        self.assertEqual(self.action(item, 'accept', receipt=receipt, review=str(review))['failed_corrections'], 1)
+        self.review_again(item, receipt, review, verdict='accepted', findings=[])
+        result = self.action(item, 'accept', receipt=receipt, review=str(review))
+        self.assertEqual(result['status'], 'blocked')
+        self.assertTrue(any('explicit resolution' in error for error in result['errors']))
+        receipt = self.review_again(item, receipt, review, change='corrected required regression', findings=[{**finding, 'status': 'resolved'}])
+        self.assertEqual(self.action(item, 'accept', receipt=receipt, review=str(review))['status'], 'passed')
+        self.assertEqual(resume(self.repo)['corrections'][item['id']], 1)
+
+    def final_check_fixture(self, commands=None):
+        commands = commands or [{'id': 'required', 'kind': 'check', 'argv': [sys.executable, '-c',
+            "from pathlib import Path; raise SystemExit(1 if 'broken' in Path('src/a.txt').read_text() else 0)"]}]
+        item = self.start(required_checks=commands)
+        claim = create_claim(self.repo, self.spec(task_ids=item['task_ids'], reuse_worktree=True, required_checks=commands))['claim']
+        return item, {'claim_id': claim['id'], 'owner': item['owner'], 'selection_id': item['id'], 'commands': commands}
+
+    def final_check(self, spec, text):
+        (self.repo / 'src/a.txt').write_text(text + '\n')
+        git(self.repo, 'commit', '-am', 'correct final verification inputs')
+        return capture_receipt(self.repo, spec)
+
+    def test_serial_final_verification_corrections_use_durable_selection_budget(self):
+        item, spec = self.final_check_fixture()
+        for number in range(3):
+            self.assertEqual(self.final_check({**spec, 'group_id': f'renamed-{number}'}, f'broken attempt {number}')['status'], 'blocked')
+            self.assertEqual(resume(self.repo)['corrections'].get(item['id'], 0), number)
+        history = resume(self.repo)['selections'][0]['failure_history']
+        self.assertEqual([entry['phase'] for entry in history], ['initial-verification', 'correction', 'correction'])
+        with self.assertRaisesRegex(CoordinationError, 'Two correction'):
+            self.final_check(spec, 'fixed after exhausted budget')
+        with self.assertRaisesRegex(CoordinationError, 'resume'):
+            self.start(dependencies={})
+
+    def test_verification_and_review_share_one_failed_correction_counter(self):
+        item, spec = self.final_check_fixture()
+        self.final_check(spec, 'broken initial implementation')
+        result = self.final_check(spec, 'checks pass but required behavior is missing')
+        receipt = result['result']
+        review = self.repo / '.ai/evidence/combined-review.json'
+        write_json(review, {'reviewer': 'independent', 'task_ids': item['task_ids'],
+                            'tested_revision': receipt['tested_revision'], 'input_fingerprint': receipt['input_fingerprint'],
+                            'verdict': 'changes-required', 'findings': [{'id': 'required-behavior', 'required': True, 'status': 'open'}]})
+        rejection = self.action(item, 'accept', receipt=result['receipt'], review=str(review), group_id='renamed-review')
+        self.assertEqual(rejection['failed_corrections'], 1)
+        self.final_check(spec, 'broken correction after review')
+        resumed = resume(self.repo)
+        self.assertEqual(resumed['corrections'][item['id']], 2)
+        self.assertEqual([entry['kind'] for entry in resumed['selections'][0]['failure_history']], ['verification', 'review', 'verification'])
+
+    def test_environment_and_malformed_final_captures_do_not_consume_corrections(self):
+        commands = [{'id': 'required', 'kind': 'check', 'argv': ['missing-workflow-fixture-tool']}]
+        item, spec = self.final_check_fixture(commands)
+        with self.assertRaisesRegex(CoordinationError, 'contracts'):
+            capture_receipt(self.repo, {**spec, 'commands': [{'id': 'required', 'kind': 'check', 'argv': ['true']}]})
+        result = capture_receipt(self.repo, spec)
+        self.assertEqual(result['status'], 'blocked')
+        self.assertNotIn('failure_history', resume(self.repo)['selections'][0])
+        self.assertNotIn(item['id'], resume(self.repo)['corrections'])
+
+    def test_fresh_failing_test_report_counts_as_required_verification_failure(self):
+        report = '.ai/evidence/tests.json'
+        data = json.dumps({'selected': 1, 'executed': 1, 'failed': 1})
+        commands = [{'id': 'required', 'kind': 'test', 'argv': [sys.executable, '-c',
+            f"from pathlib import Path; Path({report!r}).write_text({data!r}); raise SystemExit(1)"],
+            'test_report': {'path': report, 'format': 'workflow-test'}}]
+        item, spec = self.final_check_fixture(commands)
+        self.assertEqual(capture_receipt(self.repo, spec)['status'], 'blocked')
+        self.assertEqual(resume(self.repo)['corrections'].get(item['id'], 0), 0)
+        self.final_check(spec, 'changed behavior still fails its test')
+        self.assertEqual(resume(self.repo)['corrections'][item['id']], 1)
+
+    def test_unreadable_test_report_is_not_a_verified_product_failure(self):
+        report = '.ai/evidence/tests.json'
+        commands = [{'id': 'required', 'kind': 'test', 'argv': [sys.executable, '-c',
+            f"from pathlib import Path; Path({report!r}).write_text('invalid report'); raise SystemExit(1)"],
+            'test_report': {'path': report, 'format': 'workflow-test'}}]
+        item, spec = self.final_check_fixture(commands)
+        result = capture_receipt(self.repo, spec)
+        self.assertEqual(result['status'], 'blocked')
+        self.assertNotIn('failure_history', resume(self.repo)['selections'][0])
+        self.assertNotIn(item['id'], resume(self.repo)['corrections'])
+
     def test_one_combined_review_accepts_all_tasks_and_rejects_second(self):
         item, receipt, review = self.checked_selection()
         result = self.action(item, 'accept', receipt=receipt, review=str(review))
@@ -167,8 +326,9 @@ class SelectionTests(GitFixture):
         document['input_fingerprint'] = read_json(receipt)['input_fingerprint']
         document['findings'] = [{'id': 'missing success announcement', 'required': True, 'status': 'open'}]
         write_json(review, document)
-        with self.assertRaisesRegex(CoordinationError, 'Unresolved'):
-            self.action(item, 'accept', receipt=receipt, review=str(review))
+        rejection = self.action(item, 'accept', receipt=receipt, review=str(review))
+        self.assertEqual(rejection['status'], 'blocked')
+        self.assertTrue(any('Unresolved' in error for error in rejection['errors']))
         fake = self.repo / '.ai/evidence/fake.json'
         write_json(fake, {'id': 'invented', 'status': 'passed'})
         with self.assertRaisesRegex(CoordinationError, 'captured'):

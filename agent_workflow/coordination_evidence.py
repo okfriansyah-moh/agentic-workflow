@@ -105,6 +105,8 @@ def _receipt_selection(root, spec, claim):
     with registry(root) as state:
         selected = dict(get_selection(state, spec['selection_id'], spec['owner']))
         require_checkpoint(selected)
+        if state['corrections'].get(selected['id'], 0) >= 2:
+            raise CoordinationError('Two correction rounds failed; retain work and report the required blocker')
     if selected['status'] == 'accepted':
         raise CoordinationError('Selection already accepted; start a new requested selection for changed work')
     if claim.get('role') != 'integrator' and set(selected['task_ids']) - set(claim['task_ids']):
@@ -159,7 +161,31 @@ def capture_receipt(repo, spec):
         current = get_claim(state, claim['id'], claim['owner'])
         current.update(last_receipt=str(path), updated_at=time.time())
         state.setdefault('receipts', {})[receipt_id] = {'path': str(path.resolve()), 'sha256': digest(path)}
+        if selected is not None:
+            _record_final_check_failure(state, selected['id'], receipt, path, after)
     return {'status': 'ok' if not errors else 'blocked', 'receipt': str(path), 'result': receipt}
+
+
+def _record_final_check_failure(state, identity, receipt, path, after):
+    from .selection import get_selection, record_selection_failure
+    item = get_selection(state, identity)
+    if receipt['input_fingerprint'] != after['fingerprint'] or receipt['status'] != 'blocked':
+        return
+    required = {check['id'] for check in item['required_checks']}
+    failed = [command for command in receipt['commands'] if command['id'] in required and _failed_product_check(command)]
+    if failed:
+        record_selection_failure(item, state, receipt, 'verification', digest(path), receipt['errors'])
+
+
+def _failed_product_check(command):
+    if command['kind'] != 'test':
+        return command['exit_code'] not in (0, 124, 127)
+    report = command.get('test_result', {})
+    counts = [report.get(field) for field in ('selected', 'executed', 'failed')]
+    if any(not isinstance(count, int) or isinstance(count, bool) for count in counts):
+        return False
+    selected, executed, failed = counts
+    return selected >= executed >= failed > 0
 
 
 def _receipt_errors(results, before, after):

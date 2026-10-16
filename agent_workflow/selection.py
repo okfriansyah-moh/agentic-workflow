@@ -150,12 +150,14 @@ def _status(root, item, state):
     overdue = item['status'] != 'accepted' and now - item['last_checkpoint_at'] >= CHECKPOINT_SECONDS
     accepted = item['status'] == 'accepted'
     fresh = not accepted or (revision(root) == item['reviewed_revision'] and input_snapshot(root)['fingerprint'] == item['reviewed_fingerprint'])
-    status = 'blocked' if not fresh else ('passed' if accepted else ('attention' if overdue or budget['exhausted'] else 'ok'))
+    exhausted = state['corrections'].get(item['id'], 0) >= 2
+    status = 'blocked' if exhausted or not fresh else ('passed' if accepted else ('attention' if overdue or budget['exhausted'] else 'ok'))
     return {'status': status, 'acceptance_current': accepted and fresh, 'selection': item,
             'checkpoint_due': overdue, 'repair_budget': budget,
             'current_revision': revision(root), 'current_branch': git(root, 'branch', '--show-current').stdout.strip(),
             'development_ready': development_ready(root, state, item),
-            'next_action': ('Accepted source has changed; start a new selection and obtain fresh combined acceptance.' if not fresh
+            'next_action': ('Two correction rounds failed; retain work and report the required blocker.' if exhausted
+                            else 'Accepted source has changed; start a new selection and obtain fresh combined acceptance.' if not fresh
                             else 'Record a product-progress checkpoint before further support-tool activity.' if overdue else item['next_action'])}
 
 
@@ -252,6 +254,61 @@ def development_ready(root, state, item):
     return sorted(task for task in item['task_ids'] if set(item['dependencies'].get(task, [])) <= available)
 
 
+def _review_contract_errors(item, receipt, review):
+    errors = validate_review(receipt, {**review, 'verdict': 'accepted', 'findings': []})
+    findings = review.get('findings')
+    valid = isinstance(findings, list) and all(
+        isinstance(finding, dict) and isinstance(finding.get('id'), str) and finding['id']
+        and isinstance(finding.get('required'), bool) and finding.get('status') in ('open', 'resolved')
+        for finding in findings)
+    if not valid or review.get('verdict') not in ('accepted', 'changes-required', 'blocked'):
+        errors.append('Review requires a valid verdict and explicit structured findings')
+    tasks = _strings(review.get('task_ids'), 'review task_ids')
+    if set(receipt['task_ids']) != set(item['task_ids']) or set(tasks) != set(item['task_ids']):
+        errors.append('Receipt and combined review must cover the entire selection')
+    if not isinstance(review.get('reviewer'), str) or review.get('reviewer') in item['implementers']:
+        errors.append('Combined reviewer must differ from every selection implementer')
+    captured = {check['id']: check.get('contract') for check in receipt['commands']}
+    if any(captured.get(check['id']) != check for check in item['required_checks']):
+        errors.append('Selection required checks are missing or changed')
+    if receipt.get('selection_id') != item['id']:
+        errors.append('Final checks were not captured for this selection')
+    return errors
+
+
+def _unresolved_ledger(item, review):
+    resolved = {finding['id'] for finding in review['findings'] if finding['status'] == 'resolved'}
+    return [f'Previously required finding needs explicit resolution: {identity}'
+            for identity, finding in item.get('review_findings', {}).items()
+            if finding['required'] and finding['status'] != 'resolved' and identity not in resolved]
+
+
+def record_selection_failure(item, state, receipt, kind, report_hash, errors, reviewer=None):
+    history = item.setdefault('failure_history', [])
+    changed = bool(history) and history[-1]['input_fingerprint'] != receipt['input_fingerprint']
+    if changed:
+        state['corrections'][item['id']] = state['corrections'].get(item['id'], 0) + 1
+    if not history or changed or history[-1]['report_sha256'] != report_hash:
+        history.append({'created_at': time.time(), 'kind': kind, 'reviewer': reviewer,
+                        'tested_revision': receipt['tested_revision'], 'input_fingerprint': receipt['input_fingerprint'],
+                        'phase': 'correction' if changed else 'initial-' + kind if not history else history[-1]['phase'],
+                        'failed_correction': changed, 'report_sha256': report_hash, 'errors': errors})
+    count = state['corrections'].get(item['id'], 0)
+    item['next_action'] = ('Two correction rounds failed; retain work and report the required blocker.' if count >= 2
+                           else 'Resolve required verification/review findings, rerun affected checks, and verify the corrections.')
+    return count
+
+
+def _reject_review(item, state, receipt, review, path, errors):
+    count = record_selection_failure(item, state, receipt, 'review', digest(path), errors, review['reviewer'])
+    ledger = item.setdefault('review_findings', {})
+    for finding in review['findings']:
+        required = finding['required'] or ledger.get(finding['id'], {}).get('required', False)
+        ledger[finding['id']] = {**finding, 'required': required}
+    return {'status': 'blocked', 'errors': errors, 'failed_corrections': count, 'selection': item,
+            'next_action': item['next_action']}
+
+
 def _accept(root, item, state, spec):
     if item['status'] == 'accepted':
         raise CoordinationError('Selection already has its combined acceptance review')
@@ -264,23 +321,22 @@ def _accept(root, item, state, spec):
     if not spec.get('review') or not Path(spec['review']).is_file():
         raise CoordinationError('Combined independent review is missing')
     review = read_json(spec['review'])
-    errors = validate_review(receipt, review)
-    if set(receipt['task_ids']) != set(item['task_ids']) or set(review.get('task_ids', [])) != set(item['task_ids']):
-        errors.append('Receipt and combined review must cover the entire selection')
-    if review.get('reviewer') in item['implementers']:
-        errors.append('Combined reviewer must differ from every selection implementer')
-    captured = {check['id']: check.get('contract') for check in receipt['commands']}
-    if any(captured.get(check['id']) != check for check in item['required_checks']):
-        errors.append('Selection required checks are missing or changed')
-    if receipt.get('selection_id') != item['id']:
-        errors.append('Final checks were not captured for this selection')
+    errors = _review_contract_errors(item, receipt, review)
+    if errors:
+        raise CoordinationError('; '.join(errors))
+    errors = validate_review(receipt, review) + _unresolved_ledger(item, review)
+    if errors:
+        return _reject_review(item, state, receipt, review, spec['review'], errors)
     if item.get('requirements'):
         if not spec.get('evidence'):
             raise CoordinationError('Selection functional acceptance evidence is missing')
         result = validate_evidence(root, item['requirements'], read_json(spec['evidence']))
-        errors.extend(result['errors'])
-    if errors:
-        raise CoordinationError('; '.join(errors))
+        if result['errors']:
+            raise CoordinationError('; '.join(result['errors']))
+    return _finish_acceptance(root, item, state, spec, receipt, review)
+
+
+def _finish_acceptance(root, item, state, spec, receipt, review):
     for attempt in state['repair_budgets'][item['repair_budget_id']]['attempts']:
         if 'finished_at' not in attempt:
             attempt.update(finished_at=time.time(), outcome='Stopped optional tooling at combined acceptance')
@@ -292,6 +348,8 @@ def _accept(root, item, state, spec):
                 reviewed_fingerprint=receipt['input_fingerprint'],
                 review={'reviewer': review['reviewer'], 'path': str(Path(spec['review']).resolve()), 'sha256': digest(spec['review'])},
                 receipt=spec['receipt'], next_action='Publish the reviewed source commits to the draft PR and report its head.')
+    if item.get('review_findings'):
+        item['review_findings'].update({finding['id']: finding for finding in review['findings']})
     return {'status': 'passed', 'selection': item}
 
 
