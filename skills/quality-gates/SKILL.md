@@ -5,6 +5,8 @@ metadata:
   version: "1.0.0"
 ---
 
+Resolve the pinned bundle from .ai/config.json and read [selection delivery](../../docs/DELIVERY.md). That policy governs review timing, quality gates, recovery budgets and literal delivery status. Reuse it while unchanged.
+
 # quality-gates
 
 The project profile and shared gate registry define applicable checks for hooks, explicit verification and CI. Read their actual argv and working directory; plan prose is never executable shell input. A hook is an early signal, not proof that every required completion check ran.

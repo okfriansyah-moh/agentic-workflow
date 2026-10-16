@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "version": "1.1.1",
+  "version": "1.2.0",
   "bundle": {
     "name": "agent-workflow",
-    "version": "1.1.1"
+    "version": "1.2.0"
   },
   "counts": {
     "reuse": 47,
@@ -185,7 +185,7 @@
       "owner": "forge",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "df09a5c46e5c8bdf16cc435551d5221911a876ddf035a55cceabf4b0a563fd3c"
+        "value": "2c193b9a1980b31833af8418c9b585fd8a17ab60aff0de617992b02db1fae155"
       },
       "conditional_dependencies": [
         "api-design",
@@ -234,7 +234,7 @@
       "owner": "forge",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "3cccf433a10edf2c4b3c86de4f9ee10313a208a5ad02352bd7486ded02cf4e15"
+        "value": "83edc60db483cd7c1700895dca8ab42c08d816390b9fbc5ce57d86c1219772fa"
       },
       "conditional_dependencies": [
         "design-system",
@@ -783,7 +783,7 @@
       "owner": "forge",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "ec129503d9dad741fab17f9cf3ce191527e0f53a52fd3b26b2d2c656c6ee977e"
+        "value": "e0b2b77c9eb0ddbfc05a5d086383290708df79754e4d30254513eae71c4c1ce6"
       },
       "conditional_dependencies": [
         "coding-standards",
@@ -975,7 +975,7 @@
       "owner": "review-verify",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "97774722e89c8ec8dc55f3e2e617def03b601e71905539b8e7c19b3b4235e000"
+        "value": "dbdfb0136598b025c57e9b3897a6147ef0745356a773f870a5e5cafc5a62024b"
       },
       "conditional_dependencies": [
         "failure"
@@ -1549,7 +1549,7 @@
       "owner": "integrator",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "46a7cc696f0a24240db66a0f4e10a54603493e66d2d143c122a8d3cbea06c2fc"
+        "value": "7581fb77d34298fcd4dc6594193da95b91ed630ff0538e47de1f6bd905259dcd"
       },
       "conditional_dependencies": []
     },
@@ -1567,10 +1567,7 @@
         "global",
         "repository"
       ],
-      "dependencies": [
-        "code-quality",
-        "security-audit"
-      ],
+      "dependencies": [],
       "activation": {
         "when": [
           "Run configured quality and security checks with revision-bound results; diagnose failed, unavailable or inapplicable gates."
@@ -1580,9 +1577,12 @@
       "owner": "review-verify",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "4ac0e43dd89ea1b18924ac7021395cb2a7621146080a56747e61591a91cce60f"
+        "value": "a6c78d59478093bffba3444708277f78dbdde987c7e68e356549acb4847a59c0"
       },
-      "conditional_dependencies": []
+      "conditional_dependencies": [
+        "code-quality",
+        "security-audit"
+      ]
     },
     {
       "name": "kotlin-spring",
@@ -1810,9 +1810,7 @@
         "global",
         "repository"
       ],
-      "dependencies": [
-        "verify-test-evidence"
-      ],
+      "dependencies": [],
       "activation": {
         "when": [
           "Map assigned ATDD cases to executable verification at their required proof boundary and evaluate feature acceptance."
@@ -1822,9 +1820,10 @@
       "owner": "qa-evidence",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "82af6c46f0ecccfdc8e7e2affab4cbdb720e7f76afeba18a321e58edc82e52fa"
+        "value": "46feeaeab4d7c4ea4e8867e65bab1272451fc4f8d98c0b432f15c74ddf7bc030"
       },
       "conditional_dependencies": [
+        "verify-test-evidence",
         "record-test-video"
       ]
     },
@@ -1843,10 +1842,8 @@
         "repository"
       ],
       "dependencies": [
-        "worktree-integration",
         "task-implement",
         "quality-gates",
-        "acceptance-verification",
         "task-delivery"
       ],
       "activation": {
@@ -1858,10 +1855,12 @@
       "owner": "forge",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "8e64be3f2ab64f32617471b9598374116eff79d1a8a030a83d82a71a46e379f5"
+        "value": "d93206ce2c77a87c8ea051000e3d74598b4531354b866345bd773deb61cae303"
       },
       "conditional_dependencies": [
-        "design-system"
+        "acceptance-verification",
+        "design-system",
+        "worktree-integration"
       ]
     },
     {
@@ -1892,7 +1891,7 @@
       "owner": "forge",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "845d9432efa427f1d8005588387feb5c3f46e2ee6255921fca3a7ddc3296d9a4"
+        "value": "af977281ac768e90600ea34b303cbd7c855fa0eb947f0445284d21c86958233f"
       },
       "conditional_dependencies": [
         "atdd-creation",
@@ -1930,7 +1929,7 @@
       "owner": "forge",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "04ef4d9bbd98535d105c6e8778722f0bb7d2fa88fc5be5041a3039de675b4d0d"
+        "value": "f5b5e47b1a759ab95576ab3fccf57a8cc3760aa673192bfd0b2c0a5ad5644bce"
       },
       "conditional_dependencies": [
         "failure",
@@ -1953,7 +1952,6 @@
       ],
       "dependencies": [
         "quality-gates",
-        "verify-test-evidence",
         "pr"
       ],
       "activation": {
@@ -1965,9 +1963,11 @@
       "owner": "forge",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "52f587642a9f25e61a354dcc58c72402b1482b6d91c7f4cb4e8bb6ae0e4eed9c"
+        "value": "eadb7b2ac7675f2c4690cc34981ab2c6b451078fe34ad1169c60626824411137"
       },
-      "conditional_dependencies": []
+      "conditional_dependencies": [
+        "verify-test-evidence"
+      ]
     },
     {
       "name": "analyze-alert",
@@ -2027,7 +2027,7 @@
       "owner": "qa-evidence",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "bb35736593ddc4ecaeea80ed6a500c7ce6f77929b1941630efcb8544f46b212c"
+        "value": "04758a9ec845fa3c241d340adfadcf0455b1591b5a6e57e4e2c402ca47589cf1"
       },
       "conditional_dependencies": [
         "verify-test-evidence"
@@ -2057,7 +2057,7 @@
       "owner": "review-verify",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "3df4ece2054c95807c78d0c602be575eb7364ddbbd6643ebd67ce57c27a33e6a"
+        "value": "a125fa019819ed32614d67df055cb914dc7ff7e3f0633f1122b30d65ae1bf1d4"
       },
       "conditional_dependencies": []
     },
@@ -2291,7 +2291,7 @@
       "owner": "qa-evidence",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "6366c69aba69ce1c4fbbdbc828ff89b48a7ff234490169179405cd5f5465b45e"
+        "value": "4f09462da9e462f5b4a0cd97bff6e43bde42e821e0bc93ccc62c87fc779eab60"
       }
     },
     {

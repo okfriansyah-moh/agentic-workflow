@@ -1,3 +1,3 @@
-"""Portable native-agent workflow helpers."""
+"""Portable native-agent workflow runtime."""
 
-__version__ = "1.1.1"
+__version__ = "1.2.0"

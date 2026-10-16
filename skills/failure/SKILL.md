@@ -3,6 +3,8 @@ name: failure
 description: "Design failure classification, bounded retries, partial results, and recovery. Use when defining resilience behavior or fixing repeated failures."
 ---
 
+Resolve the pinned bundle from .ai/config.json and read [selection delivery](../../docs/DELIVERY.md). That policy governs review timing, quality gates, recovery budgets and literal delivery status. Reuse it while unchanged.
+
 # Failure handling
 
 Apply [the personal output wording policy](../../resources/wording/output-wording.md) to generated deliverables and completion text. Before handoff, run its shared read-only checker on the complete output, rephrase flagged text without changing meaning, and require a clean result.

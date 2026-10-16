@@ -32,6 +32,16 @@
           },
           "independent_state": {
             "type": "boolean"
+          },
+          "recording_required": {
+            "type": "boolean"
+          },
+          "assistive_technology": {
+            "type": "string",
+            "minLength": 1
+          },
+          "speech_required": {
+            "type": "boolean"
           }
         }
       }

@@ -3,6 +3,8 @@ name: code-review
 description: 'Review the changes since a fixed point (commit, branch, tag, or merge-base) along two axes: Standards (does the code follow this repo''s documented coding standards?) and Spec (does the code match what the originating issue/spec asked for?). Evaluates both axes and reports evidence-backed findings. Use when the user wants to review a branch, a PR, work-in-progress changes, or asks to "review since X".'
 ---
 
+Resolve the pinned bundle from .ai/config.json and read [selection delivery](../../docs/DELIVERY.md). That policy governs review timing, quality gates, recovery budgets and literal delivery status. Reuse it while unchanged.
+
 Apply [the personal output wording policy](../../resources/wording/output-wording.md) to generated deliverables and completion text. Before handoff, run its shared read-only checker on the complete output, rephrase flagged text without changing meaning, and require a clean result.
 
 Two-axis review of the diff between `HEAD` and a fixed point the user supplies:

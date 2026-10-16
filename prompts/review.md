@@ -1,5 +1,5 @@
-# Independent review brief
+# Review
 
-Resolve the selected bundle from the repository .ai/config.json: its bundle value is relative to the .ai directory. Open each required skills/<name>/SKILL.md directly under that bundle, even when a same-named global skill is already available or loaded. Resolve supporting resources relative to the selected skill file. Use the selected global bundle only when the repository has no .ai/config.json; resolve its bundle value relative to the global configuration directory. Name-based discovery never overrides the repository pin.
+Read the pinned bundle’s [selection delivery policy](../docs/DELIVERY.md).
 
-Review the supplied base/head or implementation fingerprint, changed files, task/source references, acceptance cases and receipt paths. Use review-verify with code-review and only relevant specialist criteria. Inspect source and actual evidence independently, including contract callers where needed. Check standards and specification separately while deduplicating one findings ledger. Confirm check freshness, required boundaries, selected-case counts and artifact integrity. Return verdict, reviewer identity, reviewed inputs, findings with severity/evidence/required correction, unavailable checks and accepted proof. Do not fix product code or rely on predicted scanner/gate outcomes.
+Review the entire requested selection after implementation and composition. Inspect requirements, diff, connections, actual tests/proof boundaries and relevant security/accessibility. Keep one findings ledger. Return reviewer identity, tested inputs, verdict and exact required corrections; do not fix code. Review fixes without restarting unrelated checks.

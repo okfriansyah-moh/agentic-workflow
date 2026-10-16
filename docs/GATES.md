@@ -1,6 +1,11 @@
 # Quality gates and proof boundaries
 
-The gate registry is the single command source for explicit verification, agent hook dispatch, optional Git hooks and CI. The project chooses its bundle through `.ai/config.json`. The `movie-app` profile has explicit required build contracts for the planned components. Because movie-app has no source code yet, these checks are not applicable during installation. An absent wrapper, script, scanner or report blocks an applicable check once source exists.
+Follow [selection delivery](DELIVERY.md). Thresholds remain blocking. New installation hooks use `hook_mode: feedback` and do not execute full gates after every edit; explicit final verification and CI remain required. Set `hook_mode: fast` explicitly to retain per-edit fast checks.
+
+For a recorded base, use `gate --repo . --stage delivery --affected --base BASE_SHA --reuse`. The affected graph includes downstream consumers and safely broadens for root/shared/unknown inputs. Full mode remains the default without `--affected`. Reuse is opt-in per check and must validate inputs, environment/toolchain and retained artifacts; runtime/network/scanner checks stay uncached unless safely supported. See the registry schema for `component_inputs`, `component_dependencies`, `shared_input_patterns`, and per-check `reuse` settings.
+
+
+The gate registry is the single command source for explicit verification, agent hook dispatch, optional Git hooks and CI. The project chooses its bundle through `.ai/config.json`. The `movie-app` profile has explicit required build contracts for the planned components. Checks become applicable when their declared sources exist; installation alone does not execute application verification. An absent wrapper, script, scanner or report blocks an applicable check once source exists.
 
 `gate --repo . --stage fast` runs lint, type, compilation, dependency and secret checks selected for existing sources. Integration adds behavior tests, architecture/database checks, coverage and SAST/dependency scanning. Delivery additionally selects browser acceptance. Each stage includes earlier stages. `--component NAME` limits component checks while retaining shared checks. CI must call the same command and honor its exit status. Hooks are feedback; they are not the completion authority.
 

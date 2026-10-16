@@ -87,6 +87,36 @@
             "required": [
               "report"
             ]
+          },
+          "reuse": {
+            "type": "object",
+            "required": [
+              "max_age_seconds",
+              "toolchain_files"
+            ],
+            "properties": {
+              "max_age_seconds": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "toolchain_files": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "uniqueItems": true
+              },
+              "artifacts": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "uniqueItems": true
+              }
+            },
+            "additionalProperties": false
           }
         }
       }
@@ -101,6 +131,36 @@
           "type": "boolean"
         }
       }
+    },
+    "component_inputs": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "minLength": 1
+        },
+        "uniqueItems": true
+      }
+    },
+    "component_dependencies": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "minLength": 1
+        },
+        "uniqueItems": true
+      }
+    },
+    "shared_input_patterns": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
     }
   }
 }

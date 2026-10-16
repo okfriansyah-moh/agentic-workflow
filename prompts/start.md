@@ -1,5 +1,5 @@
-# Start an approved implementation
+# Start
 
-Resolve the selected bundle from the repository .ai/config.json: its bundle value is relative to the .ai directory. Open each required skills/<name>/SKILL.md directly under that bundle, even when a same-named global skill is already available or loaded. Resolve supporting resources relative to the selected skill file. Use the selected global bundle only when the repository has no .ai/config.json; resolve its bundle value relative to the global configuration directory. Name-based discovery never overrides the repository pin.
+Read the pinned bundle’s [selection delivery policy](../docs/DELIVERY.md).
 
-Use Forge from the repository's selected agent-workflow bundle to execute the specified task or group in the existing plan. Read root AGENTS.md and .ai/config.json. Index the root/group/task documents, preserve identifiers, and distinguish readiness from runtime prerequisites. Record the integration revision and claim ownership before isolated writing worktrees. Use native subagents with inherited models and a maximum of three workers. Load only skills required by each brief. Require actual checks, independent review and integration-owner evidence before completion. Continue authorized delivery once the remote exists; report exact blockers. Do not execute unrelated plan tasks or rewrite source requirements/designs.
+Resolve the user selection and dependency options once. Follow the selected bundle’s docs/DELIVERY.md. Start one shared selection record, implement serially in one checkout by default, run affected checks, then obtain one combined review and publish within authorization. Preserve the quality bar and cumulative repair limits.

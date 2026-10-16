@@ -1,5 +1,8 @@
 # Install and maintain the workflow
 
+Version 1.2 installs the selection delivery policy and feedback-only edit hooks. Final explicit verification and CI preserve the existing quality gates. Updates create transactional backups and never resume application tasks.
+
+
 Python 3.11 or later and Git are the shared runtime requirements. The package itself uses the Python standard library. Native coding-agent clients, language toolchains, scanners, browser tooling and external accounts remain separate dependencies. Installation does not execute application tasks or install those tools.
 
 Run from the reusable source checkout:

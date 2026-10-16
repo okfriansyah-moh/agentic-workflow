@@ -2,23 +2,21 @@
 name: worktree-integration
 description: "Coordinate concurrent repository writers with claimed paths, isolated worktrees and verified semantic integration."
 metadata:
-  version: "1.0.0"
+  version: "1.2.0"
 ---
 
-# worktree-integration
+Resolve the pinned bundle from .ai/config.json and read [selection delivery](../../docs/DELIVERY.md). That policy governs review timing, quality gates, recovery budgets and literal delivery status. Reuse it while unchanged.
 
-Use the project-local CLI and the recorded integration revision. Read the task brief, dependency order and Git state before accepting a claim. All participating chats share the registry in Git's common metadata directory.
+# Compose contributions safely
 
-1. Claim allowed files or directories and resources before dispatch: ports, databases, output directories, schema ownership, dependency locks, build configuration, generators and migration allocation. Directory claims overlap their descendants. Shared write surfaces require one owner or explicit serialization.
-2. Create each writing lane from the recorded integration revision in an isolated worktree. Record the worker, branch, base, task IDs and claims. A native host's default worktree base must be checked rather than assumed. Keep uncommitted user work in its original checkout.
-3. Use separate ports/databases/output roots per lane. Read-only review may inspect the worker revision without a writing claim. Reuse a worker for related corrections; update its brief when ownership changes.
-4. Accept only commits with applicable gate receipts and independent review. One integrator holds the integration claim and merges accepted commits in dependency order. Preserve valid behavior from all lanes; resolve conflicts against shared contracts and acceptance cases. Git's literal union merge driver is unsuitable for application code.
-5. Check the combined tree and all affected integration cases. Worker success alone does not establish feature acceptance. Return newly found defects to the owning worker or scoped integration correction lane.
-6. After two failed correction rounds, retain branches, worktrees, receipts and claims needed for recovery, then report the exact blocking condition and next action. On resume reconcile task files, branch tips, base ancestry, claims and input fingerprints before reusing evidence.
-7. Clean up only owned worktrees after their contribution is integrated and preserved. Inspect dirty/untracked state; never force-reset or delete another lane's work.
+Serial work reuses a suitable checkout. Create claimed isolated worktrees only for concurrent writers or protection of unrelated work. Record exact base, owner, paths, resources and branch; serialize contracts, locks, schemas and generators.
 
-Return branch/base/head, claim IDs, integrated commits, conflict decisions, combined checks, remaining work and recovery paths.
+Use separate runtime/output resources per concurrent lane. Preserve user changes and other writers. Reuse lanes for corrections; read-only review needs no writing lane.
 
-Apply the [shared wording policy](../../resources/wording/output-wording.md) to authored output. Read supporting skills only for the current task.
+Compose tested commits in dependency order under one owner before the full-selection review. Selection-scoped composition requires current check receipts and ownership, but no per-worker review. It establishes pending-review status only. Legacy reviewed-worker integration remains available when explicitly selected.
 
-For actual helper commands, claim/check contracts and evidence proof fields, read [coordination and evidence contracts](../../docs/COORDINATION.md) before writing a brief or receipt. Use the documented structured objects and preserve captured argv/test-report requirements; do not infer a schema from narrative examples.
+Resolve conflicts against intended behavior; never use Git union merging for code. Run affected combined checks and obtain one independent selection review before acceptance/publication. Preserve failed branches and selection-wide counters across resumes. Clean only owned, preserved work after inspecting dirty/untracked files.
+
+Use [coordination contracts](../../docs/COORDINATION.md) for supported helpers.
+
+Apply the [shared wording policy](../../resources/wording/output-wording.md) before delivery.

@@ -7,6 +7,8 @@ metadata:
   tool-version: "0.1.22"
 ---
 
+Resolve the pinned bundle from .ai/config.json and read [selection delivery](../../docs/DELIVERY.md). That policy governs review timing, quality gates, recovery budgets and literal delivery status. Reuse it while unchanged.
+
 # Playwright CLI
 
 Resolve this skill from the repository's pinned bundle when present. Use the installed `playwright-cli` for a bounded browser task and the selected acceptance cases. The managed launcher selects its pinned Chromium runtime. Read [tool setup and limitations](../../docs/TOOLS.md) when the executable or browser is unavailable; installation and host trust are separate from a passing journey.

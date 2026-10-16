@@ -1,7 +1,5 @@
-# Evidence brief
+# Evidence
 
-Resolve the selected bundle from the repository .ai/config.json: its bundle value is relative to the .ai directory. Open each required skills/<name>/SKILL.md directly under that bundle, even when a same-named global skill is already available or loaded. Resolve supporting resources relative to the selected skill file. Use the selected global bundle only when the repository has no .ai/config.json; resolve its bundle value relative to the global configuration directory. Name-based discovery never overrides the repository pin.
+Read the pinned bundle’s [selection delivery policy](../docs/DELIVERY.md).
 
-For each assigned acceptance case record required boundary, setup, action, assertion, selected test and count, command receipt, environment and implementation/source fingerprint. Capture real requests/responses and independent database state when required. For UI, group coherent journeys with case start/action/result/end timestamps, screenshots, traces and original recordings. Inspect readable frames and redact sensitive material without disguising outcomes. Label rendered log summaries. Recompute artifact hashes and review freshness. Return failed, blocked or stale proof explicitly; Forge alone updates task execution fields after independent review.
-
-Read [coordination and evidence contracts](../docs/COORDINATION.md) for the current structured helper inputs and receipt/evidence requirements. Required checks are full command contracts, not names alone. Keep briefs consistent with that shared definition.
+Use actual case assertions and runner outputs with commands, exits, counts, inputs and environment. Ordinary UI observations need no mandatory recording. Inspect screenshots or media only when the required observation needs them; speech requirements need actual reader observation. No standalone evidence/method approval stage. Report incomplete/stale/failed proof literally.

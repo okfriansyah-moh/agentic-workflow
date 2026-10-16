@@ -135,6 +135,8 @@ def instruction_body(source, version, global_install):
     body = (source / "adapters/AGENTS.md").read_text().replace("{version}", version)
     if global_install:
         body = "## Portable workflow\n\nUse a repository's `.ai/config.json` and root AGENTS.md when present. Its pinned bundle governs all workflow checks. Otherwise use the installed agent-workflow skill catalog under `~/.local/share/agent-workflow/bundles/" + version + "/docs/SKILLS.md`. Keep personal and repository instructions intact. Use native subagents only when delegated work is authorized; keep reviewers independent. Honor explicit standing authorization within its stated scope; continue covered actions without asking again. Resolve routine choices from the request and project conventions, and ask only for essential missing information.\n"
+    if global_install:
+        body += "Read the selected bundle docs/DELIVERY.md before implementation; it governs selection-wide review, preserved quality gates, progress and repair budgets. Serial work can run directly; publication follows one combined independent review.\n"
     return START + "\n" + body.rstrip() + "\n" + END + "\n"
 
 
@@ -379,7 +381,7 @@ def inventory(source, root, state_root, global_install, profile):
     files = bundle_files(source, bundle)
     files.update(adapter_files(source, root, bundle, global_install, version))
     files.update(skill_links(source, bundle, global_install))
-    config = {"schema_version": 1, "bundle_version": version, "bundle": f"bundles/{version}", "profile": profile, "max_workers": 3, "max_correction_rounds": 2}
+    config = {"schema_version": 1, "bundle_version": version, "bundle": f"bundles/{version}", "profile": profile, "max_workers": 3, "max_correction_rounds": 2, "hook_mode": "feedback"}
     files[(prefix / "config.json").as_posix()] = {"kind": "file", "data": encoded(config)}
     launcher_path = ".local/bin/agent-workflow" if global_install else ".ai/bin/agent-workflow"
     files[launcher_path] = {"kind": "file", "data": launcher(global_install), "mode": 0o755}
@@ -790,6 +792,10 @@ def host_hook(args):
     except (ValueError, OSError, RuntimeError):
         return hook_feedback(host, "Workflow hook could not identify one safe repository from the native workspace and edit paths. Run the fast gate explicitly in the intended repository.")
     if root is None:
+        return {}
+    config = load(root / ".ai/config.json", {})
+    if config.get("hook_mode") == "feedback":
+        # Final selection verification is explicit; edits must not rerun full suites.
         return {}
     result = deduplicated_hook(root, host, normalized_hook_payload(root, host, payload))
     if result.get("status") in {"failed", "blocked", "error"}:

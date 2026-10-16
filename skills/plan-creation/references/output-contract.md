@@ -114,7 +114,7 @@ Validation table:
 |---|---|---|---|---|
 ```
 
-Check IDs are task-local. Every task includes `self-review` and `independent-review`, both Required `yes`. Other checks name assigned behavior (for example `unit-rules`, `real-query`, `visual-states`); Required is `yes` or `no`. Reserve `visual-review` as a required check when metadata says visual review required. Procedures can be human/agent observations rather than fabricated shell commands. Existing project commands are used as found; future commands are explicitly dependent contracts.
+Check IDs are task-local. Every task includes `self-review` and `independent-review`, both Required `yes`. Self-review is the implementation diff check; independent-review references the one final selection review covering all requested task IDs, not a separate task ceremony. Other checks name assigned behavior (for example `unit-rules`, `real-query`, `visual-states`); Required is `yes` or `no`. Reserve `visual-review` as a required check when metadata says visual review required. Procedures can be human/agent observations rather than fabricated shell commands. Existing project commands are used as found; future commands are explicitly dependent contracts.
 
 Evidence table:
 

@@ -720,5 +720,55 @@
   ],
   "source_exclude": [
     "docs/**"
+  ],
+  "component_inputs": {
+    "catalog": [
+      "services/catalog/**",
+      "tests/catalog/**"
+    ],
+    "core": [
+      "services/core/**",
+      "tests/core/**"
+    ],
+    "frontend": [
+      "frontend/**",
+      "tests/browser/**"
+    ],
+    "mcp": [
+      "mcp/**",
+      "tests/mcp/**"
+    ],
+    "media": [
+      "services/media/**",
+      "tests/media/**"
+    ]
+  },
+  "component_dependencies": {
+    "catalog": [],
+    "core": [],
+    "frontend": [
+      "core"
+    ],
+    "mcp": [
+      "core",
+      "catalog"
+    ],
+    "media": []
+  },
+  "shared_input_patterns": [
+    ".ai/**",
+    "AGENTS.md",
+    "CLAUDE.md",
+    "package.json",
+    "package-lock.json",
+    "gradle/**",
+    "gradlew*",
+    "*.gradle*",
+    "gradle.properties",
+    "gradle.lockfile",
+    "Makefile",
+    "ops/**",
+    "build-tools/**",
+    "services/shared/**"
   ]
 }

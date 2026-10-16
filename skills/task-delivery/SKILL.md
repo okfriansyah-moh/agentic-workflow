@@ -2,21 +2,19 @@
 name: task-delivery
 description: "Deliver verified scoped changes through commits and an authorized draft pull request when the remote is configured."
 metadata:
-  version: "1.0.0"
+  version: "1.2.0"
 ---
 
-# task-delivery
+Resolve the pinned bundle from .ai/config.json and read [selection delivery](../../docs/DELIVERY.md). That policy governs review timing, quality gates, recovery budgets and literal delivery status. Reuse it while unchanged.
 
-Read the task completion evidence, required gate results, independent review and integrated feature evidence. Confirm that they match the current implementation inputs and branch. Failed mandatory checks, stale evidence or unresolved required findings block delivery.
+# Publish reviewed selection changes
 
-Inspect Git status and stage only authorized task-related files. Preserve unrelated user changes and secrets. Use the repository's commit convention and a message describing the resulting behavior. Capture the final reviewed revision; a new implementation change requires affected checks/review before publishing.
+Confirm the entire requested selection has current passing required checks and one independent review with no unresolved required findings. A worker contribution or unreviewed composition is not selection acceptance.
 
-If the user has already authorized push and draft PR creation for this workflow, proceed without another approval loop once a valid remote exists. Confirm the intended remote/base from configuration and project context. If no remote exists, retain local commits/evidence and report the missing URL. Do not invent a destination.
+Inspect Git status and stage only authorized related files. Commit recoverable changes and preserve unrelated work. Verify the reviewed base/head and affected results; implementation changes require affected verification and review of the fixes.
 
-Create or update one draft PR for the integration branch using the host's supported tools or CLI. Include concrete behavior, verified revision, actual checks, evidence links and known limitations. Use pr for prose when useful; do not predict Sonar or reviewer outcomes. Attach the PR to the current chat when the host provides that action.
+Under existing authorization, push the selection branch and create/update its draft PR after review. Confirm the remote/base and account access. Attach every created or requested PR using the host tool when available. Missing remote/access blocks publication, not the existence of local work. Merge/deployment/external messages require authorization covering their outcome and destination.
 
-PR merge, deployment, production mutations and external messages require authorization covering those actions. Existing explicit standing authorization satisfies that requirement when the destination and requested outcome are established. Return branch/revision, PR URL if created, evidence and any exact blocked action. Avoid global add/force-push or replacing unrelated history.
+Record local head, remote PR head and the actual change: source commits, metadata only, or no publication. State implemented tasks, passed checks, review and remaining work literally. Do not report title/body edits as source delivery or imply unimplemented tasks are complete.
 
-Honor explicit standing authorization within its stated scope, including covered edits, installs, commands, worktrees, delegation, checks, commits and delivery. Continue covered actions without per-action approval. Use the request and project conventions for routine decisions; ask only for essential missing information or actions outside that authorization. Standing authorization never turns failed required checks into a pass or grants unrelated work.
-
-Apply the [shared wording policy](../../resources/wording/output-wording.md) to authored output. Read supporting skills only for the current task.
+Apply the [shared wording policy](../../resources/wording/output-wording.md) before delivery.

@@ -1,8 +1,12 @@
 # Portable agent workflow
 
-Version 1.1.1 provides eight native agent roles, 74 skills, worktree ownership, command receipts, quality gates and acceptance-evidence checks. Start work in your existing Codex, Claude Code, Copilot or Cursor chat. Python helpers coordinate files and verification; they do not launch a separate agent service.
+Version 1.2.0 provides eight native agent roles, 74 skills, worktree ownership, command receipts, quality gates and acceptance-evidence checks. Start work in your existing Codex, Claude Code, Copilot or Cursor chat. Python helpers coordinate files and verification; they do not launch a separate agent service.
 
 Use [the skill catalog](docs/SKILLS.md) to see every installed skill and its purpose. [Installation](docs/INSTALLATION.md), [host setup](docs/HOSTS.md), [coordination](docs/COORDINATION.md), [quality gates](docs/GATES.md) and [release 1.1 verification](docs/VERIFICATION-1.1.md) describe the operational details.
+
+## Selection delivery
+
+Read [the delivery policy](docs/DELIVERY.md). Implement the requested tasks/groups, verify affected behavior with unchanged blocking thresholds, obtain one independent combined review, fix findings, then publish. Track actual product progress every 45 minutes and share two optional capture-repair attempts or 20 minutes across the entire selection. Report local and published commits separately. New installations use feedback-only edit hooks; final explicit checks remain required.
 
 ## Install and inspect
 
@@ -17,7 +21,7 @@ python3 scripts/agent-workflow doctor --repo /path/to/project
 
 Use the `general` profile for another stack. Configure its actual checks before implementation; unsupported language checks are reported as blocked. The installer does not install application dependencies, scanners, browsers or accounts. It preserves existing user content and reports conflicts. Host trust and reload requirements remain visible.
 
-Each project contains its selected version at `.ai/bundles/1.1.1/`, native role adapters, skill discovery links, and `.ai/bin/agent-workflow`. Commit these together. Links point inside the project; no source-repository path is needed after a clone. A project pin governs its workflow even when the global bundle changes.
+Each project contains its selected version at `.ai/bundles/1.2.0/`, native role adapters, skill discovery links, and `.ai/bin/agent-workflow`. Commit these together. Links point inside the project; no source-repository path is needed after a clone. A project pin governs its workflow even when the global bundle changes.
 
 ```sh
 python3 .ai/bin/agent-workflow doctor --repo .
@@ -30,7 +34,7 @@ python3 .ai/bin/agent-workflow resume --repo .
 
 To execute a bounded task: “Use task-full-workflow to implement T001 from docs/06-PLAN.md. Reuse the approved documents and its test strategy. Use the installed Forge role for coordination, then independent review and evidence.” Native role profiles use the `aw-` prefix, such as `aw-forge` and `aw-review-verify`.
 
-To execute a task group: “Use Forge to implement the eligible tasks in G02. Claim isolated lanes from the recorded integration revision, use at most three workers, and integrate only accepted receipts.” Reduce worker count to host capacity. Forge never delegates to another Forge.
+To execute a task group: “Use Forge to implement the eligible tasks in G02. Implement serially in one suitable checkout by default. Claim isolated lanes only for concurrent writers, then compose tested contributions before one combined selection review.” Reduce worker count to host capacity. Forge never delegates to another Forge.
 
 To resume: “Resume the retained workflow. Reconcile task files, Git revisions, claims, receipts and evidence before continuing. Reuse valid work and report the precise next action for stale or blocked work.”
 

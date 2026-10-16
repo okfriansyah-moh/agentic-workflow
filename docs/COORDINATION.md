@@ -1,5 +1,42 @@
 # Ownership, execution, integration, and evidence
 
+[Selection delivery](DELIVERY.md) is the default execution policy. Serial work reuses a suitable checkout; concurrent writing lanes are optional. Composition validates current checks and ownership but remains pending-review until one independent review covers the entire requested selection. The legacy strict integration path below remains available explicitly.
+
+## One durable selection
+
+Use `.ai/bin/agent-workflow selection --repo . --action ACTION --spec INPUT.json`. Actions are `start`, `checkpoint`, `repair`, `accept`, and `status`. They use Git-shared locked state across all worktrees; they never dispatch application work or publish source.
+
+A start input identifies the owner, outcome, product paths, task IDs (or `plan` plus `group_ids`), dependency map, required check contracts and known PR head. Example:
+
+```json
+{
+  "owner": "selection-owner",
+  "task_ids": ["T006", "T007"],
+  "outcome": "Working account and session journeys",
+  "product_paths": ["services/core", "frontend", "tests"],
+  "dependencies": {"T006": [], "T007": ["T006"]},
+  "completed_task_ids": [],
+  "pr_head": null,
+  "required_checks": [{"id": "selected-checks", "kind": "check", "argv": ["bash", "ops/bin/test-unit.sh", "--task", "T006"], "timeout": 300}]
+}
+```
+
+Use actual complete check contracts from the selection; this abbreviated example does not authorize omitting T007 checks. A saved plan derives dependencies and validates IDs/readiness. Explicitly supplied completed task IDs are only for a bounded request without a saved plan; the coordinator must establish their validity.
+
+Every later input contains `selection_id` and, for mutation, the recorded `owner`:
+
+- `checkpoint`: `next_action`, optional `receipts`, `pr_head` and `pr_metadata_changed`. Product changes/commits are derived from Git; valid receipt checks may establish tested predecessors. The result distinguishes local work and published revision. Check at least every 2700 seconds. Support-only checkpoints return attention and an action to leave support activity.
+- `repair`: `phase: begin` plus `reason`, or `phase: end` plus `outcome`. Register only optional capture-tool repair here. Wall time includes open attempts across resume. The shared budget stops at two attempts or 1200 seconds; new phases/overlapping selections cannot reset it.
+- `status`: inspect selected tasks, development eligibility, checkpoint deadline, budget, current revision and acceptance freshness.
+- `accept`: one final whole-selection `receipt`, one independent `review`, and `evidence` when the start input declares requirements. The review must cover exactly the selection task IDs, current inputs and all required findings. One final receipt can link the existing runners; it does not require per-task review/receipt ceremonies.
+
+Capture selected checks through `receipt --repo . --spec checks.json` using `selection_id` and the existing claim/check contract fields. The helper retains actual output and input provenance; selection acceptance rejects fabricated, stale or incomplete receipts. Claim input `reuse_worktree: true` records a suitable current checkout instead of creating another one. Include `selection_id` when claiming tested in-selection dependencies.
+
+For concurrent composition, add `selection_id` to the existing integration spec. Worker receipts/ownership remain required; individual worker reviews are not. The result is `pending-review` and cannot substitute for final selection acceptance. Required correction counts follow selection identity rather than mutable group names.
+
+Ordinary browser cases may use retained assertion artifacts or `direct_observation`. Set `recording_required: true` only for required media; its stream/timestamp/frame validation remains strict. Requirements with `assistive_technology` require an actual `assistive_observation` containing observer, tool, passed result, observations and a retained artifact. `speech_required: true` additionally requires `speech_observed: true`; DOM or audio-energy checks alone are insufficient.
+
+
 The chat's native Forge coordinator owns task-status updates. Python helpers read plan files, reserve writing lanes, create worktrees, capture actual commands, and inspect receipts. They do not launch an agent, interpret Markdown as commands, edit source requirements, or dispatch an application task during installation.
 
 ## Index an existing plan
@@ -12,7 +49,7 @@ The supported version-1 format uses `kind: plan`, a `plan_root`, source IDs/path
 
 The index checks source digests, linked files and Markdown section targets, unique task/group ownership, integration-owner membership, known dependency IDs, and dependency cycles. It preserves IDs, references, acceptance IDs, change surfaces, and task statuses. `execution_eligible` means Ready with Done dependencies; it does not establish installed tools, available services, accepted reviews, task completion, or feature acceptance. Task files remain the execution record. Index output can be rebuilt at any time.
 
-## Reserve a writing lane
+## Concurrent writing lanes and legacy strict integration
 
 Create a JSON brief under `.ai/state/`. The coordinator supplies exact sources, case IDs, and checks from the accepted task. The `plan` field is recommended for planned implementation: it derives dependencies, verifies eligibility, and rejects claims outside task change surfaces. Omit it for a bounded request without a saved plan, providing explicit dependency IDs instead.
 
@@ -125,7 +162,7 @@ Checks must match the integrator brief's exact required contracts. The checkout 
 
 Accepted commits are merged with ordinary Git merge semantics. The workflow does not use the line-union merge driver. Merge conflicts remain in the integration worktree with both branches and the exact next action retained. Resolve conflicts against behavior and source contracts, commit the resolution, obtain fresh review as appropriate, and rerun combined checks. A successful merge/check receipt still requires independent review of the integrated result and the feature owner's acceptance evidence.
 
-Two failed integration/correction attempts stop that group with branches and records retained. An operator must inspect the failures and define a revised work-group decision before using a new group identifier; renaming a group to hide a failure is not a repair. The helper does not auto-reset a branch, discard changes, delete a worker, or publish a PR.
+Two failed required integration/correction attempts stop that group with branches and records retained. Optional media repair additionally shares a selection-wide two-attempt/20-minute budget; renamed phases cannot reset it. An operator must inspect the failures and define a revised work-group decision before using a new group identifier; renaming a group to hide a failure is not a repair. The helper does not auto-reset a branch, discard changes, delete a worker, or publish a PR.
 
 ## Verify acceptance evidence
 
@@ -143,7 +180,7 @@ Requirements JSON lists nonempty unique case IDs with exact proof boundaries:
 
 Evidence JSON supplies `requirements_sha256` and `input_fingerprint`, different `implementer` and `reviewer` identities, matching `integration_owner` for feature completion, and a `cases` array. Each case has `id`, matching `boundary`, `result: "passed"`, nonempty observable `assertions`, and nonempty `artifacts` with repository-relative `path` and `sha256`. The requirements hash is SHA-256 of UTF-8 JSON serialized with sorted keys, no whitespace between items, and non-ASCII characters preserved. It binds the exact supplied requirements even when that JSON lives in an excluded evidence/state directory or outside the repository. The evidence command reports the expected digest with its result. If independent state is required, `state_observation` contains a concrete `method` and its retained `artifact` path/hash. Real database or transport proof cannot be relabeled unit/mocked output.
 
-Browser or client-UI cases additionally contain a `recording` with media `path`, `sha256`, `[start, end]` timestamps, `redaction_checked: true`, and `inspected_frames`. Each frame records its path/hash, timestamp, source `recording_sha256`, inspector identity, `readable: true`, and observations of visible actions/results. `ffprobe` verifies that the recording contains video with positive duration and that case intervals fit. Frame files must decode as actual images. `ffmpeg` compares their decoded RGB pixels with the recording at each declared extraction timestamp; a renamed text file or unrelated screenshot cannot establish a sampled video frame. Missing tools/media/frames, mismatched hashes, bad timestamps, unreadable-frame findings, absent mappings, or stale inputs block verification.
+Browser or client-UI cases with `recording_required: true` additionally contain a `recording` with media `path`, `sha256`, `[start, end]` timestamps, `redaction_checked: true`, and `inspected_frames`. Each frame records its path/hash, timestamp, source `recording_sha256`, inspector identity, `readable: true`, and observations of visible actions/results. `ffprobe` verifies that the recording contains video with positive duration and that case intervals fit. Frame files must decode as actual images. `ffmpeg` compares their decoded RGB pixels with the recording at each declared extraction timestamp; a renamed text file or unrelated screenshot cannot establish a sampled video frame. Missing tools/media/frames, mismatched hashes, bad timestamps, unreadable-frame findings, absent mappings, or stale inputs block verification.
 
 A complete database evidence object follows this shape:
 

@@ -272,10 +272,28 @@ class InstallerTests(unittest.TestCase):
         self.assertIn("AGENTS.md", paths)
         self.assertIn(".claude/settings.json", paths)
 
+    def enable_edit_checks(self):
+        path = self.repo / ".ai/config.json"
+        config = json.loads(path.read_text())
+        config["hook_mode"] = "fast"
+        path.write_text(json.dumps(config))
+
+    def test_feedback_hooks_do_not_repeat_gates_after_edits(self):
+        api.install(self.args())
+        self.assertEqual(json.loads((self.repo / ".ai/config.json").read_text())["hook_mode"], "feedback")
+        for host in ("codex", "claude", "cursor", "copilot"):
+            payload = {"cwd": str(self.repo), "workspace_roots": [str(self.repo)],
+                       "session_id": "selection", "tool_use_id": "edit-1"}
+            with self.subTest(host=host), patch.object(api, "local_call") as execute:
+                with patch.object(sys, "stdin", io.StringIO(json.dumps(payload))):
+                    self.assertEqual(api.host_hook(argparse.Namespace(host=host, scope="repo")), {})
+                execute.assert_not_called()
+
     def test_host_hook_uses_pinned_runtime_and_global_does_not_assume_local_trust(self):
         gates = self.source / "agent_workflow/gates.py"
         gates.write_text("def register(parser):\n    command = parser.add_parser('hook')\n    command.add_argument('--repo')\n    command.add_argument('--host')\n    command.add_argument('--stage')\n    command.set_defaults(handler=lambda args: {'status': 'failed'})\n")
         api.install(self.args())
+        self.enable_edit_checks()
         payload = json.dumps({"cwd": str(self.repo)})
         with patch.object(sys, "stdin", io.StringIO(payload)):
             result = api.host_hook(argparse.Namespace(host="codex", scope="global"))
@@ -288,6 +306,7 @@ class InstallerTests(unittest.TestCase):
         gates = self.source / "agent_workflow/gates.py"
         gates.write_text("import hashlib\nfrom pathlib import Path\ndef call(args):\n    path = Path(args.repo)/'.ai/state/count'\n    path.parent.mkdir(parents=True,exist_ok=True)\n    path.write_text(str(int(path.read_text())+1 if path.exists() else 1))\n    return {'status':'passed'}\ndef fingerprint(args):\n    source=Path(args.repo)/'input.txt'\n    return {'sha256':hashlib.sha256(source.read_bytes() if source.exists() else b'').hexdigest()}\ndef register(parser):\n    command=parser.add_parser('hook')\n    command.add_argument('--repo')\n    command.add_argument('--host')\n    command.add_argument('--stage')\n    command.set_defaults(handler=call)\n    command=parser.add_parser('fingerprint')\n    command.add_argument('--repo')\n    command.set_defaults(handler=fingerprint)\n")
         api.install(self.args())
+        self.enable_edit_checks()
         payload = {"cwd": str(self.repo), "session_id": "session", "tool_use_id": "edit-1"}
         def invoke(scope, context):
             with patch.object(sys, "stdin", io.StringIO(json.dumps(context))):
@@ -353,6 +372,7 @@ class InstallerTests(unittest.TestCase):
     def real_hook_fixture(self):
         shutil.copy2(api.ROOT / "agent_workflow/gates.py", self.source / "agent_workflow/gates.py")
         api.install(self.args())
+        self.enable_edit_checks()
         program = ("import json; from pathlib import Path; "
                    "count=Path('.ai/state/gate-count'); count.parent.mkdir(parents=True,exist_ok=True); "
                    "count.write_text(str(int(count.read_text())+1 if count.exists() else 1)); "

@@ -5,6 +5,8 @@ metadata:
   version: "1.1.0"
 ---
 
+Resolve the pinned bundle from .ai/config.json and read [selection delivery](../../docs/DELIVERY.md). That policy governs review timing, quality gates, recovery budgets and literal delivery status. Reuse it while unchanged.
+
 # record-test-video
 
 Read the assigned acceptance cases and adopted design states. Plan coherent journeys so shared setup appears once, while each case has identifiable start/end timestamps and an asserted outcome. Use actual Playwright/browser execution against the required environment; a mock/demo recording has only that boundary.
