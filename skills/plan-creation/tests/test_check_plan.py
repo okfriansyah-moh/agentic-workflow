@@ -123,6 +123,21 @@ class PackageChecks(unittest.TestCase):
         other.write_text(self.paths["task"].read_text())
         self.finding("duplicate-task")
 
+    def task_links_wrong_existing_group(self):
+        other = self.paths["base"] / "docs/other-group.md"
+        other.write_text("# Other group\n")
+        task = self.paths["task"]
+        task.write_text(task.read_text().replace("../group.md", "../../../other-group.md"))
+
+    def test_sequential_task_links_its_containing_group(self):
+        self.sequential()
+        self.task_links_wrong_existing_group()
+        self.finding("sequential-group-navigation")
+
+    def test_legacy_group_navigation_remains_compatible(self):
+        self.task_links_wrong_existing_group()
+        self.assertEqual(self.run_check()[0], 0, self.run_check()[1])
+
     def historical_mapping(self):
         import re
         metadata(self.paths["task"], status="In progress")

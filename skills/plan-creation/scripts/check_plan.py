@@ -347,6 +347,14 @@ class Checker:
                 self.add("sequential-tasks", group.path, f"This stage requires consecutive task IDs {expected} in that order.")
             offset += len(members)
         self.validate_sequential_dependencies()
+        self.validate_sequential_group_navigation()
+
+    def validate_sequential_group_navigation(self):
+        for task in self.tasks.values():
+            containing = task.path.parent.parent / "group.md"
+            targets = [local_link(task.path, target) for target in link_targets(unfence(task.body))]
+            if not any(target and target[0] == containing for target in targets):
+                self.add("sequential-group-navigation", task.path, "Task navigation must link to its containing group.md.")
 
     def validate_sequential_dependencies(self):
         for tid, task in self.tasks.items():
