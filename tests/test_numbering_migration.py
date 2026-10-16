@@ -127,6 +127,72 @@ class MigrationTests(GitFixture):
         with registry(self.repo) as state:
             self.assertEqual(state['selections'][item['id']]['task_ids'], ['T1', 'T2'])
 
+    def target_branch(self, item):
+        with registry(self.repo) as state:
+            state['claims']['owned'] = {'id': 'owned', 'status': 'active', 'owner': item['owner'], 'selection_id': item['id'], 'task_ids': ['T1'], 'branch': 'previous-claim', 'worktree': str(self.repo), 'repository': str(self.repo), 'base_revision': 'historical-base', 'last_receipt': 'historical-receipt'}
+        git(self.repo, 'add', '.')
+        git(self.repo, 'commit', '-m', 'numbered plan')
+        git(self.repo, 'checkout', '-b', 'codex/numbering-handoff')
+
+    def test_absent_rebind_flag_preserves_selection_and_claim_branches(self):
+        item, _ = self.prepare()
+        self.target_branch(item)
+        result = self.migrate(item)
+        self.assertEqual(result['selection']['branch'], item['branch'])
+        with registry(self.repo) as state:
+            self.assertEqual(state['claims']['owned']['branch'], 'previous-claim')
+
+    def test_rebind_uses_git_branch_and_retains_old_bindings(self):
+        item, _ = self.prepare()
+        self.target_branch(item)
+        result = self.migrate(item, rebind_branch=True)
+        saved = result['selection']
+        self.assertEqual(saved['branch'], 'codex/numbering-handoff')
+        audit = saved['numbering_migrations'][0]
+        self.assertEqual(audit['target_revision'], revision(self.repo))
+        self.assertEqual(audit['branch_bindings']['selection']['before'], item['branch'])
+        self.assertEqual(audit['branch_bindings']['claims']['owned']['before'], 'previous-claim')
+        with registry(self.repo) as state:
+            claim = state['claims']['owned']
+            self.assertEqual(claim['branch'], 'codex/numbering-handoff')
+            self.assertEqual(claim['worktree'], str(self.repo))
+            self.assertEqual(claim['repository'], str(self.repo))
+            self.assertEqual(claim['base_revision'], 'historical-base')
+            self.assertEqual(claim['last_receipt'], 'historical-receipt')
+
+    def test_dirty_tracked_checkout_blocks_rebind_transaction(self):
+        item, _ = self.prepare()
+        self.target_branch(item)
+        (self.repo / 'PLAN.md').write_text((self.repo / 'PLAN.md').read_text() + '\nChanged\n')
+        with registry(self.repo) as state:
+            before = deepcopy(state)
+        with self.assertRaises(CoordinationError):
+            self.migrate(item, rebind_branch=True)
+        with registry(self.repo) as state:
+            self.assertEqual(state, before)
+
+    def test_untracked_file_blocks_rebind_transaction(self):
+        item, _ = self.prepare()
+        self.target_branch(item)
+        (self.repo / 'untracked.txt').write_text('pending work')
+        with registry(self.repo) as state:
+            before = deepcopy(state)
+        with self.assertRaises(CoordinationError):
+            self.migrate(item, rebind_branch=True)
+        with registry(self.repo) as state:
+            self.assertEqual(state, before)
+
+    def test_detached_checkout_blocks_rebind_transaction(self):
+        item, _ = self.prepare()
+        self.target_branch(item)
+        git(self.repo, 'checkout', '--detach')
+        with registry(self.repo) as state:
+            before = deepcopy(state)
+        with self.assertRaises(CoordinationError):
+            self.migrate(item, rebind_branch=True)
+        with registry(self.repo) as state:
+            self.assertEqual(state, before)
+
     def test_translate_live_is_simultaneous_and_preserves_literals(self):
         item = {'task_ids': ['T006', 'T009'], 'acceptance_ids': ['T009-A1', 'REQ-009'], 'paths': ['old/task.md', 'src'], 'checkpoints': [{'task_ids': ['T009']}], 'required_checks': [{'argv': ['runner', '--task', 'T009', '--task=T006', '--label', 'T009']} ]}
         result = _translate_live(item, {'T006': 'T008', 'T009': 'T006'}, {'old/task.md': 'new/task.md'}, {})

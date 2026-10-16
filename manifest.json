@@ -234,7 +234,7 @@
       "owner": "forge",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "02a6f01f1adabf0e35d152ef4f6ad150c47e2417f53e2cf5197ca9c44a1de899"
+        "value": "44382526d657237430c65d2870f5ad5d32a038d160b6d1fd3d37c081f73adc27"
       },
       "conditional_dependencies": [
         "design-system",

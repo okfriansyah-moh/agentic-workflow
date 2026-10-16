@@ -55,6 +55,18 @@ def _validate_groups(root, data, plan, index):
         raise CoordinationError('Migration must preserve all source tasks and target groups')
 
 
+def _validate_evidence(root, row, old_text):
+    section = r'^## Evidence\n.*?(?=^## |\Z)'
+    before_match = re.search(section, old_text, re.M | re.S)
+    after_text = (root / safe_relative(root, row['new_path'])).read_text()
+    after_match = re.search(section, after_text, re.M | re.S)
+    if before_match or after_match or row.get('evidence_sha256'):
+        if not before_match or not after_match or before_match[0] != after_match[0]:
+            raise CoordinationError('Migration must preserve the complete Evidence section')
+        if hashlib.sha256(before_match[0].encode()).hexdigest() != row.get('evidence_sha256'):
+            raise CoordinationError('Migration Evidence digest disagrees with source')
+
+
 def _validate_tasks(root, data, plan):
     meta, _ = frontmatter(root / safe_relative(root, plan))
     if meta.get('numbering') != 'sequential':
@@ -79,15 +91,7 @@ def _validate_tasks(root, data, plan):
             raise CoordinationError('Numbering migration must preserve task status')
         if before['depends_on'] != row['depends_on_before'] or expected != row['depends_on_after'] or after['depends_on'] != expected:
             raise CoordinationError('Migration must preserve dependency edges')
-        section = r'^## Evidence\n.*?(?=^## |\Z)'
-        before_match = re.search(section, old_text, re.M | re.S)
-        after_text = (root / safe_relative(root, row['new_path'])).read_text()
-        after_match = re.search(section, after_text, re.M | re.S)
-        if before_match or after_match or row.get('evidence_sha256'):
-            if not before_match or not after_match or before_match[0] != after_match[0]:
-                raise CoordinationError('Migration must preserve the complete Evidence section')
-            if hashlib.sha256(before_match[0].encode()).hexdigest() != row.get('evidence_sha256'):
-                raise CoordinationError('Migration Evidence digest disagrees with source')
+        _validate_evidence(root, row, old_text)
         target = (root / safe_relative(root, row['new_path'])).resolve()
         if target != (root / plan).parent / after['path'] or after['group'] != row['new_group']:
             raise CoordinationError('Target task identity/path disagrees with migration')
@@ -127,6 +131,25 @@ def _translate_live(item, ids, paths, groups):
     return result
 
 
+def _rebind_branch(root, item, claims, spec):
+    if 'rebind_branch' in spec and type(spec['rebind_branch']) is not bool:
+        raise CoordinationError('rebind_branch must be a boolean')
+    if not spec.get('rebind_branch'):
+        return None
+    if git(root, 'status', '--porcelain', '--untracked-files=all').stdout.strip():
+        raise CoordinationError('Branch rebinding requires a clean repository including untracked files')
+    branch = git(root, 'symbolic-ref', '--quiet', '--short', 'HEAD', check=False)
+    if branch.returncode or not branch.stdout.strip():
+        raise CoordinationError('Branch rebinding requires a named branch, not detached HEAD')
+    for claim in claims:
+        location = claim.get('worktree')
+        if not isinstance(location, str) or Path(location).resolve() != root.resolve():
+            raise CoordinationError('Branch rebinding requires every active claim in the current worktree')
+    target = branch.stdout.strip()
+    return {'selection': {'before': item.get('branch'), 'after': target},
+            'claims': {claim['id']: {'before': claim.get('branch'), 'after': target} for claim in claims}}
+
+
 def migrate(root, item, state, spec):
     path, fingerprint, data = _mapping(root, spec)
     previous = item.get('numbering_migrations', [])
@@ -150,11 +173,17 @@ def migrate(root, item, state, spec):
     affected = [claim for claim in active if set(claim['task_ids']) & set(item['task_ids'])]
     if any(claim['owner'] != item['owner'] or claim.get('selection_id') != item['id'] for claim in affected):
         raise CoordinationError('Affected active claims must belong to this selection owner')
+    bindings = _rebind_branch(root, item, affected, spec)
     migrated = _translate_live(item, ids, paths, groups)
     claims = {claim['id']: _translate_live(claim, ids, paths, groups) for claim in affected}
     migrated['numbering_migrations'] = [{'mapping': path, 'sha256': fingerprint,
         'source_revision': data['source_revision'], 'target_revision': revision(root),
         'owner': item['owner'], 'created_at': time.time()}]
+    if bindings is not None:
+        migrated['branch'] = bindings['selection']['after']
+        for identity, binding in bindings['claims'].items():
+            claims[identity]['branch'] = binding['after']
+        migrated['numbering_migrations'][0]['branch_bindings'] = bindings
     state['selections'][item['id']] = migrated
     state['claims'].update(claims)
     return {'status': 'ok', 'idempotent': False, 'selection': migrated, 'claims': list(claims)}

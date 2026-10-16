@@ -346,6 +346,9 @@ class Checker:
             if members != expected:
                 self.add("sequential-tasks", group.path, f"This stage requires consecutive task IDs {expected} in that order.")
             offset += len(members)
+        self.validate_sequential_dependencies()
+
+    def validate_sequential_dependencies(self):
         for tid, task in self.tasks.items():
             dependencies = task.meta.get("depends_on", [])
             if not isinstance(dependencies, list):
@@ -511,31 +514,35 @@ class Checker:
             ids_map = {row["old_id"]: row["new_id"] for row in rows}
             verified = {}
             for row in rows:
-                task = self.tasks[row["new_id"]]
-                old_path = Path(row["old_path"])
-                if old_path.is_absolute() or ".." in old_path.parts:
-                    raise ValueError("Historical source paths must remain inside the repository.")
-                original = subprocess.run(["git", "-C", root, "show", f"{source}:{old_path.as_posix()}"], capture_output=True, text=True, check=True).stdout
-                match = re.match(r"\A---\r?\n(.*?)\r?\n---(?:\r?\n|$)", original, re.S)
-                before = yaml.load(match[1], Loader=UniqueLoader) if match else {}
-                dependencies = [ids_map[dep] for dep in before.get("depends_on", [])]
-                expected = (before.get("id"), before.get("group"), before.get("status"), before.get("depends_on"))
-                supplied = (row["old_id"], row["old_group"], row["status_before"], row["depends_on_before"])
-                if expected != supplied or task.meta.get("group") != row["new_group"] or task.meta.get("status") != row["status_before"] or task.meta.get("depends_on") != dependencies or dependencies != row["depends_on_after"]:
-                    raise ValueError(f"Historical task identity, status or dependency mismatch: {row['new_id']}.")
-                if task.path != (Path(root) / row["new_path"]).resolve():
-                    raise ValueError("Historical target task path mismatch.")
-                pattern = r"^## Evidence\n.*?(?=^## |\Z)"
-                old = re.search(pattern, original, re.M | re.S)
-                current = re.search(pattern, task.body, re.M | re.S)
-                if not old or not current or old[0] != current[0] or hashlib.sha256(old[0].encode()).hexdigest() != row["evidence_sha256"]:
-                    raise ValueError(f"Historical Evidence changed: {row['new_id']}.")
+                task, section = self.historical_task(root, source, row, ids_map)
                 if row["status_before"] != "Not started":
-                    verified[task.path] = current[0]
+                    verified[task.path] = section
             self.archival_evidence = verified
             self.add("archival-evidence", self.entry, f"Verified {len(verified)} preserved Evidence sections against {source}; historical acceptance is retained, no fresh product acceptance established.", "warning")
         except (OSError, ValueError, KeyError, TypeError, subprocess.CalledProcessError) as exc:
             self.add("historical-mapping", self.entry, str(exc))
+
+    def historical_task(self, root, source, row, ids_map):
+        task = self.tasks[row["new_id"]]
+        old_path = Path(row["old_path"])
+        if old_path.is_absolute() or ".." in old_path.parts:
+            raise ValueError("Historical source paths must remain inside the repository.")
+        original = subprocess.run(["git", "-C", root, "show", f"{source}:{old_path.as_posix()}"], capture_output=True, text=True, check=True).stdout
+        match = re.match(r"\A---\r?\n(.*?)\r?\n---(?:\r?\n|$)", original, re.S)
+        before = yaml.load(match[1], Loader=UniqueLoader) if match else {}
+        dependencies = [ids_map[dep] for dep in before.get("depends_on", [])]
+        expected = (before.get("id"), before.get("group"), before.get("status"), before.get("depends_on"))
+        supplied = (row["old_id"], row["old_group"], row["status_before"], row["depends_on_before"])
+        if expected != supplied or task.meta.get("group") != row["new_group"] or task.meta.get("status") != row["status_before"] or task.meta.get("depends_on") != dependencies or dependencies != row["depends_on_after"]:
+            raise ValueError(f"Historical task identity, status or dependency mismatch: {row['new_id']}.")
+        if task.path != (Path(root) / row["new_path"]).resolve():
+            raise ValueError("Historical target task path mismatch.")
+        pattern = r"^## Evidence\n.*?(?=^## |\Z)"
+        old = re.search(pattern, original, re.M | re.S)
+        current = re.search(pattern, task.body, re.M | re.S)
+        if not old or not current or old[0] != current[0] or hashlib.sha256(old[0].encode()).hexdigest() != row["evidence_sha256"]:
+            raise ValueError(f"Historical Evidence changed: {row['new_id']}.")
+        return task, current[0]
 
     def validate_evidence(self, task):
         checks = {}
