@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "version": "1.2.0",
+  "version": "1.2.1",
   "bundle": {
     "name": "agent-workflow",
-    "version": "1.2.0"
+    "version": "1.2.1"
   },
   "counts": {
     "reuse": 47,
@@ -234,7 +234,7 @@
       "owner": "forge",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "83edc60db483cd7c1700895dca8ab42c08d816390b9fbc5ce57d86c1219772fa"
+        "value": "02a6f01f1adabf0e35d152ef4f6ad150c47e2417f53e2cf5197ca9c44a1de899"
       },
       "conditional_dependencies": [
         "design-system",

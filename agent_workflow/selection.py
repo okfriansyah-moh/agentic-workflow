@@ -363,6 +363,9 @@ def selection(repo, action, spec):
             return _status(root, item, state)
         if spec.get('owner') != item['owner']:
             raise CoordinationError('Selection mutations require the recorded owner')
+        if action == 'migrate':
+            from .numbering_migration import migrate
+            return migrate(root, item, state, spec)
         actions = {'checkpoint': _checkpoint, 'repair': _repair, 'accept': _accept}
         if action not in actions:
             raise CoordinationError(f'Unknown selection action: {action}')

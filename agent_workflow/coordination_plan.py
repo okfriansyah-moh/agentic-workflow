@@ -84,7 +84,10 @@ def _block(lines, pos, indent):
 
 
 def frontmatter(path: Path):
-    text = path.read_text(encoding='utf-8')
+    return frontmatter_text(path.read_text(encoding='utf-8'), path)
+
+
+def frontmatter_text(text, path='<document>'):
     parts = text.split('---', 2)
     if len(parts) != 3 or parts[0].strip():
         raise PlanError(f'Missing delimited frontmatter: {path}')
@@ -225,6 +228,7 @@ def task_index(plan):
         groups.append({**group, 'path': entry['path'], 'reference_errors': failures})
     if set(membership) != set(tasks):
         raise PlanError(f'Unowned tasks: {sorted(set(tasks) - set(membership))}')
+    _sequential(meta, groups, tasks)
     sources = _sources(meta.get('sources', []), root)
     _, errors = _local_links(path, body)
     errors += [error for item in [*tasks.values(), *groups] for error in item['reference_errors']]
@@ -262,3 +266,24 @@ def _sources(entries, root):
         digest = _hash(source) if source.is_file() else None
         sources.append({**entry, 'actual_sha256': digest, 'matches': digest == entry.get('sha256')})
     return sources
+
+
+def _sequential(meta, groups, tasks):
+    if meta.get('numbering') is None:
+        return
+    if meta['numbering'] != 'sequential':
+        raise PlanError('Unsupported numbering mode')
+    offset = 1
+    width = max(2, len(str(len(groups))))
+    for number, group in enumerate(groups, 1):
+        prefix = f'{number:0{width}d}'
+        if group['id'] != f'G{prefix}' or not Path(group['path']).parent.name.startswith(prefix + '-'):
+            raise PlanError('Sequential group ID and folder prefix must match their position')
+        expected = [f'T{n:03d}' for n in range(offset, offset + len(group['tasks']))]
+        if group['tasks'] != expected:
+            raise PlanError('Sequential stages require contiguous task ID ranges')
+        offset += len(expected)
+    for identity, task in tasks.items():
+        for dependency in task['depends_on']:
+            if dependency not in tasks or int(dependency[1:]) >= int(identity[1:]):
+                raise PlanError('Sequential prerequisites must precede their consumers')

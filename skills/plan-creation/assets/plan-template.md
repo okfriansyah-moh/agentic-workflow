@@ -1,6 +1,7 @@
 ---
 kind: plan
 schema_version: 1
+numbering: sequential
 readiness: Draft
 plan_root: plan
 repositories:
@@ -30,7 +31,7 @@ groups:
 |---|---|---|---|
 | G01 | {{observable_outcome}} | {{prerequisites}} | [{{order_prefix}}-{{feature}}](plan/{{order_prefix}}-{{feature}}/group.md) |
 
-{{Numerical first-start order derived from task dependencies, returns to earlier groups for integration, and safe parallel opportunities with write/resource conflicts.}}
+{{Sequential stage order derived from task dependencies, shared feature labels across split stages, and safe parallel opportunities with write/resource conflicts.}}
 
 ## Obligation coverage
 

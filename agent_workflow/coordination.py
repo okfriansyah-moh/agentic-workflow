@@ -247,7 +247,7 @@ def _resume_command(args):
 def register(subparsers):
     delivery = subparsers.add_parser('selection', help='Track one delivery selection, progress, repair limits and combined acceptance')
     delivery.add_argument('--repo', required=True)
-    delivery.add_argument('--action', choices=('start', 'checkpoint', 'repair', 'accept', 'status'), required=True)
+    delivery.add_argument('--action', choices=('start', 'checkpoint', 'repair', 'accept', 'status', 'migrate'), required=True)
     delivery.add_argument('--spec', required=True)
     delivery.set_defaults(handler=_selection_command)
     index = subparsers.add_parser('task-index', help='Read plan/task sources, dependencies and ownership without dispatching work')

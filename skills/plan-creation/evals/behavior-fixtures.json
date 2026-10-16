@@ -4,39 +4,105 @@
     {
       "id": "spoolin-discovery",
       "request": "Create only the catalog-discovery feature planning package from the supplied SpoolIn sources. Preserve all project files and label this bounded scope.",
-      "inputs": ["PRD discovery requirements", "design specification, discovery states and component contracts", "techdoc frontend/query handoff and API contracts", "ATDD-002, ATDD-256, ATDD-303 and relevant fixtures"],
-      "evaluate": ["Feature-named directory and separate task files", "Real versus controlled proof ownership", "All applicable UI states and selected render contexts", "No production test/evidence claims", "Exact source references and dependency prerequisites"]
+      "inputs": [
+        "PRD discovery requirements",
+        "design specification, discovery states and component contracts",
+        "techdoc frontend/query handoff and API contracts",
+        "ATDD-002, ATDD-256, ATDD-303 and relevant fixtures"
+      ],
+      "evaluate": [
+        "Feature-named directory and separate task files",
+        "Real versus controlled proof ownership",
+        "All applicable UI states and selected render contexts",
+        "No production test/evidence claims",
+        "Exact source references and dependency prerequisites"
+      ]
     },
     {
       "id": "small-cli",
       "request": "Plan a small CLI negative-count validation fix using the supplied source and existing parser.",
-      "evaluate": ["One cohesive task is sufficient", "No invented frontend, database or setup phase", "Unit and actual CLI-boundary assertions", "Fresh independent review still required"]
+      "evaluate": [
+        "One cohesive task is sufficient",
+        "No invented frontend, database or setup phase",
+        "Unit and actual CLI-boundary assertions",
+        "Fresh independent review still required"
+      ]
     },
     {
       "id": "cross-repository",
       "request": "Plan a producer/consumer contract change across two repositories with a shared generated output and integration fixture.",
-      "evaluate": ["Each repository has an explicit root", "Contract precedes consumers", "Shared writes/resources prevent unsafe concurrency", "Real combined outcome has one verification owner"]
+      "evaluate": [
+        "Each repository has an explicit root",
+        "Contract precedes consumers",
+        "Shared writes/resources prevent unsafe concurrency",
+        "Real combined outcome has one verification owner"
+      ]
     },
     {
       "id": "source-conflict",
       "request": "Plan two independent behaviors where one has conflicting accepted limits and the other has complete source evidence.",
-      "evaluate": ["Affected behavior stays a precise gap", "Independent work progresses", "No silent source rewriting or guessed policy", "Draft and execution state remain distinct"]
+      "evaluate": [
+        "Affected behavior stays a precise gap",
+        "Independent work progresses",
+        "No silent source rewriting or guessed policy",
+        "Draft and execution state remain distinct"
+      ]
     },
     {
       "id": "source-update",
       "request": "Update a plan with a completed task after its governing acceptance rule changes.",
-      "evaluate": ["Task IDs and old evidence preserved", "Impact disposition recorded", "Affected task reopened and previous proof marked stale", "Unaffected evidence is not described as newly executed"]
+      "evaluate": [
+        "Task IDs and old evidence preserved",
+        "Impact disposition recorded",
+        "Affected task reopened and previous proof marked stale",
+        "Unaffected evidence is not described as newly executed"
+      ]
     },
     {
       "id": "unavailable-proof",
       "request": "Review a purportedly completed UI task whose real integration environment and independent reviewer were unavailable.",
-      "evaluate": ["No Done claim", "Component evidence retains its proof boundary", "Missing visual/integration/reviewer evidence identified", "Specific resumable handoff"]
+      "evaluate": [
+        "No Done claim",
+        "Component evidence retains its proof boundary",
+        "Missing visual/integration/reviewer evidence identified",
+        "Specific resumable handoff"
+      ]
     },
     {
       "id": "fresh-pickup",
       "request": "Using only the generated entry point, group, task and explicit sources, identify the next eligible task and explain its implementation and verification without executing it.",
-      "evaluate": ["No authoring-chat dependency", "Can find current instructions, prerequisites and intended change", "Can identify expected outcomes and proof limits", "Can explain completion and review gates"]
+      "evaluate": [
+        "No authoring-chat dependency",
+        "Can find current instructions, prerequisites and intended change",
+        "Can identify expected outcomes and proof limits",
+        "Can explain completion and review gates"
+      ]
+    },
+    {
+      "id": "sequential-interleaved-features",
+      "request": "Plan account storage, registration and browser acceptance when policy and receipts must intervene.",
+      "evaluate": [
+        "Folder prefix equals group ID",
+        "Globally consecutive contiguous task ranges",
+        "All prerequisites have smaller task numbers",
+        "Split stages retain account feature label and verification ownership"
+      ]
+    },
+    {
+      "id": "authorized-renumbering",
+      "request": "Renumber an active plan while another writer owns an unfinished selection.",
+      "evaluate": [
+        "Idle acknowledgment precedes switch",
+        "Versioned source revision and simultaneous old/new ID/path mapping",
+        "Historical receipts and budgets preserved",
+        "Existing accepted status retained; unaccepted source stays unfinished"
+      ]
     }
   ],
-  "negative_triggers": ["Brainstorm an unresolved product idea", "Execute an already approved implementation task", "Create Jira tickets", "Install or research planning skills without generating a project plan"]
+  "negative_triggers": [
+    "Brainstorm an unresolved product idea",
+    "Execute an already approved implementation task",
+    "Create Jira tickets",
+    "Install or research planning skills without generating a project plan"
+  ]
 }

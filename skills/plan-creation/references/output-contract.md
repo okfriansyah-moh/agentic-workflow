@@ -2,7 +2,7 @@
 
 ## Layout and authority
 
-The root is `docs/06-PLAN.md` by default. Its `plan_root` resolves relative to that file; each immediate child folder combines a zero-padded numerical order and a lowercase hyphenated feature name, such as `01-catalog-discovery`, with `group.md` and `tasks/T001-catalog-backend.md`. Start numbering at `01-`, use consecutive numbers, and widen all prefixes consistently if the package needs more than 99 groups. Keep stable group IDs inside metadata; the numerical prefix is display order, not group identity. The group H1 must exactly match the complete folder name, for example `# 01-catalog-discovery`. Supporting capabilities can have meaningful names such as `application-foundation`. Group related technical tasks under their feature; a feature can consist of one full-stack task.
+The root is `docs/06-PLAN.md` by default. Its `plan_root` resolves relative to that file; each immediate child folder combines a zero-padded numerical order and a lowercase hyphenated feature name, such as `01-catalog-discovery`, with `group.md` and `tasks/T001-catalog-backend.md`. Start numbering at `01-`, use consecutive numbers, and widen all prefixes consistently if the package needs more than 99 groups. New plans declare `numbering: sequential`: the numerical folder prefix matches its group ID, starting at `01` / `G01`, and task IDs start at `T001` and continue consecutively across contiguous group ranges. Every task prerequisite precedes its consumer. Existing packages that omit `numbering` retain the earlier display-order behavior. The group H1 must exactly match the complete folder name, for example `# 01-catalog-discovery`. Supporting capabilities can have meaningful names such as `application-foundation`. Group related technical tasks under their feature; a feature can consist of one full-stack task.
 
 The root owns source/obligation registers, shared rules, repository paths, feature navigation, cross-feature ordering, and release criteria. A group owns common feature knowledge, its task index, and integrated completion. A task owns its instructions, current status, evidence, and handoff. Indexes link to task records; they do not duplicate task status or evidence. Use Markdown links for navigation. Author only real content; leave future evidence folders uncreated.
 
@@ -15,6 +15,7 @@ Required YAML metadata:
 ```yaml
 kind: plan
 schema_version: 1
+numbering: sequential
 readiness: Draft
 plan_root: plan
 repositories:
@@ -55,7 +56,7 @@ Optional `## Retired tasks` uses `| Task | Replaced by | Reason |`. Keep retired
 
 ## Feature group
 
-List root group paths and navigation in numerical folder order. Number groups by a feasible order of first starts derived from the task dependency graph, using a documented stable tie-break for equally eligible work. A group may resume after another group supplies a prerequisite; explain these returns instead of suggesting that every task in folder01 must finish before folder02 can begin. Preserve existing IDs when paths or display order change.
+List root group paths and navigation in numerical folder order. For sequential packages, each stage can complete before the next begins; split interleaved features into named stages with their shared feature label visible. Keep the same task dependency edges and acceptance owners across the split. Assign an integration owner from each stage’s existing member tasks with explicit verification ownership. Preserve existing IDs on ordinary updates; changing an existing allocation requires the authorized migration procedure.
 
 Required header: `kind: group`, `id: G01`, `tasks: [T001, T002]`, `integration_owner: T002`. IDs are stable; ordering in the list is display order, while dependencies govern execution. The integration owner is a member task whose verification establishes the feature outcome. This can be the sole task of a small feature, not necessarily a separate QA task.
 

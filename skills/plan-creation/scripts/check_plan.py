@@ -7,6 +7,7 @@ import hashlib
 import json
 import re
 import sys
+import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
@@ -100,9 +101,11 @@ class Document:
 
 
 class Checker:
-    def __init__(self, entry, inventory=None):
+    def __init__(self, entry, inventory=None, historical_mapping=None):
         self.entry = Path(entry).resolve()
         self.inventory = inventory
+        self.historical_mapping = historical_mapping
+        self.archival_evidence = {}
         self.findings = []
         self.docs = {}
         self.tasks = {}
@@ -323,6 +326,34 @@ class Checker:
             if path.resolve() not in registered_tasks:
                 self.add("orphan-task", path, "Task is not reachable through a registered group.")
 
+    def validate_numbering(self):
+        mode = self.root.meta.get("numbering")
+        if mode is None:
+            return
+        if mode != "sequential":
+            self.add("numbering-mode", self.entry, "numbering must be sequential or omitted for an existing package.")
+            return
+        offset = 1
+        width = max(2, len(str(len(self.groups))))
+        for order, (gid, group) in enumerate(self.groups.items(), 1):
+            expected_group = f"G{order:0{width}d}"
+            if gid != expected_group:
+                self.add("sequential-group", group.path, f"Folder order requires {expected_group}, found {gid}.")
+            members = group.meta.get("tasks", [])
+            if not isinstance(members, list):
+                continue
+            expected = [f"T{number:03d}" for number in range(offset, offset + len(members))]
+            if members != expected:
+                self.add("sequential-tasks", group.path, f"This stage requires consecutive task IDs {expected} in that order.")
+            offset += len(members)
+        for tid, task in self.tasks.items():
+            dependencies = task.meta.get("depends_on", [])
+            if not isinstance(dependencies, list):
+                continue
+            for dependency in dependencies:
+                if dependency in self.tasks and int(dependency[1:]) >= int(tid[1:]):
+                    self.add("sequential-dependency", task.path, f"Prerequisite {dependency} must precede {tid}.")
+
     def validate_dependencies(self):
         graph = {}
         for tid, task in self.tasks.items():
@@ -465,6 +496,47 @@ class Checker:
                     if left not in predecessors(right) and right not in predecessors(left):
                         self.add("unordered-shared-write", self.tasks[right].path, f"{left} and {right} both write {path}; establish ordering or reconcile ownership before parallel work.", "warning")
 
+    def validate_historical_mapping(self):
+        if not self.historical_mapping:
+            return
+        try:
+            data = json.loads(Path(self.historical_mapping).read_text())
+            source = data.get("source_revision", "")
+            if data.get("schema_version") != 1 or data.get("target_numbering") != "sequential" or not re.fullmatch(r"[a-f0-9]{40}", source):
+                raise ValueError("Expected versioned sequential mapping with a full source revision.")
+            root = subprocess.run(["git", "-C", str(self.entry.parent), "rev-parse", "--show-toplevel"], capture_output=True, text=True, check=True).stdout.strip()
+            rows = data["tasks"]
+            if len({row["old_id"] for row in rows}) != len(rows) or len({row["new_id"] for row in rows}) != len(rows) or {row["new_id"] for row in rows} != set(self.tasks):
+                raise ValueError("Historical mapping must cover every task one-to-one.")
+            ids_map = {row["old_id"]: row["new_id"] for row in rows}
+            verified = {}
+            for row in rows:
+                task = self.tasks[row["new_id"]]
+                old_path = Path(row["old_path"])
+                if old_path.is_absolute() or ".." in old_path.parts:
+                    raise ValueError("Historical source paths must remain inside the repository.")
+                original = subprocess.run(["git", "-C", root, "show", f"{source}:{old_path.as_posix()}"], capture_output=True, text=True, check=True).stdout
+                match = re.match(r"\A---\r?\n(.*?)\r?\n---(?:\r?\n|$)", original, re.S)
+                before = yaml.load(match[1], Loader=UniqueLoader) if match else {}
+                dependencies = [ids_map[dep] for dep in before.get("depends_on", [])]
+                expected = (before.get("id"), before.get("group"), before.get("status"), before.get("depends_on"))
+                supplied = (row["old_id"], row["old_group"], row["status_before"], row["depends_on_before"])
+                if expected != supplied or task.meta.get("group") != row["new_group"] or task.meta.get("status") != row["status_before"] or task.meta.get("depends_on") != dependencies or dependencies != row["depends_on_after"]:
+                    raise ValueError(f"Historical task identity, status or dependency mismatch: {row['new_id']}.")
+                if task.path != (Path(root) / row["new_path"]).resolve():
+                    raise ValueError("Historical target task path mismatch.")
+                pattern = r"^## Evidence\n.*?(?=^## |\Z)"
+                old = re.search(pattern, original, re.M | re.S)
+                current = re.search(pattern, task.body, re.M | re.S)
+                if not old or not current or old[0] != current[0] or hashlib.sha256(old[0].encode()).hexdigest() != row["evidence_sha256"]:
+                    raise ValueError(f"Historical Evidence changed: {row['new_id']}.")
+                if row["status_before"] != "Not started":
+                    verified[task.path] = current[0]
+            self.archival_evidence = verified
+            self.add("archival-evidence", self.entry, f"Verified {len(verified)} preserved Evidence sections against {source}; historical acceptance is retained, no fresh product acceptance established.", "warning")
+        except (OSError, ValueError, KeyError, TypeError, subprocess.CalledProcessError) as exc:
+            self.add("historical-mapping", self.entry, str(exc))
+
     def validate_evidence(self, task):
         checks = {}
         for row in self.table(task, "Validation", VALIDATION):
@@ -480,6 +552,10 @@ class Checker:
         for cid in required_reviews:
             if checks.get(cid, {}).get("Required") != "yes":
                 self.add("required-review", task.path, f"Missing required {cid} check.")
+        if task.path in self.archival_evidence:
+            if task.meta.get("status") == "Done" and task.meta.get("readiness") != "Ready":
+                self.add("done-readiness", task.path, "Done requires Ready instructions.")
+            return
         evidence = {}
         for row in self.table(task, "Evidence", EVIDENCE):
             cid, result = row["Check"], row["Result"]
@@ -527,7 +603,10 @@ class Checker:
                     continue
                 path, fragment = local
                 if not path.exists():
-                    self.add("link-missing", doc.path, f"Missing target: {target}")
+                    archive = self.archival_evidence.get(doc.path, "")
+                    outside = doc.body.replace(archive, "", 1) if archive else doc.body
+                    severity = "warning" if archive and target not in link_targets(unfence(outside)) else "error"
+                    self.add("link-missing", doc.path, f"Missing target: {target}", severity)
                 elif fragment and path.suffix.lower() in {".md", ".html", ".htm"}:
                     try:
                         if fragment not in anchors(path.read_text(encoding="utf-8")):
@@ -583,6 +662,8 @@ class Checker:
         self.validate_sources()
         self.validate_repositories()
         self.collect_groups()
+        self.validate_historical_mapping()
+        self.validate_numbering()
         graph = self.validate_dependencies()
         self.validate_coverage()
         self.validate_surfaces(graph)
@@ -631,6 +712,7 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("entry", type=Path)
     parser.add_argument("--inventory", type=Path)
+    parser.add_argument("--historical-mapping", type=Path, help="Verify immutable Evidence sections through an authorized source revision mapping; retain historical acceptance without claiming a fresh run.")
     parser.add_argument("--format", choices=["text", "json"], default="text")
     parser.add_argument("--strict", action="store_true", help="Fail on unresolved gaps as well as structural errors.")
     args = parser.parse_args(argv)
@@ -638,7 +720,7 @@ def main(argv=None):
     try:
         if yaml is None:
             raise RuntimeError("PyYAML is unavailable in this Python runtime; no checks ran.")
-        checker = Checker(args.entry, args.inventory)
+        checker = Checker(args.entry, args.inventory, args.historical_mapping)
         report = checker.run()
         code = 2 if checker.unsupported else int(report["counts"]["error"] > 0 or (args.strict and report["counts"]["gap"] > 0))
     except (OSError, UnicodeError, ValueError, RuntimeError, TypeError, RecursionError) as exc:

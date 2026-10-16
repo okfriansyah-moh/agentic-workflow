@@ -4,7 +4,7 @@
 
 ## One durable selection
 
-Use `.ai/bin/agent-workflow selection --repo . --action ACTION --spec INPUT.json`. Actions are `start`, `checkpoint`, `repair`, `accept`, and `status`. They use Git-shared locked state across all worktrees; they never dispatch application work or publish source.
+Use `.ai/bin/agent-workflow selection --repo . --action ACTION --spec INPUT.json`. Actions are `start`, `checkpoint`, `repair`, `accept`, `status`, and `migrate`. They use Git-shared locked state across all worktrees; they never dispatch application work or publish source.
 
 A start input identifies the owner, outcome, product paths, task IDs (or `plan` plus `group_ids`), dependency map, required check contracts and known PR head. Example:
 
@@ -248,3 +248,11 @@ Hash and metadata checks establish provenance and completeness of declared revie
 Resume reports current worktree revisions/fingerprints, merge conflicts, old claim timestamps, prior integration records, correction counts, and a next action. Reconcile task files, source revisions, claims, and current evidence before resuming execution. Prior success records are not trusted as proof of current inputs.
 
 Release retains the worktree and branch. Cleanup requires a released claim owned by the caller and a recorded successful integration containing the worker head. It refuses any local tracked/untracked content or retained evidence directory. Archive evidence into the integration checkout's evidence area and inspect all other files first. Cleanup uses Git's ordinary worktree removal without force and retains the branch. It never deletes unrelated branches or worktrees.
+
+## Numbering migration
+
+At a coordinated idle handoff, the recorded owner may use `selection --action migrate` with `selection_id`, `owner`, `plan`, `mapping` and `idle_acknowledged: true`. The mapping is a repository-relative JSON file with `schema_version: 1`, `target_numbering: sequential`, a full `source_revision`, `tasks` and `groups`. Each task row records `old_id`, `new_id`, `old_group`, `new_group`, `old_path`, `new_path`, `depends_on_before`, `depends_on_after`, `status_before` and `evidence_sha256`. Group rows record `old_id`, `old_path`, `new_ids` and `new_paths`, including split lineage. The Evidence digest covers the heading and full section through the next level-two heading.
+
+The locked operation validates source task records from Git, current sequential plan membership, dependency edges, status and preserved Evidence sections before changing state. All overlapping active claims must belong to that owner and selection. Live task/dependency/completion IDs, group selections, acceptance IDs, exact task paths and `--task` check arguments move simultaneously. Checkpoints, receipts, report files, findings and correction/repair budgets retain their original content. Tested-task keys move while their original proof remains unchanged and must still satisfy freshness checks. Historical identifiers resolve through the mapping and original revision; reused task numbers are never compatibility aliases.
+
+The registry stores the mapping digest and source/target revisions. Repeating the same mapping is idempotent; a different second migration on the same selection is rejected. Failure before the locked transaction completes leaves state unchanged. Migration does not mark tasks Done or establish current passing checks.

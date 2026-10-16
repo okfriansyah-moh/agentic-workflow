@@ -65,6 +65,116 @@ class PackageChecks(unittest.TestCase):
         self.replace("group", "# 01-count-validation", "# Count validation")
         self.finding("group-title")
 
+    def sequential(self):
+        metadata(self.paths["entry"], numbering="sequential")
+
+    def test_sequential_complete_package(self):
+        self.sequential()
+        second_task(self.paths)
+        self.assertEqual(self.run_check("--strict")[0], 0, self.run_check()[1])
+
+    def test_sequential_group_matches_folder(self):
+        self.sequential()
+        self.replace("entry", "G01", "G02")
+        self.replace("group", "G01", "G02")
+        self.replace("task", "G01", "G02")
+        self.finding("sequential-group")
+
+    def test_legacy_group_id_can_differ(self):
+        self.replace("entry", "G01", "G02")
+        self.replace("group", "G01", "G02")
+        self.replace("task", "G01", "G02")
+        self.assertEqual(self.run_check()[0], 0, self.run_check()[1])
+
+    def test_unknown_numbering_mode(self):
+        metadata(self.paths["entry"], numbering="anything")
+        self.finding("numbering-mode")
+
+    def test_sequential_task_gap(self):
+        self.sequential()
+        second = second_task(self.paths)
+        for path in [self.paths["entry"], self.paths["group"], second]:
+            path.write_text(path.read_text().replace("T002", "T003"))
+        second.rename(second.with_name(second.name.replace("T002", "T003")))
+        self.finding("sequential-tasks")
+
+    def test_sequential_member_order(self):
+        self.sequential()
+        second_task(self.paths)
+        metadata(self.paths["group"], tasks=["T002", "T001"])
+        self.finding("sequential-tasks")
+
+    def test_sequential_backward_dependency(self):
+        self.sequential()
+        second = second_task(self.paths)
+        metadata(self.paths["task"], depends_on=["T002"])
+        metadata(second, depends_on=[])
+        self.finding("sequential-dependency")
+
+    def test_legacy_backward_dependency_remains_valid(self):
+        second = second_task(self.paths)
+        metadata(self.paths["task"], depends_on=["T002"])
+        metadata(second, depends_on=[])
+        self.assertEqual(self.run_check()[0], 0, self.run_check()[1])
+
+    def test_sequential_duplicate_remains_rejected(self):
+        self.sequential()
+        other = self.paths["task"].with_name("T001-duplicate.md")
+        other.write_text(self.paths["task"].read_text())
+        self.finding("duplicate-task")
+
+    def historical_mapping(self):
+        import re
+        metadata(self.paths["task"], status="In progress")
+        self.replace("task", "| count-rule | Not run |", "| count-rule | Passed: historical detail |")
+        self.replace("task", "| self-review | Not run |", "| self-review | Historical only |")
+        base = self.paths["base"]
+        for args in [["init"], ["add", "."], ["-c", "user.name=Fixture", "-c", "user.email=fixture@example.test", "commit", "-m", "original plan"]]:
+            subprocess.run(["git", "-C", str(base), *args], capture_output=True, check=True)
+        revision = subprocess.run(["git", "-C", str(base), "rev-parse", "HEAD"], capture_output=True, text=True, check=True).stdout.strip()
+        section = re.search(r"^## Evidence\n.*?(?=^## |\Z)", self.paths["task"].read_text(), re.M | re.S)[0]
+        relative = str(self.paths["task"].relative_to(base))
+        data = {"schema_version": 1, "target_numbering": "sequential", "source_revision": revision, "tasks": [{"old_id": "T001", "new_id": "T001", "old_group": "G01", "new_group": "G01", "old_path": relative, "new_path": relative, "status_before": "In progress", "depends_on_before": [], "depends_on_after": [], "evidence_sha256": hashlib.sha256(section.encode()).hexdigest()}]}
+        path = base / "migration.json"
+        path.write_text(json.dumps(data))
+        return path
+
+    def test_explicit_preserved_historical_evidence(self):
+        mapping = self.historical_mapping()
+        self.assertEqual(self.run_check("--historical-mapping", str(mapping))[0], 0)
+        self.finding("evidence-result")
+
+    def test_historical_evidence_changed_is_rejected(self):
+        mapping = self.historical_mapping()
+        self.replace("task", "Historical only", "Different historical record")
+        self.finding("historical-mapping", "--historical-mapping", str(mapping))
+
+    def test_historical_invalid_revision_is_rejected(self):
+        mapping = self.historical_mapping()
+        data = json.loads(mapping.read_text())
+        data["source_revision"] = "f" * 40
+        mapping.write_text(json.dumps(data))
+        self.finding("historical-mapping", "--historical-mapping", str(mapping))
+
+    def test_historical_mapping_must_cover_actual_new_ids(self):
+        mapping = self.historical_mapping()
+        data = json.loads(mapping.read_text())
+        data["tasks"][0]["new_id"] = "T999"
+        mapping.write_text(json.dumps(data))
+        self.finding("historical-mapping", "--historical-mapping", str(mapping))
+
+    def test_historical_missing_link_outside_evidence_still_fails(self):
+        mapping = self.historical_mapping()
+        self.replace("task", "../../../spec.md#invalid-input", "../../../missing.md#invalid-input")
+        self.finding("link-missing", "--historical-mapping", str(mapping))
+
+    def test_historical_missing_link_inside_evidence_is_warning(self):
+        self.replace("task", "| count-rule | Not run | — |", "| count-rule | Not run | [History](missing-history.json) |")
+        mapping = self.historical_mapping()
+        status, report = self.run_check("--historical-mapping", str(mapping))
+        self.assertEqual(status, 0, report)
+        self.assertIn("warning", [row["severity"] for row in report["findings"] if row["code"] == "link-missing"])
+
     def test_check_is_read_only(self):
         def snapshot():
             return {str(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in self.paths["base"].rglob("*") if p.is_file()}
