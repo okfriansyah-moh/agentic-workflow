@@ -5,7 +5,7 @@ import time
 import uuid
 from pathlib import Path
 
-from .coordination_evidence import (_receipt_errors, _run, capture_receipt, validate_evidence,
+from .coordination_evidence import (_receipt_errors, _run, capture_receipt, digest, validate_evidence,
                                     validate_review, verify_receipt)
 from .coordination_plan import task_index
 from .coordination_state import (_shared_resources, CoordinationError, check_contract, cleanup_worktree, create_claim, create_worktree, get_claim,
@@ -29,6 +29,8 @@ def _worker_order(workers, claims, completed):
         dependencies = set(worker.get('depends_on', [])) | set(claims[identity].get('depends_on', []))
         for task in sorted(dependencies):
             if task in by_task:
+                if by_task[task] is worker:
+                    continue
                 visit(by_task[task])
             elif task not in completed:
                 raise CoordinationError(f'Unproven integration dependency: {task}')
@@ -39,7 +41,7 @@ def _worker_order(workers, claims, completed):
     return ordered
 
 
-def _accepted_worker(worker, state):
+def _accepted_worker(worker, state, require_review=True):
     claim = get_claim(state, worker['claim_id'])
     worktree = claim.get('worktree')
     if not worktree or not Path(worktree).is_dir():
@@ -53,7 +55,12 @@ def _accepted_worker(worker, state):
     if receipt.get('claim_id') != claim['id'] or receipt.get('implementer') != claim['owner']:
         raise CoordinationError('Receipt does not belong to this worker claim')
     errors = verify_receipt(worktree, receipt)
-    errors += validate_review(receipt, read_json(worker['review']))
+    captured = state.get('receipts', {}).get(receipt.get('id'), {})
+    if not require_review and (captured.get('sha256') != digest(worker['receipt'])
+                               or captured.get('path') != str(Path(worker['receipt']).resolve())):
+        errors.append('Selection composition requires an unchanged registry-captured worker receipt')
+    if require_review:
+        errors += validate_review(receipt, read_json(worker['review']))
     required = {check['id']: check for check in claim['required_checks']}
     captured = {check['id']: check.get('contract') for check in receipt.get('commands', [])}
     if any(captured.get(identity) != contract for identity, contract in required.items()):
@@ -87,7 +94,8 @@ def _check_integration_lane(repo, spec, state):
     if git(repo, 'rev-parse', '-q', '--verify', 'MERGE_HEAD', check=False).returncode == 0:
         raise CoordinationError('An unresolved merge is retained; resolve it before another integration attempt')
     group = spec['group_id']
-    if state['corrections'].get(group, 0) >= 2:
+    correction_key = spec.get('selection_id', group)
+    if state['corrections'].get(correction_key, 0) >= 2:
         raise CoordinationError('Two correction rounds failed. Retain branches and request a revised work-group decision.')
     if not spec.get('workers') or not spec.get('commands'):
         raise CoordinationError('Integration requires workers and checks for the combined result')
@@ -102,9 +110,9 @@ def _check_integration_lane(repo, spec, state):
     return claim
 
 
-def _merge_workers(repo, workers, state, record):
+def _merge_workers(repo, workers, state, record, require_review=True):
     for worker in workers:
-        claim, commit = _accepted_worker(worker, state)
+        claim, commit = _accepted_worker(worker, state, require_review)
         if git(repo, 'merge-base', '--is-ancestor', commit, 'HEAD', check=False).returncode == 0:
             record['merged_claims'].append(claim['id'])
             continue
@@ -123,19 +131,21 @@ def integrate(repo, spec):
     root = repository(repo)
     with registry(root) as state:
         claim = _check_integration_lane(root, spec, state)
+        selected = _composition_selection(root, spec, state)
         completed = set()
         for prior in state['integrations']:
-            if prior['status'] == 'passed' and git(root, 'merge-base', '--is-ancestor', prior['result_revision'], 'HEAD', check=False).returncode == 0:
+            eligible = prior['status'] == 'passed' or (selected is not None and prior.get('selection_id') == selected['id'] and prior['status'] == 'pending-review')
+            if eligible and git(root, 'merge-base', '--is-ancestor', prior['result_revision'], 'HEAD', check=False).returncode == 0:
                 for identity in prior['merged_claims']:
                     completed.update(state['claims'][identity]['task_ids'])
         workers = _worker_order(spec['workers'], state['claims'], completed)
         # Validate every lane before changing the integration branch.
         for worker in workers:
-            _accepted_worker(worker, state)
+            _accepted_worker(worker, state, require_review=selected is None)
         record = {'id': 'integration-' + uuid.uuid4().hex, 'group_id': spec['group_id'],
                   'owner': spec['owner'], 'initial_revision': revision(root), 'merged_claims': [],
                   'started_at': time.time(), 'status': 'running'}
-        merged = _merge_workers(root, workers, state, record)
+        merged = _merge_workers(root, workers, state, record, require_review=selected is None)
         if merged:
             output = root / '.ai/evidence' / record['id']
             output.mkdir(parents=True)
@@ -143,16 +153,48 @@ def integrate(repo, spec):
             results = [_run(root, command, output, n) for n, command in enumerate(spec['commands'])]
             errors = _receipt_errors(results, before, input_snapshot(root))
             record.update(status='passed' if not errors else 'blocked', commands=results,
-                          errors=errors, input_fingerprint=before['fingerprint'],
+                          errors=errors, input_fingerprint=before['fingerprint'], input_files=before['files'],
                           next_action='Independent review and feature acceptance evidence are still required.' if not errors else 'Correct the integrated behavior and rerun the affected combined checks.')
         record.update(result_revision=revision(root), finished_at=time.time())
         if record['status'] != 'passed':
-            state['corrections'][spec['group_id']] = state['corrections'].get(spec['group_id'], 0) + 1
+            key = spec.get('selection_id', spec['group_id'])
+            state['corrections'][key] = state['corrections'].get(key, 0) + 1
+        if selected is not None:
+            _record_composition(selected, record, workers, state)
         state['integrations'].append(record)
         claim['updated_at'] = time.time()
         path = root / '.ai/evidence' / record['id'] / 'integration.json'
         write_json(path, record)
     return {'status': record['status'], 'record': str(path), 'result': record}
+
+
+def _composition_selection(repo, spec, state):
+    if not spec.get('selection_id'):
+        return None
+    from .selection import get_selection, require_checkpoint
+    item = get_selection(state, spec['selection_id'], spec['owner'])
+    require_checkpoint(item)
+    if item['status'] == 'accepted':
+        raise CoordinationError('Accepted selection cannot compose additional workers')
+    for worker in spec['workers']:
+        tasks = state['claims'][worker['claim_id']]['task_ids']
+        if set(tasks) - set(item['task_ids']):
+            raise CoordinationError('Worker tasks are outside the delivery selection')
+    return item
+
+
+def _record_composition(item, record, workers, state):
+    record['selection_id'] = item['id']
+    if record['status'] != 'passed':
+        return
+    record['status'] = 'pending-review'
+    record['next_action'] = 'Combined checks passed; one independent review of the entire selection remains required.'
+    for worker in workers:
+        claim = state['claims'][worker['claim_id']]
+        if claim['owner'] not in item['implementers']:
+            item['implementers'].append(claim['owner'])
+        for task in claim['task_ids']:
+            item['tested_tasks'][task] = {'revision': record['result_revision'], 'integration_id': record['id'], 'inputs': record['input_files']}
 
 
 def _output(args, result):
@@ -193,11 +235,21 @@ def _evidence_command(args):
     return _output(args, validate_evidence(args.repo, read_json(args.requirements), read_json(args.evidence)))
 
 
+def _selection_command(args):
+    from .selection import selection
+    return selection(args.repo, args.action, read_json(args.spec))
+
+
 def _resume_command(args):
     return resume(args.repo, args.stale_seconds)
 
 
 def register(subparsers):
+    delivery = subparsers.add_parser('selection', help='Track one delivery selection, progress, repair limits and combined acceptance')
+    delivery.add_argument('--repo', required=True)
+    delivery.add_argument('--action', choices=('start', 'checkpoint', 'repair', 'accept', 'status'), required=True)
+    delivery.add_argument('--spec', required=True)
+    delivery.set_defaults(handler=_selection_command)
     index = subparsers.add_parser('task-index', help='Read plan/task sources, dependencies and ownership without dispatching work')
     index.add_argument('--plan', required=True)
     index.add_argument('--output')

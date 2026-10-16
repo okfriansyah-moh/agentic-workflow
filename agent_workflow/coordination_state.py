@@ -203,14 +203,15 @@ def create_claim(repo, spec):
         if index['status'] != 'ok':
             raise CoordinationError('Plan references or source fingerprints are not ready')
         selected = [index['tasks'].get(task) for task in spec['task_ids']]
-        if any(task is None or not task['execution_eligible'] for task in selected):
-            raise CoordinationError('Selected plan tasks are not execution-eligible')
+        _claim_eligibility(root, spec, selected)
         surfaces = [entry['path'].rstrip('/') for task in selected for entry in task['change_surface']]
         if any(not any(path == allowed or Path(allowed) in Path(path).parents for allowed in surfaces) for path in paths):
             raise CoordinationError('Requested paths exceed the selected task change surfaces')
         prepared['depends_on'] = sorted({dep for task in selected for dep in task['depends_on']})
     else:
         prepared['depends_on'] = spec.get('depends_on', [])
+        if spec.get('selection_id'):
+            _selection_claim(root, spec)
     with registry(root) as state:
         active = [c for c in state['claims'].values() if c['status'] == 'active']
         _claim_conflicts(prepared, active)
@@ -221,8 +222,34 @@ def create_claim(repo, spec):
         claim_id = 'lane-' + uuid.uuid4().hex[:16]
         claim = {**prepared, 'id': claim_id, 'status': 'active', 'repository': str(root),
                  'created_at': time.time(), 'updated_at': time.time(), 'worktree': None}
+        if spec.get('reuse_worktree'):
+            claim.update(worktree=str(root), branch=git(root, 'branch', '--show-current').stdout.strip())
         state['claims'][claim_id] = claim
     return {'status': 'ok', 'claim': claim}
+
+
+def _claim_eligibility(root, spec, selected):
+    if not spec.get('selection_id'):
+        if any(task is None or not task['execution_eligible'] for task in selected):
+            raise CoordinationError('Selected plan tasks are not execution-eligible')
+        return
+    if any(task is None or task['readiness'] != 'Ready' for task in selected):
+        raise CoordinationError('Selected task documents are not ready')
+    _selection_claim(root, spec)
+
+
+def _selection_claim(root, spec):
+    from .selection import available_tasks, get_selection
+    with registry(root) as state:
+        item = get_selection(state, spec['selection_id'])
+        if item['status'] == 'accepted' or set(spec['task_ids']) - set(item['task_ids']):
+            raise CoordinationError('Claim must belong to an unfinished selection')
+        available = available_tasks(root, item)
+        internal = set(spec['task_ids'])
+        for task in internal:
+            pending = set(item['dependencies'].get(task, [])) - internal
+            if pending - available:
+                raise CoordinationError('Selection task prerequisites have no tested implementation at this revision')
 
 
 def get_claim(state, claim_id, owner=None):
@@ -349,4 +376,5 @@ def resume(repo, stale_seconds=3600):
             claims.append(item)
         return {'status': 'ok', 'integration_revision': revision(repo), 'claims': claims,
                 'integrations': state['integrations'], 'corrections': state['corrections'],
+                'selections': list(state.get('selections', {}).values()),
                 'note': 'Stale timestamps do not release claims or prove success. Task files remain the execution record.'}

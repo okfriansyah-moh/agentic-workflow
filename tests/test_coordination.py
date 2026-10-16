@@ -365,11 +365,37 @@ class EvidenceTests(GitFixture):
         with self.assertRaises(CoordinationError):
             validate_evidence(self.repo, {'cases': []}, evidence)
 
+    def test_browser_assertions_pass_without_optional_recording(self):
+        requirements = {'cases': [{'id': 'AC1', 'boundary': 'browser'}]}
+        evidence = self.evidence(requirements)
+        case = evidence['cases'][0]
+        case['boundary'] = 'browser'
+        self.assertEqual(validate_evidence(self.repo, requirements, evidence)['status'], 'passed')
+        case['artifacts'] = []
+        case['direct_observation'] = {'observer': 'reviewer', 'method': 'Actual browser interaction',
+                                      'observations': 'Submitted form persisted and displayed its saved value'}
+        self.assertEqual(validate_evidence(self.repo, requirements, evidence)['status'], 'passed')
+        case['assertions'] = []
+        self.assertTrue(any('assertions' in error for error in validate_evidence(self.repo, requirements, evidence)['errors']))
+
+    def test_speech_obligation_cannot_be_replaced_by_dom_assertions(self):
+        requirements = {'cases': [{'id': 'AC1', 'boundary': 'browser', 'assistive_technology': 'VoiceOver', 'speech_required': True}]}
+        evidence = self.evidence(requirements)
+        case = evidence['cases'][0]
+        case['boundary'] = 'browser'
+        self.assertEqual(validate_evidence(self.repo, requirements, evidence)['status'], 'blocked')
+        case['assistive_observation'] = {'observer': 'reviewer', 'tool': 'VoiceOver', 'result': 'passed',
+                                          'observations': 'Success announcement was spoken after saving',
+                                          'artifact': case['artifacts'][0], 'speech_observed': True}
+        self.assertEqual(validate_evidence(self.repo, requirements, evidence)['status'], 'passed')
+        case['assistive_observation']['speech_observed'] = False
+        self.assertTrue(any('speech' in error for error in validate_evidence(self.repo, requirements, evidence)['errors']))
+
     def test_missing_frames_or_unreadable_recording_blocks(self):
         evidence = self.evidence()
         case = evidence['cases'][0]
         case['boundary'] = 'browser'
-        requirements = {'cases': [{'id': 'AC1', 'boundary': 'browser'}]}
+        requirements = {'cases': [{'id': 'AC1', 'boundary': 'browser', 'recording_required': True}]}
         evidence['requirements_sha256'] = requirements_digest(requirements)
         self.assertEqual(validate_evidence(self.repo, requirements, evidence)['status'], 'blocked')
         if not shutil.which('ffmpeg') or not shutil.which('ffprobe'):
