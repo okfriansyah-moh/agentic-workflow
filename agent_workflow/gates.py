@@ -13,7 +13,7 @@ import time
 from datetime import datetime, timezone
 import xml.etree.ElementTree as ET
 
-from . import gate_reports
+from . import gate_reports, gate_selection
 from .coordination_state import _normalized_input, input_snapshot
 
 BUNDLE = Path(__file__).resolve().parents[1]
@@ -200,7 +200,11 @@ def coverage_result(repo, coverage, base, checks, run_started):
         if not changes:
             return result | {'status': 'not-applicable', 'reason': 'No changed source lines'}
         reports = [p for pattern in coverage['reports'] for p in repo.glob(pattern)]
-        if not reports or any(p.stat().st_mtime < run_started for p in reports):
+        valid = {name: sha for check in checks if check.get('reused_from')
+                 for name, sha in check.get('artifacts', {}).items()}
+        if not reports or any(p.stat().st_mtime < run_started and
+                              valid.get(p.relative_to(repo).as_posix()) != hashlib.sha256(p.read_bytes()).hexdigest()
+                              for p in reports):
             return result | {'status': 'blocked', 'reason': 'Missing or stale coverage report'}
         lines = gate_reports.coverage_lines(reports, coverage['format'], coverage.get('source_prefix', ''))
         measurement = gate_reports.measure_coverage(repo, changes, lines, coverage.get('exclude', []))
@@ -240,31 +244,62 @@ def source_support(repo, registry):
             if unsupported else [])
 
 
-def run_gates(repo, stage='fast', registry_path=None, component=None, base=None):
+def selected_checks(repo, registry, stage, component, selected):
+    for check in registry['checks']:
+        if not re.fullmatch(r'[a-z0-9-]+', check['id']):
+            raise ValueError('Unsafe gate ID')
+        name = check.get('component', 'shared')
+        if STAGES[check.get('stage', 'integration')] > STAGES[stage]:
+            continue
+        if component and name not in {component, 'shared'}:
+            continue
+        if selected is not None and name != 'shared' and name not in selected:
+            continue
+        yield check
+
+
+def check_results(repo, registry, checks, output_dir, files, reuse):
+    results, completed = [], {}
+    for check in checks:
+        if not applicable(repo, check):
+            results.append({'id': check['id'], 'status': 'not-applicable', 'reason': 'No matching source inputs'})
+            continue
+        key = gate_selection.semantic_key(check)
+        if key in completed:
+            result = dict(completed[key], id=check['id'], component=check.get('component', 'shared'),
+                          required=check.get('required', True), deduplicated_from=completed[key]['id'])
+        else:
+            identity_check = dict(check, argv=expand_argv(check, repo))
+            identity = gate_selection.reuse_identity(repo, registry, identity_check, files) if reuse else None
+            result = gate_selection.find_reusable(repo, check, identity) if reuse else None
+            if result is None:
+                result = execute_check(repo, check, output_dir)
+                gate_selection.attach_provenance(repo, check, result, identity)
+            completed[key] = result
+        results.append(result)
+    return results
+
+
+def run_gates(repo, stage='fast', registry_path=None, component=None, base=None, affected=False, reuse=False):
     repo = Path(repo).resolve()
     registry = load_registry(repo, registry_path)
     components = {check.get('component', 'shared') for check in registry['checks']}
     if component and component not in components - {'shared'}:
         raise ValueError(f'Unknown configured component: {component}')
+    selected, selection_reason = gate_selection.select_components(repo, registry, base, affected)
     before = fingerprint(repo)
-    run_id = f'{time.time_ns()}-{os.getpid()}'
-    output_dir = repo / '.ai/reports' / run_id
+    output_dir = repo / '.ai/reports' / f'{time.time_ns()}-{os.getpid()}'
     started = time.time()
     results = required_sonar(repo, registry, stage, component)
-    for check in registry['checks']:
-        if not re.fullmatch(r'[a-z0-9-]+', check['id']):
-            raise ValueError('Unsafe gate ID')
-        if STAGES[check.get('stage', 'integration')] > STAGES[stage]:
-            continue
-        if component and check.get('component') not in {component, 'shared'}:
-            continue
-        if not applicable(repo, check):
-            results.append({'id': check['id'], 'status': 'not-applicable', 'reason': 'No matching source inputs'})
-        else:
-            results.append(execute_check(repo, check, output_dir))
+    checks = selected_checks(repo, registry, stage, component, selected)
+    results.extend(check_results(repo, registry, checks, output_dir, before['files'], reuse))
     if STAGES[stage] >= STAGES['integration']:
         for coverage in registry.get('coverage', []):
-            if (not component or component == coverage['component']) and applicable(repo, coverage):
+            if component and component != coverage['component']:
+                continue
+            if selected is not None and coverage['component'] not in selected:
+                continue
+            if applicable(repo, coverage):
                 results.append(coverage_result(repo, coverage, base, results, started))
     results.extend(source_support(repo, registry))
     after = fingerprint(repo)
@@ -276,7 +311,9 @@ def run_gates(repo, stage='fast', registry_path=None, component=None, base=None)
     record = {'schema_version': 1, 'status': status, 'stage': stage,
               'revision': git_revision(repo), 'input_fingerprint': before['sha256'],
               'registry_sha256': hashlib.sha256(json.dumps(registry, sort_keys=True).encode()).hexdigest(),
-              'timestamp': datetime.now(timezone.utc).isoformat(), 'results': results}
+              'timestamp': datetime.now(timezone.utc).isoformat(), 'results': results,
+              'selection': {'affected': affected, 'components': sorted(selected) if selected is not None else None,
+                            'reason': selection_reason}, 'reuse_requested': reuse}
     write_json(output_dir / 'result.json', record)
     record['report'] = str((output_dir / 'result.json').relative_to(repo))
     return record
@@ -289,7 +326,9 @@ def register(subparsers):
     parser.add_argument('--registry')
     parser.add_argument('--component')
     parser.add_argument('--base')
-    parser.set_defaults(handler=lambda a: run_gates(a.repo, a.stage, a.registry, a.component, a.base))
+    parser.add_argument('--affected', action='store_true')
+    parser.add_argument('--reuse', action='store_true')
+    parser.set_defaults(handler=lambda a: run_gates(a.repo, a.stage, a.registry, a.component, a.base, a.affected, a.reuse))
     parser = subparsers.add_parser('fingerprint', help='Hash implementation and requirement inputs')
     parser.add_argument('--repo', default='.')
     parser.set_defaults(handler=lambda a: fingerprint(a.repo))
