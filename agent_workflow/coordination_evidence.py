@@ -98,17 +98,37 @@ def _run(repo, command, output, index):
     return result
 
 
+def _receipt_selection(root, spec, claim):
+    if not spec.get('selection_id'):
+        return None
+    from .selection import get_selection, require_checkpoint
+    with registry(root) as state:
+        selected = dict(get_selection(state, spec['selection_id'], spec['owner']))
+        require_checkpoint(selected)
+    if selected['status'] == 'accepted':
+        raise CoordinationError('Selection already accepted; start a new requested selection for changed work')
+    if claim.get('role') != 'integrator' and set(selected['task_ids']) - set(claim['task_ids']):
+        raise CoordinationError('Final checks require ownership of the entire selection or its integration lane')
+    return selected
+
+
 def capture_receipt(repo, spec):
     root = repository(repo)
     with registry(root) as state:
         claim = dict(get_claim(state, spec['claim_id'], spec['owner']))
         if not claim.get('worktree') or root != Path(claim['worktree']).resolve():
             raise CoordinationError('Capture implementation checks in the assigned lane worktree')
+    selected = _receipt_selection(root, spec, claim)
     commands = spec.get('commands', [])
     ids = [command.get('id') for command in commands]
     if not commands or len(ids) != len(set(ids)):
         raise CoordinationError('A receipt needs nonempty checks with distinct IDs')
     required = {check['id']: check for check in claim['required_checks']}
+    if selected is not None:
+        for check in selected['required_checks']:
+            if check['id'] in required and required[check['id']] != check:
+                raise CoordinationError('Selection and claim required check contracts disagree')
+            required[check['id']] = check
     contracts = {command['id']: check_contract(command) for command in commands}
     if any(contracts.get(identity) != contract for identity, contract in required.items()):
         raise CoordinationError('Receipt commands do not match the exact required check contracts')
@@ -122,7 +142,9 @@ def capture_receipt(repo, spec):
     errors = _receipt_errors(results, before, after)
     receipt = {
         'schema_version': 1, 'id': receipt_id, 'status': 'passed' if not errors else 'blocked',
-        'claim_id': claim['id'], 'implementer': claim['owner'], 'task_ids': claim['task_ids'],
+        'claim_id': claim['id'], 'implementer': claim['owner'],
+        'task_ids': selected['task_ids'] if selected is not None else claim['task_ids'],
+        'selection_id': selected['id'] if selected is not None else None,
         'tested_revision': tested_revision, 'base_revision': claim['base_revision'],
         'input_fingerprint': before['fingerprint'], 'input_files': before['files'],
         'actual_changed_files': changed_files(root, claim['base_revision']),
@@ -136,6 +158,7 @@ def capture_receipt(repo, spec):
     with registry(root) as state:
         current = get_claim(state, claim['id'], claim['owner'])
         current.update(last_receipt=str(path), updated_at=time.time())
+        state.setdefault('receipts', {})[receipt_id] = {'path': str(path.resolve()), 'sha256': digest(path)}
     return {'status': 'ok' if not errors else 'blocked', 'receipt': str(path), 'result': receipt}
 
 
@@ -228,18 +251,40 @@ def _case_errors(repo, requirement, case):
         errors.append(f"{requirement['id']}: required boundary is {requirement['boundary']}")
     if case.get('result') != 'passed' or not case.get('assertions'):
         errors.append(f"{requirement['id']}: successful observable assertions are missing")
-    if not case.get('artifacts'):
-        errors.append(f"{requirement['id']}: retained evidence is missing")
+    observation = case.get('direct_observation', {})
+    observed = (isinstance(observation, dict) and observation.get('observer')
+                and observation.get('method') and observation.get('observations'))
+    if not case.get('artifacts') and not observed:
+        errors.append(f"{requirement['id']}: retained evidence or direct observation is missing")
     for artifact in case.get('artifacts', []):
         errors += _verify_artifact(repo, {**artifact, 'required_nonempty': True})
-    if requirement['boundary'] in ('browser', 'client-ui'):
+    if requirement.get('recording_required') or case.get('recording'):
         errors += _visual_errors(repo, requirement['id'], case)
+    if requirement.get('assistive_technology') or requirement.get('speech_required'):
+        errors += _assistive_errors(repo, requirement, case)
     if requirement.get('independent_state'):
         observation = case.get('state_observation', {})
         if not isinstance(observation, dict) or not observation.get('method') or not observation.get('artifact'):
             errors.append(f"{requirement['id']}: independent state observation and artifact are missing")
         else:
             errors += _verify_artifact(repo, {**observation['artifact'], 'required_nonempty': True})
+    return errors
+
+
+def _assistive_errors(repo, requirement, case):
+    observation = case.get('assistive_observation', {})
+    expected = requirement.get('assistive_technology')
+    if not isinstance(observation, dict):
+        observation = {}
+    if (not observation.get('observer') or not observation.get('tool')
+            or not observation.get('observations') or observation.get('result') != 'passed'
+            or not observation.get('artifact')):
+        return [f"{requirement['id']}: actual assistive-technology observation is missing"]
+    errors = _verify_artifact(repo, {**observation['artifact'], 'required_nonempty': True})
+    if expected and observation['tool'] != expected:
+        errors.append(f"{requirement['id']}: required assistive technology was not observed")
+    if requirement.get('speech_required') and observation.get('speech_observed') is not True:
+        errors.append(f"{requirement['id']}: actual speech observation is missing")
     return errors
 
 
