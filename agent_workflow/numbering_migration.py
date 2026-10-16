@@ -105,7 +105,8 @@ def _translate_checks(checks, ids):
         for number, arg in enumerate(args):
             if number and args[number - 1] == '--task' and arg in ids:
                 args[number] = ids[arg]
-            elif arg.startswith('--task=') and arg[7:] in ids:
+                continue
+            if arg.startswith('--task=') and arg[7:] in ids:
                 args[number] = '--task=' + ids[arg[7:]]
     return result
 
