@@ -2,7 +2,7 @@
 
 A portable workflow for getting software work from an approved brief to verified delivery in **Codex, Cursor AI, Claude Code, and GitHub Copilot**.
 
-Version **1.3.0** combines 74 bundled skills, native agent roles, and a small Python standard-library CLI. Your existing chat coordinates the work. Helpers track scope, ownership, checks, review findings, and recovery state; no separate agent service is required.
+Version [**1.3.0**](https://github.com/okfriansyah-moh/agentic-workflow/releases/tag/v1.3.0) combines 74 bundled skills, native agent roles, and a small Python standard-library CLI. Your existing chat coordinates the work. Helpers track scope, ownership, checks, review findings, and recovery state; no separate agent service is required.
 
 The workflow is:
 
@@ -21,17 +21,17 @@ The CLI itself uses only the Python standard library. Installing the workflow do
 
 ## Quick start
 
-Clone the source:
+Clone the [version 1.3.0 release](https://github.com/okfriansyah-moh/agentic-workflow/releases/tag/v1.3.0):
 
 ```sh
-git clone https://github.com/okfriansyah-moh/agentic-workflow.git
+git clone --branch v1.3.0 https://github.com/okfriansyah-moh/agentic-workflow.git
 cd agentic-workflow
 python3 scripts/agent-workflow --version
 ```
 
 ### Install into a project
 
-From the cloned source directory, replace `/path/to/project` with an existing project:
+From the cloned version 1.3.0 source directory, replace `/path/to/project` with an existing project:
 
 ```sh
 python3 scripts/agent-workflow install --repo /path/to/project --profile general
@@ -46,7 +46,7 @@ Open the target project in your coding agent, load its project instructions, and
 
 ### Optional global installation
 
-To make the bundle available across projects:
+From the same version 1.3.0 source directory, make the bundle available across projects:
 
 ```sh
 python3 scripts/agent-workflow install --global
@@ -114,10 +114,11 @@ Resume uses retained Git-shared selection state; chat history does not transfer 
 
 ## Update, rollback, and uninstall
 
-Review incoming source changes before updating. From the source checkout:
+Review the release notes before updating. From an existing source checkout, select version 1.3.0:
 
 ```sh
-git pull --ff-only
+git fetch origin tag v1.3.0
+git checkout --detach v1.3.0
 python3 scripts/agent-workflow update --global
 python3 scripts/agent-workflow update --repo /path/to/project
 python3 scripts/agent-workflow doctor --repo /path/to/project
