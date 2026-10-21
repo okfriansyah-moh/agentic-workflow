@@ -21,6 +21,18 @@ The CLI itself uses only the Python standard library. Installing the workflow do
 
 ## Quick start
 
+### One-line global install
+
+With the requirements above plus `curl` and `tar`, download and install [version 1.3.0](https://github.com/okfriansyah-moh/agentic-workflow/releases/tag/v1.3.0) without a manual clone:
+
+```sh
+(set -eu; workflow_tmp="$(mktemp -d)"; trap 'rm -rf "$workflow_tmp"' EXIT; curl --fail --location --silent --show-error https://github.com/okfriansyah-moh/agentic-workflow/archive/refs/tags/v1.3.0.tar.gz --output "$workflow_tmp/release.tar.gz"; tar -xzf "$workflow_tmp/release.tar.gz" -C "$workflow_tmp"; python3 "$workflow_tmp/agentic-workflow-1.3.0/scripts/agent-workflow" install --global)
+```
+
+This installs the global bundle and host integration files, then removes the temporary download. Add `~/.local/bin` to PATH and check the installation with `agent-workflow doctor --global`. To install directly into a project instead, replace `install --global` in the command with `install --repo /path/to/project --profile general`.
+
+### Install from a source checkout
+
 Clone the [version 1.3.0 release](https://github.com/okfriansyah-moh/agentic-workflow/releases/tag/v1.3.0):
 
 ```sh
