@@ -21,7 +21,7 @@
         "label": "local-skills/brainstorming",
         "version": "local-snapshot-c9a45fa75a59",
         "source_sha256": "c9a45fa75a59f5b94bfa3c98092beefc097b97ab741b50f292b04faf00b52cb8",
-        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+        "license": "Owner confirmed permission to publish this bundled snapshot; retained third-party licenses and notices remain applicable. See source metadata and license files."
       },
       "targets": [
         "global",
@@ -53,7 +53,7 @@
         "label": "local-skills/deliver-prd",
         "version": "local-snapshot-094f2ba40d73",
         "source_sha256": "094f2ba40d73f1fc34b1c69530c6ae192bf78dadb44d00902a8636c32c1c09a4",
-        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+        "license": "Owner confirmed permission to publish this bundled snapshot; retained third-party licenses and notices remain applicable. See source metadata and license files."
       },
       "targets": [
         "global",
@@ -87,7 +87,7 @@
         "label": "local-skills/techdoc-creation",
         "version": "local-snapshot-5f61e4943dcc",
         "source_sha256": "5f61e4943dcc6924f2f7d053432b65ef439e16fad4bdca91365f2099bc43b3b6",
-        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+        "license": "Owner confirmed permission to publish this bundled snapshot; retained third-party licenses and notices remain applicable. See source metadata and license files."
       },
       "targets": [
         "global",
@@ -141,7 +141,7 @@
         "label": "local-skills/design-system",
         "version": "local-snapshot-53e077c17b79",
         "source_sha256": "53e077c17b796c3515320aef5ec98714e4c869078eead3ef78f9d6386e267b57",
-        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+        "license": "Owner confirmed permission to publish this bundled snapshot; retained third-party licenses and notices remain applicable. See source metadata and license files."
       },
       "targets": [
         "global",
@@ -177,7 +177,7 @@
         "label": "local-skills/atdd-creation",
         "version": "local-snapshot-71c31b9eb957",
         "source_sha256": "71c31b9eb957a98841fe5e9577103c7e230ac6661b831937eb6c382c78d0a787",
-        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+        "license": "Owner confirmed permission to publish this bundled snapshot; retained third-party licenses and notices remain applicable. See source metadata and license files."
       },
       "targets": [
         "global",
@@ -228,7 +228,7 @@
         "label": "local-skills/plan-creation",
         "version": "local-snapshot-f55909ee57d2",
         "source_sha256": "f55909ee57d271113919f9fceb3d29197e1af0cdbeb0a577c71c8b81fe206aa0",
-        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+        "license": "Owner confirmed permission to publish this bundled snapshot; retained third-party licenses and notices remain applicable. See source metadata and license files."
       },
       "targets": [
         "global",
@@ -262,7 +262,7 @@
         "label": "local-skills/design-system-foundations",
         "version": "local-snapshot-39ffdb5cc3a6",
         "source_sha256": "39ffdb5cc3a6573ad127a373a65aa869c021fbe5e2a6a29b9bb285fc941bd9fa",
-        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+        "license": "Owner confirmed permission to publish this bundled snapshot; retained third-party licenses and notices remain applicable. See source metadata and license files."
       },
       "targets": [
         "global",
@@ -294,7 +294,7 @@
         "label": "local-skills/frontend-design",
         "version": "local-snapshot-b170f3743668",
         "source_sha256": "b170f3743668ea7e584ab14b4612b4db526b261db0af156aed3182a0a53d0ce4",
-        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+        "license": "Owner confirmed permission to publish this bundled snapshot; retained third-party licenses and notices remain applicable. See source metadata and license files."
       },
       "targets": [
         "global",
@@ -326,7 +326,7 @@
         "label": "local-skills/impeccable",
         "version": "local-snapshot-6c2fd1775b42",
         "source_sha256": "6c2fd1775b42042bf5aab6f2e37bdabec2cb60c06716055009631ac8a1038e56",
-        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+        "license": "Owner confirmed permission to publish this bundled snapshot; retained third-party licenses and notices remain applicable. See source metadata and license files."
       },
       "targets": [
         "global",
@@ -359,7 +359,7 @@
         "label": "local-skills/fixing-accessibility",
         "version": "local-snapshot-522edca7b468",
         "source_sha256": "522edca7b46855db65b2d79fc9ed5f8c8c2cef697ec4836c96c9f060dd2ab28c",
-        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+        "license": "Owner confirmed permission to publish this bundled snapshot; retained third-party licenses and notices remain applicable. See source metadata and license files."
       },
       "targets": [
         "global",
@@ -391,7 +391,7 @@
         "label": "local-skills/ui-ux-pro-max",
         "version": "local-snapshot-92aeb555bdc4",
         "source_sha256": "92aeb555bdc44a1286b01d207af181c88ddd0320f8c5932bceb75eb9c9af8b29",
-        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+        "license": "Owner confirmed permission to publish this bundled snapshot; retained third-party licenses and notices remain applicable. See source metadata and license files."
       },
       "targets": [
         "global",
@@ -425,7 +425,7 @@
         "label": "local-skills/architecture-designer",
         "version": "local-snapshot-43650b74b195",
         "source_sha256": "43650b74b19553711f670c6d1c32006dcd2e3d84e6cd6aa9927ab4445fc2c468",
-        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+        "license": "Owner confirmed permission to publish this bundled snapshot; retained third-party licenses and notices remain applicable. See source metadata and license files."
       },
       "targets": [
         "global",
@@ -457,7 +457,7 @@
         "label": "local-skills/architecture-decision-records",
         "version": "local-snapshot-2ad6b47aa9fe",
         "source_sha256": "2ad6b47aa9fe986da43993317fd38def3bc8009f3ecbc34e150f47301de40140",
-        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+        "license": "Owner confirmed permission to publish this bundled snapshot; retained third-party licenses and notices remain applicable. See source metadata and license files."
       },
       "targets": [
         "global",
@@ -487,7 +487,7 @@
         "label": "local-skills/domain-modeling",
         "version": "local-snapshot-2d64407d21d7",
         "source_sha256": "2d64407d21d737b3f41a4df855571e3e80f9e0d85e5682d35b0a145682d08463",
-        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+        "license": "Owner confirmed permission to publish this bundled snapshot; retained third-party licenses and notices remain applicable. See source metadata and license files."
       },
       "targets": [
         "global",
@@ -517,7 +517,7 @@
         "label": "local-skills/codebase-design",
         "version": "local-snapshot-ece26f79fdec",
         "source_sha256": "ece26f79fdec31b7f01d29293c89cf0d984a1a38babcbe6a1992f0fa9f910285",
-        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+        "license": "Owner confirmed permission to publish this bundled snapshot; retained third-party licenses and notices remain applicable. See source metadata and license files."
       },
       "targets": [
         "global",
@@ -547,7 +547,7 @@
         "label": "local-skills/modularity",
         "version": "local-snapshot-ee61f2100aec",
         "source_sha256": "ee61f2100aec9e7ffa4e9064b40c54bb3fb72b837acd1ed14f4f696079f6c2f4",
-        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+        "license": "Owner confirmed permission to publish this bundled snapshot; retained third-party licenses and notices remain applicable. See source metadata and license files."
       },
       "targets": [
         "global",
@@ -582,7 +582,7 @@
         "label": "local-skills/dependency-analysis",
         "version": "local-snapshot-88e6c9cd2abb",
         "source_sha256": "88e6c9cd2abb68d14044ac329771cdd492cb55e1caeb7dfd4de9836464a44e62",
-        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+        "license": "Owner confirmed permission to publish this bundled snapshot; retained third-party licenses and notices remain applicable. See source metadata and license files."
       },
       "targets": [
         "global",
@@ -615,7 +615,7 @@
         "label": "local-skills/vertical-slice",
         "version": "local-snapshot-9b611abf45c5",
         "source_sha256": "9b611abf45c509a0ffbe9befcf055e659aa437bb9f46fd0fc1a4b8688f02a96e",
-        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+        "license": "Owner confirmed permission to publish this bundled snapshot; retained third-party licenses and notices remain applicable. See source metadata and license files."
       },
       "targets": [
         "global",
@@ -650,7 +650,7 @@
         "label": "local-skills/api-design",
         "version": "local-snapshot-4603a025554f",
         "source_sha256": "4603a025554f51242b337bfb9be6d307ae11c573ae796715a15b79eeca23d8fe",
-        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+        "license": "Owner confirmed permission to publish this bundled snapshot; retained third-party licenses and notices remain applicable. See source metadata and license files."
       },
       "targets": [
         "global",
@@ -685,7 +685,7 @@
         "label": "local-skills/dto",
         "version": "local-snapshot-4802938ec2a9",
         "source_sha256": "4802938ec2a934dcee3bbfe26126e959563627aba54c6344bab4855dfc200fbf",
-        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+        "license": "Owner confirmed permission to publish this bundled snapshot; retained third-party licenses and notices remain applicable. See source metadata and license files."
       },
       "targets": [
         "global",
@@ -717,7 +717,7 @@
         "label": "local-skills/config-validation",
         "version": "local-snapshot-31279b439853",
         "source_sha256": "31279b4398533a68dbe819d2923e6dc5700b3cee4557c5a365448a7374cc7f3c",
-        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+        "license": "Owner confirmed permission to publish this bundled snapshot; retained third-party licenses and notices remain applicable. See source metadata and license files."
       },
       "targets": [
         "global",
@@ -749,7 +749,7 @@
         "label": "local-skills/determinism",
         "version": "local-snapshot-71238ce1a8d0",
         "source_sha256": "71238ce1a8d017a1a3f8e28c688f7c7934ca9e9707aeec7c0842d1ba9d894dd9",
-        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+        "license": "Owner confirmed permission to publish this bundled snapshot; retained third-party licenses and notices remain applicable. See source metadata and license files."
       },
       "targets": [
         "global",
@@ -781,7 +781,7 @@
         "label": "local-skills/idempotency",
         "version": "local-snapshot-9285a98671ea",
         "source_sha256": "9285a98671eacbb904262804aa476b6016a080111952e5382739a5d6960174da",
-        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+        "license": "Owner confirmed permission to publish this bundled snapshot; retained third-party licenses and notices remain applicable. See source metadata and license files."
       },
       "targets": [
         "global",
@@ -813,7 +813,7 @@
         "label": "local-skills/failure",
         "version": "local-snapshot-4b06c41ddd6f",
         "source_sha256": "4b06c41ddd6fe161240c6ce427379ecefa3177a2dbbc5fb5b429d84894db129b",
-        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+        "license": "Owner confirmed permission to publish this bundled snapshot; retained third-party licenses and notices remain applicable. See source metadata and license files."
       },
       "targets": [
         "global",
@@ -846,7 +846,7 @@
         "label": "local-skills/pipeline",
         "version": "local-snapshot-73750bf846a4",
         "source_sha256": "73750bf846a4a5320398998f26f47f618d8f14744ceb9f9c88d8e9184e73687a",
-        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+        "license": "Owner confirmed permission to publish this bundled snapshot; retained third-party licenses and notices remain applicable. See source metadata and license files."
       },
       "targets": [
         "global",
@@ -880,7 +880,7 @@
         "label": "local-skills/migration-management",
         "version": "local-snapshot-3616560ddd90",
         "source_sha256": "3616560ddd90a8bfdf7211c51e3b9f561038f622cb4acd81fc0097e0542d298e",
-        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+        "license": "Owner confirmed permission to publish this bundled snapshot; retained third-party licenses and notices remain applicable. See source metadata and license files."
       },
       "targets": [
         "global",
@@ -913,7 +913,7 @@
         "label": "local-skills/database-portability",
         "version": "local-snapshot-e7dc696c5cf8",
         "source_sha256": "e7dc696c5cf870dc73d0b240308445d10cee95d1672b341fd5a050f842466b6b",
-        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+        "license": "Owner confirmed permission to publish this bundled snapshot; retained third-party licenses and notices remain applicable. See source metadata and license files."
       },
       "targets": [
         "global",
@@ -948,7 +948,7 @@
         "label": "local-skills/coding-standards",
         "version": "local-snapshot-47d759f9fdc1",
         "source_sha256": "47d759f9fdc1a66f0f86b9fdf97bd37f21be9b98f3bb6b5e5c706bf71331e4cf",
-        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+        "license": "Owner confirmed permission to publish this bundled snapshot; retained third-party licenses and notices remain applicable. See source metadata and license files."
       },
       "targets": [
         "global",
@@ -982,7 +982,7 @@
         "label": "local-skills/code-quality",
         "version": "local-snapshot-84650d7365f0",
         "source_sha256": "84650d7365f0fef16e4d4e2fe5eaf1d63b490cef09d120162fb866dc427279c9",
-        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+        "license": "Owner confirmed permission to publish this bundled snapshot; retained third-party licenses and notices remain applicable. See source metadata and license files."
       },
       "targets": [
         "global",
@@ -1015,7 +1015,7 @@
         "label": "local-skills/code-review",
         "version": "local-snapshot-ada905fda636",
         "source_sha256": "ada905fda636e3ba326466c5588ef05d0f43f862fd3c683940c67f04a7dc6e0c",
-        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+        "license": "Owner confirmed permission to publish this bundled snapshot; retained third-party licenses and notices remain applicable. See source metadata and license files."
       },
       "targets": [
         "global",
@@ -1048,7 +1048,7 @@
         "label": "local-skills/tdd",
         "version": "local-snapshot-7e37d86e498a",
         "source_sha256": "7e37d86e498a722aa5b58a8c981b74a8dddc616542f7ec94c0e66169bec1ef88",
-        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+        "license": "Owner confirmed permission to publish this bundled snapshot; retained third-party licenses and notices remain applicable. See source metadata and license files."
       },
       "targets": [
         "global",
@@ -1081,7 +1081,7 @@
         "label": "local-skills/test-driven-development",
         "version": "local-snapshot-896fc2b5182c",
         "source_sha256": "896fc2b5182c11ed7c47e21589b6680187e79f6a8b3e0631ba36e634216f79cc",
-        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+        "license": "Owner confirmed permission to publish this bundled snapshot; retained third-party licenses and notices remain applicable. See source metadata and license files."
       },
       "targets": [
         "global",
@@ -1115,7 +1115,7 @@
         "label": "local-skills/test-generation",
         "version": "local-snapshot-50c9a9bd05fa",
         "source_sha256": "50c9a9bd05fa8c5f603c1ee4a611e62622465e098da973dc1ccd4123e0947b5e",
-        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+        "license": "Owner confirmed permission to publish this bundled snapshot; retained third-party licenses and notices remain applicable. See source metadata and license files."
       },
       "targets": [
         "global",
@@ -1149,7 +1149,7 @@
         "label": "local-skills/diagnosing-bugs",
         "version": "local-snapshot-7e99e59005b5",
         "source_sha256": "7e99e59005b5a74988aa663e1cea854f630012726c301d60da1a85bd709926b5",
-        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+        "license": "Owner confirmed permission to publish this bundled snapshot; retained third-party licenses and notices remain applicable. See source metadata and license files."
       },
       "targets": [
         "global",
@@ -1181,7 +1181,7 @@
         "label": "local-skills/security-audit",
         "version": "local-snapshot-06a036855a13",
         "source_sha256": "06a036855a13c95e9c0cf8fbc196e2955fac8856f7fefb555309ba215fcc3851",
-        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+        "license": "Owner confirmed permission to publish this bundled snapshot; retained third-party licenses and notices remain applicable. See source metadata and license files."
       },
       "targets": [
         "global",
@@ -1213,7 +1213,7 @@
         "label": "local-skills/security-requirement-extraction",
         "version": "local-snapshot-3b78a88b0a95",
         "source_sha256": "3b78a88b0a95c44df048aee909d2b44449903e49df09db7b4cb7d15acf1caf50",
-        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+        "license": "Owner confirmed permission to publish this bundled snapshot; retained third-party licenses and notices remain applicable. See source metadata and license files."
       },
       "targets": [
         "global",
@@ -1245,7 +1245,7 @@
         "label": "local-skills/stride-analysis-patterns",
         "version": "local-snapshot-5e3397e730f9",
         "source_sha256": "5e3397e730f9ceafa8111936e633dc5723ae742806bc03018c0d81cc33c94a59",
-        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+        "license": "Owner confirmed permission to publish this bundled snapshot; retained third-party licenses and notices remain applicable. See source metadata and license files."
       },
       "targets": [
         "global",
@@ -1275,7 +1275,7 @@
         "label": "local-skills/project-scaffold",
         "version": "local-snapshot-77540b06a17f",
         "source_sha256": "77540b06a17f3fcc1f794223edf274fb25e64d31bead4b2440b76a305593517d",
-        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+        "license": "Owner confirmed permission to publish this bundled snapshot; retained third-party licenses and notices remain applicable. See source metadata and license files."
       },
       "targets": [
         "global",
@@ -1308,7 +1308,7 @@
         "label": "local-skills/performance-optimization",
         "version": "local-snapshot-66e862f975eb",
         "source_sha256": "66e862f975eb92be25b0fe1fdc0434c73c0c38f4a93796f34d88fa22df45a562",
-        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+        "license": "Owner confirmed permission to publish this bundled snapshot; retained third-party licenses and notices remain applicable. See source metadata and license files."
       },
       "targets": [
         "global",
@@ -1340,7 +1340,7 @@
         "label": "local-skills/conflict-resolution",
         "version": "local-snapshot-0b00d43c4be5",
         "source_sha256": "0b00d43c4be52c06c2786f4ebec93af3645240ef83181ba192b2ad31601a807e",
-        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+        "license": "Owner confirmed permission to publish this bundled snapshot; retained third-party licenses and notices remain applicable. See source metadata and license files."
       },
       "targets": [
         "global",
@@ -1372,7 +1372,7 @@
         "label": "local-skills/docs-sync",
         "version": "local-snapshot-758f02dc2ed4",
         "source_sha256": "758f02dc2ed4503df340d0e2ae697eef1d98ac7d72761aed2b7f7f896a9659e6",
-        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+        "license": "Owner confirmed permission to publish this bundled snapshot; retained third-party licenses and notices remain applicable. See source metadata and license files."
       },
       "targets": [
         "global",
@@ -1404,7 +1404,7 @@
         "label": "local-skills/pr",
         "version": "local-snapshot-b84e946f3712",
         "source_sha256": "b84e946f3712d812e61d7b106b91c68e6e1259d8c2de63503968bd67a211c206",
-        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+        "license": "Owner confirmed permission to publish this bundled snapshot; retained third-party licenses and notices remain applicable. See source metadata and license files."
       },
       "targets": [
         "global",
@@ -1434,7 +1434,7 @@
         "label": "local-skills/humanizer",
         "version": "local-snapshot-a01833ea19b5",
         "source_sha256": "a01833ea19b5ce0334ca7f038f30b48c4634590f236b85af44835e4726e25ceb",
-        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+        "license": "Owner confirmed permission to publish this bundled snapshot; retained third-party licenses and notices remain applicable. See source metadata and license files."
       },
       "targets": [
         "global",
@@ -1466,7 +1466,7 @@
         "label": "local-skills/writing-for-agents",
         "version": "local-snapshot-fb0e4bf6fe7d",
         "source_sha256": "fb0e4bf6fe7d347687b2dc6c21374a638b95fb058bf8bec2406b931567a1bb34",
-        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+        "license": "Owner confirmed permission to publish this bundled snapshot; retained third-party licenses and notices remain applicable. See source metadata and license files."
       },
       "targets": [
         "global",
@@ -1498,7 +1498,7 @@
         "label": "local-skills/task-observer",
         "version": "local-snapshot-179ad383cd95",
         "source_sha256": "179ad383cd958835662965267dcfdd4b1daa6659ba2611a907d620ef44195bff",
-        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+        "license": "Owner confirmed permission to publish this bundled snapshot; retained third-party licenses and notices remain applicable. See source metadata and license files."
       },
       "targets": [
         "global",
@@ -1528,7 +1528,7 @@
         "label": "local-skills/rtk",
         "version": "local-snapshot-ed6a43e874ed",
         "source_sha256": "ed6a43e874edb6232b3c944799b47b780911570af5a7d9daff46fbecb407a5bf",
-        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+        "license": "Owner confirmed permission to publish this bundled snapshot; retained third-party licenses and notices remain applicable. See source metadata and license files."
       },
       "targets": [
         "global",
@@ -1561,7 +1561,7 @@
         "label": "local-skills/token-optimization",
         "version": "local-snapshot-4c757752d4a4",
         "source_sha256": "4c757752d4a4fe68ef0cd57f4fdcbb0f6a7ff4e0aea79e2a739006249f221489",
-        "license": "See retained source metadata and license files; private personal reuse only where no redistribution grant is recorded."
+        "license": "Owner confirmed permission to publish this bundled snapshot; retained third-party licenses and notices remain applicable. See source metadata and license files."
       },
       "targets": [
         "global",
@@ -1594,7 +1594,7 @@
         "label": "agent-workflow/workflow-install",
         "version": "1.0.0",
         "source_sha256": "514f22425d9fac9f9b51e346ddd203ae852878f0c420e4565c678eff45acacdc",
-        "license": "Private project-authored material; no public distribution grant added."
+        "license": "Project-authored material; owner confirmed permission to publish this bundled snapshot. No blanket downstream license added."
       },
       "targets": [
         "global",
@@ -1624,7 +1624,7 @@
         "label": "agent-workflow/worktree-integration",
         "version": "1.0.0",
         "source_sha256": "85cf359f7559b261d316d66c45325e0aa86cad8d22d4a235e43eba43665e2e3f",
-        "license": "Private project-authored material; no public distribution grant added."
+        "license": "Project-authored material; owner confirmed permission to publish this bundled snapshot. No blanket downstream license added."
       },
       "targets": [
         "global",
@@ -1657,7 +1657,7 @@
         "label": "agent-workflow/quality-gates",
         "version": "1.0.0",
         "source_sha256": "ddc6731cde02ac5751ca2f6b2da111aacf19322e8020fe4cdefc65acbc3bf06e",
-        "license": "Private project-authored material; no public distribution grant added."
+        "license": "Project-authored material; owner confirmed permission to publish this bundled snapshot. No blanket downstream license added."
       },
       "targets": [
         "global",
@@ -1690,7 +1690,7 @@
         "label": "agent-workflow/kotlin-spring",
         "version": "1.0.0",
         "source_sha256": "933b18a8a78168247b852f5ba1d5246afd3d7ce17d17db5f8cd1495578d2ac91",
-        "license": "Private project-authored material; no public distribution grant added."
+        "license": "Project-authored material; owner confirmed permission to publish this bundled snapshot. No blanket downstream license added."
       },
       "targets": [
         "global",
@@ -1725,7 +1725,7 @@
         "label": "agent-workflow/spring-dependency-injection",
         "version": "1.0.0",
         "source_sha256": "7419b087d0dfa64e15aac1296fd4eded9ebbcacd09dfae82d36a8584bf2ddc10",
-        "license": "Private project-authored material; no public distribution grant added."
+        "license": "Project-authored material; owner confirmed permission to publish this bundled snapshot. No blanket downstream license added."
       },
       "targets": [
         "global",
@@ -1755,7 +1755,7 @@
         "label": "agent-workflow/jpa-hibernate",
         "version": "1.0.0",
         "source_sha256": "2b0d1d620fba7a4822ce5722430863751f935ff7b2e60b9e115d1ac94e82ec8a",
-        "license": "Private project-authored material; no public distribution grant added."
+        "license": "Project-authored material; owner confirmed permission to publish this bundled snapshot. No blanket downstream license added."
       },
       "targets": [
         "global",
@@ -1785,7 +1785,7 @@
         "label": "agent-workflow/svelte-typescript",
         "version": "1.0.0",
         "source_sha256": "30eca6bd32b92e36dc1ecad49989840af6e9c05436740f9de5c384d786d01dfc",
-        "license": "Private project-authored material; no public distribution grant added."
+        "license": "Project-authored material; owner confirmed permission to publish this bundled snapshot. No blanket downstream license added."
       },
       "targets": [
         "global",
@@ -1819,7 +1819,7 @@
         "label": "agent-workflow/node-backend",
         "version": "1.0.0",
         "source_sha256": "eca9ea89ecc70a958b27f5b160d54cdc3e13bcd0ca95e558a2842bfa1f7994fe",
-        "license": "Private project-authored material; no public distribution grant added."
+        "license": "Project-authored material; owner confirmed permission to publish this bundled snapshot. No blanket downstream license added."
       },
       "targets": [
         "global",
@@ -1849,7 +1849,7 @@
         "label": "agent-workflow/devops-ci",
         "version": "1.0.0",
         "source_sha256": "e53125cfde8293f189322569d710726b3a37c448855c248fca78f9595430040e",
-        "license": "Private project-authored material; no public distribution grant added."
+        "license": "Project-authored material; owner confirmed permission to publish this bundled snapshot. No blanket downstream license added."
       },
       "targets": [
         "global",
@@ -1881,7 +1881,7 @@
         "label": "agent-workflow/observability",
         "version": "1.0.0",
         "source_sha256": "1a7eb07ac3371e88d145d607f38d480867deef5a8703e9d3a9d4c74509c0430c",
-        "license": "Private project-authored material; no public distribution grant added."
+        "license": "Project-authored material; owner confirmed permission to publish this bundled snapshot. No blanket downstream license added."
       },
       "targets": [
         "global",
@@ -1914,7 +1914,7 @@
         "label": "agent-workflow/acceptance-verification",
         "version": "1.0.0",
         "source_sha256": "99b67354d3976c4a4b0869705eb1b06bb2ae25616a04c4257b01e5a30bedb73f",
-        "license": "Private project-authored material; no public distribution grant added."
+        "license": "Project-authored material; owner confirmed permission to publish this bundled snapshot. No blanket downstream license added."
       },
       "targets": [
         "global",
@@ -1947,7 +1947,7 @@
         "label": "supplied-forge",
         "version": "supplied-snapshot",
         "source_sha256": "ac694bcc552564a94dd9e5d1b7821327c789cf965b8d9c499a14594a3f0792d2",
-        "license": "User-supplied private workflow material; no public distribution grant added."
+        "license": "User-supplied workflow material; owner confirmed permission to publish this bundled snapshot. Retained third-party terms remain applicable."
       },
       "targets": [
         "global",
@@ -1984,7 +1984,7 @@
         "label": "supplied-billing-task-full-workflow",
         "version": "supplied-snapshot",
         "source_sha256": "3f298d31b863849eab4628f0141e8c52eb67138830b74b7cba46959b3dd2abce",
-        "license": "User-supplied private workflow material; no public distribution grant added."
+        "license": "User-supplied workflow material; owner confirmed permission to publish this bundled snapshot. Retained third-party terms remain applicable."
       },
       "targets": [
         "global",
@@ -2024,7 +2024,7 @@
         "label": "supplied-billing-task-implement",
         "version": "supplied-snapshot",
         "source_sha256": "541349a3820af9da67750748c765b1f15ba078be5cd0d9aefa439cef35aaba63",
-        "license": "User-supplied private workflow material; no public distribution grant added."
+        "license": "User-supplied workflow material; owner confirmed permission to publish this bundled snapshot. Retained third-party terms remain applicable."
       },
       "targets": [
         "global",
@@ -2059,7 +2059,7 @@
         "label": "supplied-billing-task-delivery",
         "version": "supplied-snapshot",
         "source_sha256": "4e63f9527a3de3347a3826c3d394a42ad889595dba5fc5bd33ed2beaa24968a4",
-        "license": "User-supplied private workflow material; no public distribution grant added."
+        "license": "User-supplied workflow material; owner confirmed permission to publish this bundled snapshot. Retained third-party terms remain applicable."
       },
       "targets": [
         "global",
@@ -2093,7 +2093,7 @@
         "label": "supplied-officeless-analyze-alert",
         "version": "supplied-snapshot",
         "source_sha256": "d38aac79ecf881800f5fb361b286d0521ee0d4ca78285caae7cfd9e9186886bf",
-        "license": "User-supplied private workflow material; no public distribution grant added."
+        "license": "User-supplied workflow material; owner confirmed permission to publish this bundled snapshot. Retained third-party terms remain applicable."
       },
       "targets": [
         "global",
@@ -2126,7 +2126,7 @@
         "label": "supplied-billing-record-test-video",
         "version": "supplied-snapshot",
         "source_sha256": "0224415f89e6e490c684c931875520e8be7e4e87dc760a71363f0a3fa70aac28",
-        "license": "User-supplied private workflow material; no public distribution grant added."
+        "license": "User-supplied workflow material; owner confirmed permission to publish this bundled snapshot. Retained third-party terms remain applicable."
       },
       "targets": [
         "global",
@@ -2159,7 +2159,7 @@
         "label": "supplied-billing-attach-test-evidence",
         "version": "supplied-snapshot",
         "source_sha256": "b80860d933b50cf36d924bf6069db6b73ce50335f7395706c4cc568fe9c888ec",
-        "license": "User-supplied private workflow material; no public distribution grant added."
+        "license": "User-supplied workflow material; owner confirmed permission to publish this bundled snapshot. Retained third-party terms remain applicable."
       },
       "targets": [
         "global",
@@ -2395,7 +2395,7 @@
         "kind": "new",
         "label": "agent-workflow/playwright-cli",
         "version": "1.1.0",
-        "license": "Private local workflow instructions; upstream tools retain their own licenses.",
+        "license": "Local workflow instructions; owner confirmed permission to publish this bundled snapshot. Upstream tools retain their own licenses.",
         "references": [
           "https://github.com/microsoft/playwright-cli"
         ]
@@ -2433,7 +2433,7 @@
         "kind": "new",
         "label": "agent-workflow/context7",
         "version": "1.1.0",
-        "license": "Private local workflow instructions; upstream tools retain their own licenses.",
+        "license": "Local workflow instructions; owner confirmed permission to publish this bundled snapshot. Upstream tools retain their own licenses.",
         "references": [
           "https://context7.com/docs/resources/all-clients"
         ]
@@ -2467,7 +2467,7 @@
         "kind": "new",
         "label": "agent-workflow/strix-security",
         "version": "1.1.0",
-        "license": "Private local workflow instructions; upstream tools retain their own licenses.",
+        "license": "Local workflow instructions; owner confirmed permission to publish this bundled snapshot. Upstream tools retain their own licenses.",
         "references": [
           "https://github.com/usestrix/strix"
         ]
