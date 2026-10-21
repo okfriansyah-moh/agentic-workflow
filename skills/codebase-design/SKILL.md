@@ -116,6 +116,6 @@ Good interfaces make testing natural:
 - **Exploring alternative interfaces**, see [DESIGN-IT-TWICE.md](DESIGN-IT-TWICE.md): spin up parallel sub-agents to design the interface several radically different ways, then compare on depth, locality, and seam placement.
 
 
-## Codex execution
+## Host execution
 
 Use the available subagent tools for delegated work when permitted. Subagents are not new user-facing chats. If delegation is unavailable, perform the work sequentially and explain any loss of independent review. Respect the current mode and the user’s authorized scope; installing this skill does not execute its workflow.

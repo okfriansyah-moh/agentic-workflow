@@ -9,7 +9,7 @@ Resolve the pinned bundle from .ai/config.json and read [selection delivery](../
 
 # Publish reviewed selection changes
 
-Confirm the entire requested selection has current passing required checks and one independent review with no unresolved required findings. A worker contribution or unreviewed composition is not selection acceptance.
+Confirm one independent combined review with no unresolved required source findings. Verified selection acceptance also requires current passing required checks. When the user explicitly authorizes draft publication with test limits, disclose pending runtime/visual proof and leave acceptance pending; that draft is not verified completion. A worker contribution or unreviewed composition is not selection acceptance.
 
 Inspect Git status and stage only authorized related files. Commit recoverable changes and preserve unrelated work. Verify the reviewed base/head and affected results; implementation changes require affected verification and review of the fixes.
 

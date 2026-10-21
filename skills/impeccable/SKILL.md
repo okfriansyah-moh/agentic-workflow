@@ -9,7 +9,7 @@ metadata:
   local_version: "1.0.0"
 ---
 
-# Impeccable review for Codex
+# Impeccable review
 
 Apply [the personal output wording policy](../../resources/wording/output-wording.md) to generated deliverables and completion text. Before handoff, run its shared read-only checker on the complete output, rephrase flagged text without changing meaning, and require a clean result.
 

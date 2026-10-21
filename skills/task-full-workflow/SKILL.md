@@ -11,7 +11,7 @@ Resolve the pinned bundle from .ai/config.json and read [selection delivery](../
 
 Reuse approved requirements, design and task artifacts. Begin authorized implementation without reopening routine planning. Use brainstorming only for an unresolved material decision.
 
-Resolve the full requested selection once. Serial work can be implemented directly; parallel work uses claimed isolated lanes. Both routes share one record and one final independent review, then authorized publication. Keep acceptance pending while using tested predecessor implementations.
+Resolve the full requested selection once. The current chat implements directly by default; authorized concurrent contributions use claimed isolated worktrees. All contributions share one record and one final independent review, then authorized publication. Keep acceptance pending while using tested predecessor implementations.
 
 Use task-implement and applicable stack skills. Load only relevant source sections. Preserve the quality bar, meaningful tests and real proof boundaries; remove repeated reviews and capture administration. “Finish and wrap up” retains the completion objective unless the user explicitly stops execution. Installation does not start application work.
 

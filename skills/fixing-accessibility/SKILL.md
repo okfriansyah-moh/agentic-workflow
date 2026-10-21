@@ -7,7 +7,7 @@ description: Audit and fix HTML accessibility issues including ARIA labels, keyb
 
 Apply [the personal output wording policy](../../resources/wording/output-wording.md) to generated deliverables and completion text. Before handoff, run its shared read-only checker on the complete output, rephrase flagged text without changing meaning, and require a clean result.
 
-Codex adapter: apply the rules directly to the requested files and rendered surfaces. Slash-command examples below describe upstream invocation, not required Codex tools. For design prototypes, record source/keyboard/contrast evidence separately from production conformance.
+Host adapter: apply the rules directly to requested files and rendered surfaces using the active host’s tools. Slash-command examples describe upstream invocation, not required host tools. Explicit no-test/no-browser limits remain binding; excluded interaction observations stay pending. For design prototypes, record source/keyboard/contrast evidence separately from production conformance.
 
 Fix accessibility issues.
 

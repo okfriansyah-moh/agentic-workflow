@@ -15,7 +15,7 @@ metadata:
 
 Apply [the personal output wording policy](../../resources/wording/output-wording.md) to generated deliverables and completion text. Before handoff, run its shared read-only checker on the complete output, rephrase flagged text without changing meaning, and require a clean result.
 
-Token architecture, component specifications, systematic design, slide generation.
+Use these foundations for requested token/component authoring or unresolved design-to-code decisions. Existing approved tokens and components govern implementation; do not generate another design system. Presentation examples below are retained references for explicitly requested slide work, not executable host commands or project requirements.
 
 ## When to Use
 

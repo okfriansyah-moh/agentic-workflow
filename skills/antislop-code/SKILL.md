@@ -7,7 +7,7 @@ metadata:
 
 # antislop-code
 
-Read antislop. Apply this skill only to comments and documentation adjacent to code; code-review/coding-standards own implementation correctness and maintainability. A comment review does not authorize unrelated executable changes.
+Apply this skill only to comments and documentation adjacent to code; code-review/coding-standards own implementation correctness and maintainability. A comment review does not authorize unrelated executable changes.
 
 Remove comments that merely restate the next line, decorative separators, empty labels, redundant step narration and vague promises of future improvement. Retain comments that explain domain rules, concurrency constraints, protocols, security decisions, non-obvious algorithms, workarounds or public API behavior.
 

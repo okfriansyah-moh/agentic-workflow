@@ -13,9 +13,9 @@ Trace route inputs, server/client responsibilities, data loading and mutations. 
 
 Use version-appropriate Svelte reactivity and lifecycle. Clean up subscriptions, observers and timers; avoid global mutable request state in server code. Render user content through safe APIs and review any raw HTML boundary. Keep transport and persistence details outside presentational components where project boundaries call for adapters.
 
-Use semantic controls, explicit labels, keyboard interactions and visible focus. Match adopted tokens and layouts across narrow/intermediate/wide viewports. Verify zoom, long text, reduced motion, errors and any shipped themes. Use purposeful composition rather than decorative filler. Load focused anti-slop/a11y skills for the affected surface.
+Use semantic controls, explicit labels, keyboard interactions and visible focus. Match adopted tokens and layouts at agreed sizes and responsive rules. Inspect relevant zoom, long-text, reduced-motion, error and theme behavior selected by the change. Follow approved composition exactly. Open actual references and compare a representative state before spreading shared styling. Load focused visual/accessibility guidance only for a concern the change introduces.
 
-Run the actual Svelte/TypeScript checker, lint, Vitest behavior tests and required Playwright journeys. Preserve assertion IDs and inspect the rendered result; a component test or screenshot of a mock is not end-to-end proof. Test races or stale responses where the changed data flow can overlap.
+Run the agreed affected checks using existing Svelte/TypeScript, lint, Vitest or browser commands as applicable; this list does not require every tool. Explicit no-test limits prohibit added/executed tests and substitute browser trials, including hooks. Keep omitted proof pending. Preserve assertion IDs and inspect the rendered result; a component test or screenshot of a mock is not end-to-end proof. Test races or stale responses where the changed data flow can overlap.
 
 Return state/case coverage, changed files, actual browser observations, checks and pending boundaries. Leave production requirement/design changes to their authorized document workflow.
 

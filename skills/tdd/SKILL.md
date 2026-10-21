@@ -1,6 +1,6 @@
 ---
 name: tdd
-description: Test-driven development. Use when the user wants to build features or fix bugs test-first, mentions "red-green-refactor", or wants integration tests.
+description: Test-driven development. Use when the user wants to build features or fix bugs test-first, mentions "red-green-refactor", or an approved task explicitly selects test-first development.
 ---
 
 # Test-Driven Development
@@ -23,7 +23,7 @@ A **seam** is the public boundary you test at: the interface where you observe b
 
 **Test at agreed public boundaries.** Reuse the boundaries and proof requirements in the approved task or ATDD. If the task leaves a consequential boundary unresolved, propose the relevant interface and clarify it once; routine implementation decisions use existing project guidance. Independent database observation is valid when the acceptance contract explicitly requires persisted-state proof.
 
-When the shape of that interface is itself in question (how deep the module is, where the seam belongs, what the interface should expose), Read and follow the installed `$codebase-design` SKILL.md for the vocabulary. It is the shared source of the module, interface, depth, seam, adapter, leverage and locality terms, and it is a reference to consult, not a session to run.
+When the shape of that interface is itself in question (how deep the module is, where the seam belongs, what the interface should expose), read the selected bundle’s [codebase-design](../codebase-design/SKILL.md) for the vocabulary. It is the shared source of the module, interface, depth, seam, adapter, leverage and locality terms, and it is a reference to consult, not a session to run.
 
 ## Anti-patterns
 

@@ -17,6 +17,6 @@ Commit source at natural milestones. Check product progress every 45 minutes; su
 
 Combine tested contributions in dependency order before the selection review. Reuse one reviewer and ledger for corrections. Mark tasks accepted only after current checks and the complete selection review pass, then deliver within authorization.
 
-Read [coordination contracts](../../docs/COORDINATION.md) for selection commands and the optional concurrent-lane helpers.
+Read [coordination contracts](../../docs/COORDINATION.md) for selection commands and the optional concurrent-contribution helpers.
 
 Apply the [shared wording policy](../../resources/wording/output-wording.md) before delivery.

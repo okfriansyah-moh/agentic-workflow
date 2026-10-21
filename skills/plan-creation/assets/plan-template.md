@@ -23,7 +23,7 @@ groups:
 
 ## Shared execution rules
 
-{{Source loading, accepted constraints, project conventions, review/evidence rules, repository command map with workdirs and prerequisites.}}
+{{One delivery procedure for Codex, Cursor AI, Claude Code and GitHub Copilot. Direct serial implementation by default; optional scoped contributors; one independent combined selection review. Source references, accepted constraints, protected workflow/unplanned Python files, agreed affected checks with workdirs/prerequisites, explicit test limits and delivery destination.}}
 
 ## Feature groups
 

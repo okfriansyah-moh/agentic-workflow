@@ -7,7 +7,7 @@ metadata:
 
 # antislop-copywriting
 
-Read antislop, the product behavior and the intended audience. Use actual task/domain vocabulary and the adopted brand voice. Personal voice is supplied by humanizer only when requested; this skill does not invent testimonials, usage counts, savings or capabilities.
+Read the product behavior, adopted design and intended audience. Use actual task/domain vocabulary and the adopted brand voice. Personal voice is supplied by humanizer only when requested; this skill does not invent testimonials, usage counts, savings or capabilities.
 
 Give each heading, label and sentence a concrete job. Name the action or result rather than promising vague transformation. Remove generic openings, repeated value propositions, adjective stacks, unsupported superlatives and sentences that restate the heading. Prefer a precise short statement to a slogan when the user needs information.
 

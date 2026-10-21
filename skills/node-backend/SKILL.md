@@ -17,6 +17,6 @@ For MCP follow the selected protocol/SDK version: validated tool arguments, boun
 
 Preserve GraphQL/gRPC/API compatibility and schema generation ownership. Coordinate dependency lock updates with the owner. Use deterministic fixtures and real transport/client checks when the acceptance contract requires them; directly calling a handler proves only that boundary.
 
-Run lint, type checks, dependency-cycle checks and scoped behavioral/security tests. Record runtime versions, request/response observations, resource cleanup and any transport/database boundary still unverified.
+Run agreed affected checks with existing lint, type, dependency and behavioral/security tools as applicable. Explicit no-test limits prohibit added/executed tests and substitute trials; keep omitted proof pending. Record runtime versions, request/response observations, resource cleanup and any transport/database boundary still unverified.
 
 Apply the [shared wording policy](../../resources/wording/output-wording.md) to authored output. Read supporting skills only for the current task.

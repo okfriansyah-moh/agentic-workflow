@@ -11,7 +11,7 @@ Use the user's selected design, requirements and task scope as the governing dir
 
 For every visible element or sentence, identify its concrete job: help the user understand, decide, navigate or act. Remove generic claims, decorative filler, invented metrics/testimonials and repeated copy that adds no information. Retain purposeful techniques when they serve the adopted design; gradients, cards, motion and illustrations are not universally forbidden.
 
-Check actual behavior alongside presentation. Controls need meaningful actions, navigation must reach the promised destination, and the required loading/empty/error/success states must exist. Verify responsive layout, keyboard operation, focus, contrast, zoom and every shipped theme. A polished screenshot cannot establish an interaction.
+Check actual behavior alongside presentation. Controls need meaningful actions, navigation must reach the promised destination, and the required loading/empty/error/success states must exist. Inspect responsive layout, keyboard operation, focus, contrast, zoom and themes where affected or required by the agreed checks. Explicit test/browser limits remain binding; report excluded observations as pending. A polished screenshot cannot establish an interaction.
 
 Use antislop-ui for composition, antislop-copywriting for product language, antislop-human for usability/accessibility, antislop-layoutmobile for reflow and antislop-code for comment hygiene. Load only relevant concerns. General maintainability/correctness belongs to code-review and the configured quality gates.
 

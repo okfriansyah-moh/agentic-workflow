@@ -11,11 +11,11 @@ integration_owner: T001
 
 ## Outcome and scope
 
-{{Observable feature outcome, actors, owned behavior and boundaries.}}
+{{Observable feature outcome, actors, complete journey through success/return/retained context, owned behavior and boundaries.}}
 
 ## Shared context
 
-{{Relevant shared contracts, source links, design states, domain facts and pitfalls.}}
+{{Relevant shared contracts and exact design/component/token/asset/state references with agreed comparison sizes; domain facts and pitfalls. Reference the root’s delivery/review rules instead of adding another group ceremony.}}
 
 ## Task list
 

@@ -336,6 +336,14 @@ class PackageChecks(unittest.TestCase):
         self.passed_fixture()
         self.assertEqual(self.run_check()[0], 0, self.run_check()[1])
 
+    def test_tasks_can_reference_one_combined_selection_review(self):
+        self.passed_fixture()
+        second = second_task(self.paths)
+        self.assertIn("[Report](../evidence.md)", second.read_text())
+        status, report = self.run_check("--strict")
+        self.assertEqual(status, 0, report)
+        self.assertEqual(report["tasks"], 2)
+
     def test_same_reviewer_is_not_independent(self):
         self.passed_fixture()
         self.replace("task", "reviewer-B", "implementer-A")

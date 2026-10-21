@@ -7,7 +7,7 @@ metadata:
 
 # antislop-ui
 
-Read antislop and the adopted design specification/tokens. Start with the user's main task, actual content and state hierarchy. The approved palette, typography and component system govern; this review does not replace them with a new aesthetic.
+Use the adopted design and the adopted design specification/tokens. Start with the user's main task, actual content and state hierarchy. The approved palette, typography and component system govern; this review does not replace them with a new aesthetic.
 
 Inspect hierarchy, density, spacing rhythm and alignment in real rendered states. Give primary actions and essential information clear emphasis. Use cards when grouping is meaningful, avoid boxing every paragraph, and let differing content needs shape layout. Keep component radius, shadows, icon family and motion consistent with tokens.
 

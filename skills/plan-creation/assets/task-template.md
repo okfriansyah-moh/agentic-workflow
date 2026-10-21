@@ -6,7 +6,7 @@ depends_on: []
 readiness: Draft
 status: Not started
 risk: medium
-test_strategy: test-first
+test_strategy: alongside
 visual_review: not-applicable
 ---
 
@@ -40,11 +40,11 @@ visual_review: not-applicable
 
 ## Implementation
 
-{{Ordered checkable changes, relevant interfaces, states, enforcement, persistence, failure/recovery and compatibility.}}
+{{Ordered checkable changes and relevant interfaces. Complete the journey through success, return destination and retained context. For UI, link exact references/tokens/assets/states and agreed comparison sizes; compare a representative state before propagating shared styling. Include relevant failures and compatibility.}}
 
 ## Development guidance
 
-{{Applicable shared rules and their task-specific consequences; authored/generated ownership and guardrails.}}
+{{Applicable shared rules and task-specific consequences. Protect workflow code, bundled instructions, gate policy and unplanned Python files during product work. Harness maintenance requires its own requested scope.}}
 
 ## Acceptance
 
@@ -52,7 +52,7 @@ visual_review: not-applicable
 
 ## Tests
 
-{{Test strategy and reason, assigned source cases/rows, unit/component/real-boundary coverage, fixtures/reset, independent expected values, planned test paths and proof limits.}}
+{{Select the agreed strategy explicitly; alongside is a placeholder, not mandatory TDD. Specify only meaningful affected checks, source cases, fixtures, expected values and proof limits. Explicit no-test limits prohibit new/executed tests and substitute browser trials; leave excluded proof pending.}}
 
 ## Validation
 
@@ -60,13 +60,13 @@ visual_review: not-applicable
 |---|---|---|---|---|
 | behavior | {{exact_command_or_observation}} | {{workdir}} | {{independent_expected_result}} | yes |
 | self-review | Compare changes to source and acceptance | {{workdir}} | All task criteria addressed; defects corrected | yes |
-| independent-review | Fresh reviewer checks source compliance, code and evidence | {{workdir}} | Required findings resolved for the current revision | yes |
+| independent-review | Reference the one final selection review covering this task | {{workdir}} | Combined selection findings resolved for the current revision | yes |
 
 ## Review and evidence
 
 {{Reviewers, source/baseline/change evidence, concrete review focus and risk-based scrutiny. When UI is affected set visual_review: required, add required visual-review check/evidence row, and specify design references, state/actor/fixture/theme/viewport, captures, comparison and interaction/accessibility checks. Otherwise explain why visual review is inapplicable.}}
 
-Implement → test → self-review → independent review → correct → rerun affected checks → reassess. Preserve unresolved findings and next action when unfinished. Source changes need an authorized decision.
+Implement → run agreed affected checks → inspect the diff → include in one combined selection review → correct findings → rerun affected checks. Preserve unresolved findings and next action when unfinished. Source changes need an authorized decision.
 
 ## Evidence
 

@@ -13,10 +13,10 @@ Keep domain behavior independent of transport and persistence adapters where the
 
 Use Kotlin nullability to model real absence. Avoid unchecked casts and force-unwrapping at external boundaries. Keep immutable values where practical, bounded collections, explicit time sources and stable ordering where observable. Translate cancellation, deadlines and error types at transport boundaries without swallowing failures.
 
-Load spring-dependency-injection for bean wiring and jpa-hibernate for persistence. Keep transaction scopes short and move slow network calls outside database transactions unless the contract deliberately requires coordination. Model retries/idempotency where the operation can repeat.
+Load spring-dependency-injection for changed bean-wiring concerns and jpa-hibernate for changed persistence concerns only. Keep transaction scopes short and move slow network calls outside database transactions unless the contract deliberately requires coordination. Model retries/idempotency where the operation can repeat.
 
 For GraphQL check resolver authorization, error shape, pagination and N+1 behavior. For gRPC check protobuf compatibility, deadlines, status mapping and real client behavior where ATDD requires it. Serialization contracts and schema generators are shared resources with one owner.
 
-Run formatting/static checks and the smallest relevant behavioral tests, then compilation and required integration checks. Include invalid input, permissions, failure mapping and concurrency cases when they are part of the changed behavior. A mocked repository does not prove PostgreSQL behavior. Return contract IDs, changed paths, checks and known gaps.
+Run the agreed affected formatting/static, compilation and behavioral/integration checks. Explicit no-test limits prohibit added/executed tests and substitute trials; keep omitted proof pending. Include invalid input, permissions, failure mapping and concurrency cases when they are part of the changed behavior. A mocked repository does not prove PostgreSQL behavior. Return contract IDs, changed paths, checks and known gaps.
 
 Apply the [shared wording policy](../../resources/wording/output-wording.md) to authored output. Read supporting skills only for the current task.

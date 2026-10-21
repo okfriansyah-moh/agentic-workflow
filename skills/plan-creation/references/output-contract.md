@@ -76,7 +76,7 @@ depends_on: []
 readiness: Draft
 status: Not started
 risk: medium
-test_strategy: test-first
+test_strategy: alongside
 visual_review: not-applicable
 ```
 
@@ -89,7 +89,7 @@ Allowed values:
 | readiness | `Draft`, `Ready`, `Needs update`; describes settled instructions, not completed dependencies |
 | status | `Not started`, `In progress`, `In review`, `Blocked`, `Done`; describes actual execution |
 | risk | `low`, `medium`, `high`; explain concrete impact in the task |
-| test_strategy | `test-first`, `alongside`, `checks-only`; explain selection, with checks-only for work without executable behavior |
+| test_strategy | `test-first`, `alongside`, `checks-only`; choose explicitly from agreed checks; checks-only describes work without executable behavior, not omitted required tests |
 | visual_review | `required`, `not-applicable`; explain applicability in Review and evidence |
 
 Use these sections in every task, marking irrelevant conditional content with a concise reason rather than fabricated work:
@@ -115,7 +115,7 @@ Validation table:
 |---|---|---|---|---|
 ```
 
-Check IDs are task-local. Every task includes `self-review` and `independent-review`, both Required `yes`. Self-review is the implementation diff check; independent-review references the one final selection review covering all requested task IDs, not a separate task ceremony. Other checks name assigned behavior (for example `unit-rules`, `real-query`, `visual-states`); Required is `yes` or `no`. Reserve `visual-review` as a required check when metadata says visual review required. Procedures can be human/agent observations rather than fabricated shell commands. Existing project commands are used as found; future commands are explicitly dependent contracts.
+Check IDs are task-local. Every task includes `self-review` and `independent-review`, both Required `yes`, for schema compatibility. Their methods reference the implementation diff check and shared selection review; they do not create separate review events. All covered tasks may link the same review artifact. Self-review is the implementation diff check; independent-review references the one final selection review covering all requested task IDs, not a separate task ceremony. Other checks name assigned behavior (for example `unit-rules`, `real-query`, `visual-states`); Required is `yes` or `no`. Reserve `visual-review` as a required check when metadata says visual review required. Procedures can be human/agent observations rather than fabricated shell commands. Existing project commands are used as found; future commands are explicitly dependent contracts.
 
 Evidence table:
 
@@ -126,7 +126,7 @@ Evidence table:
 
 One current row per validation check. Results: `Not run`, `Passed`, `Failed`, `Blocked`, `Stale`. Future rows use `Not run` with `—` in evidence fields. Passed requires an explicit link to a nonempty local evidence file, implementation revision/content fingerprint, and actual environment. Review rows also identify reviewers; independent and self-review identities must differ. Tool/agent IDs or named humans are useful, not untraceable labels alone. Keep previous run reports linked in prose; the table reflects the current verdict. Authenticity and sufficiency need review; the checker only validates recorded structure and reachable artifacts.
 
-Done requires Ready instructions and Passed evidence for every required check, including both reviews and applicable visual review. In-review/blocked records identify next action and unresolved findings. A stopped execution budget preserves progress; it is not evidence of an external blocker. Neither missing tools nor self-review can substitute for required independent review.
+Done requires Ready instructions and Passed evidence for every required check, including the diff check, referenced combined selection review and applicable visual observation. In-review/blocked records identify next action and unresolved findings. A stopped execution budget preserves progress; it is not evidence of an external blocker. Neither missing tools nor self-review can substitute for required independent review.
 
 ## Completion boundary
 

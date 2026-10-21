@@ -7,7 +7,7 @@ metadata:
 
 # antislop-human
 
-Read antislop and the task's accessibility contract. Use semantic controls, meaningful labels and keyboard reachability as the starting point. Automated accessibility checks support manual interaction checks; they do not establish complete compliance.
+Use the adopted design and the task's accessibility contract. Use semantic controls, meaningful labels and keyboard reachability as the starting point. Automated accessibility checks support manual interaction checks; they do not establish complete compliance.
 
 Verify text contrast against the actual background, including image/gradient surfaces and every shipped theme. Use 4.5:1 for ordinary text and 3:1 where the standard's large-text definition applies; controls/focus indicators need applicable nontext contrast. The included contrast-check.py supports color-pair arithmetic, not a whole-page audit.
 

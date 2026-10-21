@@ -12,7 +12,7 @@ Two-axis review of the diff between `HEAD` and a fixed point the user supplies:
 - **Standards**: does the code conform to this repo's documented coding standards?
 - **Spec**: does the code faithfully implement the originating issue / spec?
 
-An independent review-verify agent evaluates both axes in one review. For a large change the coordinator may allocate separate reviewers within the same worker budget; reviewers do not start nested orchestration.
+One independent reviewer evaluates both axes in the combined selection review. Specialists contribute scoped concerns only when needed; they do not start another review ceremony or nested orchestration.
 
 Use the supplied task, local specification, or authorized issue source. A tracker installation is optional.
 
@@ -60,7 +60,7 @@ Each smell reads *what it is* → *how to fix*; match it against the diff:
 
 Inspect changed files and the relevant callers or contracts needed to test each concern. For standards, cite the rule and concrete violation; treat smell heuristics as judgment, not automatic failure. For specification, map each assigned acceptance criterion to implementation and actual evidence, reporting missing behavior and unapproved scope.
 
-Run the applicable checks at the reviewed revision. Report unavailable tools and environment failures separately from code defects. Preserve the independent reviewer identity and findings ledger; return actionable findings to the existing coordinator for correction.
+Inspect valid existing results for the reviewed revision; run only agreed affected checks needed to resolve a finding. Honor explicit no-test limits, including browser trials and hooks, and report runtime/visual proof as pending when excluded. Report unavailable tools and environment failures separately from code defects. Preserve the independent reviewer identity and findings ledger; return actionable findings to the existing coordinator for correction.
 
 ### 5. Aggregate
 
@@ -78,6 +78,6 @@ A change can pass one axis and fail the other:
 Reporting them separately stops one axis from masking the other.
 
 
-## Codex execution
+## Host execution
 
 The parent coordinator assigns the independent reviewer. This reviewer evaluates the scoped change and returns findings to that parent; it does not dispatch more agents. If independent review is unavailable, record that limitation rather than presenting self-review as independent. Respect the current mode and authorized scope; installing this skill does not execute a review.

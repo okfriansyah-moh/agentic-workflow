@@ -14,9 +14,13 @@ Read this reference once for the affected components; reuse the findings until f
 
 Use the user’s authorized scope and existing approvals. Revisit approval only for a material design change or an action requiring authorization not already given. Installation or discovery of a skill does not itself authorize setup scripts, hooks, commits, publications, deployments, or destructive actions. Respect denied operations; report the blocked part and continue independent permitted work.
 
-Use available Codex tools rather than assuming Copilot/Claude commands, a particular todo API, writable memory paths, model controls, or named preconfigured agents. Inherit the current model unless the user requests otherwise. Delegate only when permitted and beneficial; if unavailable, work sequentially and identify the loss of independent review. Independent reads can run together; dependent edits and integrations stay ordered.
+Use the active host’s available tools on Codex, Cursor AI, Claude Code or GitHub Copilot. Native invocation and discovery differ; the delivery procedure does not. Do not assume another host’s commands, a particular todo API, writable memory paths, model controls, or named preconfigured agents. Inherit the current model unless the user requests otherwise. Delegate only when permitted and beneficial; if unavailable, work sequentially and identify the loss of independent review. Independent reads can run together; dependent edits and integrations stay ordered.
 
 Scale planning and verification to the task. Reuse an approved design and established test boundaries. A small correction does not require an architectural interview, new plan file, full security audit, or extra completion approval. Complete authorized work, fix findings introduced by the change, and distinguish unrelated baseline failures and unavailable checks from passes. Avoid assurance such as “secure” or “production-ready” beyond the evidence.
+
+During product implementation, edit only the approved product scope. Preserve workflow code, bundled instructions, gate policy and unplanned Python files. Harness maintenance requires its own requested task. Load supporting skills only for an unresolved concern in the selected change; availability is not a checklist.
+
+Run agreed affected checks through existing project tools. Explicit no-test instructions prohibit added/executed tests and substitute browser trials, including hook-triggered tests. Retain omitted required proof as pending and report source-review limits; do not silently mark product acceptance passed.
 
 ## Completion evidence
 

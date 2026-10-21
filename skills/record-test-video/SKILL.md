@@ -15,7 +15,7 @@ Record the implementation fingerprint, browser/runtime version, viewport/theme, 
 
 Make actions and outcomes readable: show the relevant control, visible result and brief truthful captions or case IDs. Use pauses only to communicate actual state transitions; never edit a failed step into an apparent success. Assertions and raw traces remain separate evidence even when captions are present.
 
-Use the managed [Playwright CLI](../playwright-cli/SKILL.md) when available. Start one named lane session and capture video with `video-start PATH` / `video-stop`; `recording-start` / `recording-stop` produce test code, not video. Add case markers with `video-chapter`, and show truthful visible actions with `video-show-actions`. Read `--help` for the pinned version's duration, pointer and annotation options.
+Use the managed [Playwright CLI](../playwright-cli/SKILL.md) when available. Start one named browser session and capture video with `video-start PATH` / `video-stop`; `recording-start` / `recording-stop` produce test code, not video. Add case markers with `video-chapter`, and show truthful visible actions with `video-show-actions`. Read `--help` for the pinned version's duration, pointer and annotation options.
 
 Capture video, relevant screenshots, traces and runner results. For backend-only cases record real requests/responses and independent state checks through acceptance-verification; rendered logs must be labeled as summaries and never presented as browser execution.
 

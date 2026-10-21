@@ -7,7 +7,7 @@ metadata:
 
 # antislop-layoutmobile
 
-Read antislop and the adopted responsive layout contracts. Derive breakpoints from where the content stops working; phone/tablet/desktop samples help inspection but do not prove every width between them.
+Use the adopted design and the adopted responsive layout contracts. Derive breakpoints from where the content stops working; phone/tablet/desktop samples help inspection but do not prove every width between them.
 
 Inspect continuous resizing and representative narrow/intermediate/wide states. Reflow columns, order and navigation deliberately. Keep type, spacing and content measure appropriate to available space while preserving target sizes. Avoid a desktop page merely compressed into a narrow viewport.
 

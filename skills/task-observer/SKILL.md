@@ -9,7 +9,7 @@ metadata:
   local-adaptation: Codex for Muhammad Okfriansyah, 2026-10-09
 ---
 
-# Task Observer for Codex
+# Task Observer
 
 Apply [the personal output wording policy](../../resources/wording/output-wording.md) to generated deliverables and completion text. Before handoff, run its shared read-only checker on the complete output, rephrase flagged text without changing meaning, and require a clean result.
 

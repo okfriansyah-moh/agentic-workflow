@@ -7,7 +7,7 @@ description: Diagnosis loop for hard bugs and performance regressions. Use when 
 
 Apply [the personal output wording policy](../../resources/wording/output-wording.md) to generated deliverables and completion text. Before handoff, run its shared read-only checker on the complete output, rephrase flagged text without changing meaning, and require a clean result.
 
-A discipline for hard bugs. Skip phases only when explicitly justified.
+Use this diagnosis discipline for hard bugs. Reuse an existing focused signal; do not build another harness when existing observations suffice. Explicit no-test limits prohibit new/executed tests and substitute browser/HTTP trials. Under those limits, inspect source and existing logs, report unresolved runtime uncertainty, and keep required proof pending.
 
 When exploring the codebase, read `GLOSSARY.md` (if it exists) to get a clear mental model of the relevant modules, and check ADRs in the area you're touching.
 

@@ -107,7 +107,7 @@ Test-first is appropriate for this reproducible rule. Add a unit boundary case a
 |---|---|---|---|---|
 | count-rule | python3 -m unittest discover -s tests | repository root | Negative rejected; zero accepted; real CLI exits 2 | yes |
 | self-review | Inspect changes and source expectations | repository root | Scope and acceptance agree | yes |
-| independent-review | Fresh reviewer examines baseline, change and evidence | repository root | Required findings resolved | yes |
+| independent-review | Reference the combined selection review of baseline, change and evidence | repository root | Required findings resolved | yes |
 
 ## Review and evidence
 Review parser boundary, unchanged flags and stderr. Visual review is inapplicable to a CLI with no visual interface. Correct findings and repeat affected checks before fresh review.
@@ -120,7 +120,7 @@ Review parser boundary, unchanged flags and stderr. Visual review is inapplicabl
 | independent-review | Not run | — | — | — | — |
 
 ## Completion and handoff
-Complete only after the required behavior and both reviews pass. Next action is to add the failing count test. This synthetic checker fixture claims no application execution.
+Complete only after the required behavior, diff check and referenced combined selection review pass. Next action is to add the failing count test. This synthetic checker fixture claims no application execution.
 """)
     return {"base": base, "entry": entry, "group": group, "task": task, "source": source, "src": src}
 
