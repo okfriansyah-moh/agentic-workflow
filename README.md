@@ -110,6 +110,24 @@ Replace the example plan path with your own. The shared resource controller admi
 
 Use the stages needed for your project. An approved existing specification can be reused; a routine change does not require recreating every document. The numbered filenames below are SpoolIn's convention, not required filenames for every project.
 
+```mermaid
+flowchart TD
+    brainstorm["Brainstorming<br/>docs/01-brainstorming-result.md"]
+    prd["Product requirements<br/>docs/02-PRD.md"]
+    design["Design system<br/>docs/03-design-system.md<br/>docs/design-system/tokens.json<br/>docs/design-system/components.md<br/>docs/design-system/mockup/"]
+    tech["Technical design<br/>docs/04-spoolin-techdoc.md"]
+    acceptance["Acceptance specification<br/>docs/05-atdd.md"]
+    plan["Implementation planning<br/>docs/06-PLAN.md<br/>docs/plan/: groups and task files"]
+    implementation["Implementation and verification<br/>Code, tests, check results<br/>Verification receipts and progress"]
+    review["Independent combined review<br/>Findings and review outcome"]
+    delivery["Delivery<br/>Commits and authorized publication<br/>docs/release/handoff.md"]
+
+    brainstorm --> prd --> design --> tech --> acceptance --> plan
+    plan --> implementation --> review
+    review -->|Findings require corrections| implementation
+    review -->|Review accepted and required checks current and passing| delivery
+```
+
 | Stage and skill | What goes in → what comes out | SpoolIn output example |
 | --- | --- | --- |
 | **1. Brainstorming** — `brainstorming` | Idea, constraints, and open choices → agreed direction, scope, alternatives, decisions, and unresolved questions. | [`docs/01-brainstorming-result.md`](https://github.com/okfriansyah-moh/spoolIn/blob/main/docs/01-brainstorming-result.md) records the movie-app direction and delivery decisions. |
