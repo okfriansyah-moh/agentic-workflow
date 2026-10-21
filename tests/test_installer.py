@@ -280,11 +280,25 @@ class InstallerTests(unittest.TestCase):
             path = "services/" + service + "/src/Handler.kt"
             with self.subTest(service=service), patch.object(gate_selection, "changed_paths", return_value={path}):
                 selected, reason = gate_selection.select_components(self.repo, profile, "HEAD", True)
-                self.assertIsNone(selected)
-                self.assertIn("Shared", reason)
+                expected = {'core': {'core', 'frontend', 'mcp'}, 'catalog': {'catalog', 'core', 'frontend', 'mcp'}, 'media': {'media', 'catalog', 'core', 'frontend', 'mcp'}}
+                self.assertEqual(selected, expected[service])
+                self.assertIn('downstream', reason)
         with patch.object(gate_selection, "changed_paths", return_value={"frontend/src/App.svelte"}):
             selected, _ = gate_selection.select_components(self.repo, profile, "HEAD", True)
             self.assertEqual(selected, {"frontend"})
+
+    def test_backend_support_changes_keep_every_service_consumer(self):
+        from agent_workflow import gate_selection
+        profile = json.loads((api.ROOT / 'profiles/movie-app.json').read_text())
+        with patch.object(gate_selection, 'changed_paths', return_value={'libraries/backend-support/src/Shared.kt'}):
+            self.assertIsNone(gate_selection.select_components(self.repo, profile, 'HEAD', True)[0])
+
+    def test_review_adapter_never_receives_coordinator_implementation_instructions(self):
+        role = {'id': 'review-verify', 'description': 'Review changes', 'instructions': 'Inspect without editing.', 'skills': ['code-review']}
+        for host in ('codex', 'cursor', 'claude', 'copilot'):
+            text = api.role_text(role, host, '.ai/bundles/1.3.0')
+            self.assertNotIn('current chat coordinates and implements', text)
+            self.assertIn('Inspect without editing.', text)
 
     def enable_edit_checks(self):
         path = self.repo / ".ai/config.json"
@@ -300,7 +314,7 @@ class InstallerTests(unittest.TestCase):
                        "session_id": "selection", "tool_use_id": "edit-1"}
             with self.subTest(host=host), patch.object(api, "local_call") as execute:
                 with patch.object(sys, "stdin", io.StringIO(json.dumps(payload))):
-                    self.assertEqual(api.host_hook(argparse.Namespace(host=host, scope="repo")), {})
+                    self.assertIn("Workflow edit observed", json.dumps(api.host_hook(argparse.Namespace(host=host, scope="repo"))))
                 execute.assert_not_called()
 
     def test_host_hook_uses_pinned_runtime_and_global_does_not_assume_local_trust(self):
@@ -316,27 +330,14 @@ class InstallerTests(unittest.TestCase):
             result = api.host_hook(argparse.Namespace(host="codex", scope="repo"))
         self.assertIn("additionalContext", result["hookSpecificOutput"])
 
-    def test_hook_deduplication_requires_same_event_and_input(self):
-        gates = self.source / "agent_workflow/gates.py"
-        gates.write_text("import hashlib\nfrom pathlib import Path\ndef call(args):\n    path = Path(args.repo)/'.ai/state/count'\n    path.parent.mkdir(parents=True,exist_ok=True)\n    path.write_text(str(int(path.read_text())+1 if path.exists() else 1))\n    return {'status':'passed'}\ndef fingerprint(args):\n    source=Path(args.repo)/'input.txt'\n    return {'sha256':hashlib.sha256(source.read_bytes() if source.exists() else b'').hexdigest()}\ndef register(parser):\n    command=parser.add_parser('hook')\n    command.add_argument('--repo')\n    command.add_argument('--host')\n    command.add_argument('--stage')\n    command.set_defaults(handler=call)\n    command=parser.add_parser('fingerprint')\n    command.add_argument('--repo')\n    command.set_defaults(handler=fingerprint)\n")
+    def test_edit_notifications_never_execute_commands_even_with_legacy_fast_setting(self):
         api.install(self.args())
         self.enable_edit_checks()
-        payload = {"cwd": str(self.repo), "session_id": "session", "tool_use_id": "edit-1"}
-        def invoke(scope, context):
-            with patch.object(sys, "stdin", io.StringIO(json.dumps(context))):
-                api.host_hook(argparse.Namespace(host="codex", scope=scope))
-        invoke("global", payload)
-        invoke("repo", payload)
-        count = self.repo / ".ai/state/count"
-        self.assertEqual(count.read_text(), "1")
-        (self.repo / "input.txt").write_text("Changed input")
-        invoke("repo", payload)
-        self.assertEqual(count.read_text(), "2")
-        invoke("repo", dict(payload, tool_use_id="edit-2"))
-        self.assertEqual(count.read_text(), "3")
-        invoke("global", {"cwd": str(self.repo)})
-        invoke("repo", {"cwd": str(self.repo)})
-        self.assertEqual(count.read_text(), "5")
+        payload = {"cwd": str(self.repo), "tool_name": "Write", "session_id": "session", "tool_use_id": "edit-1"}
+        for host in ("codex", "claude", "cursor", "copilot"):
+            with self.subTest(host=host), patch.object(api, "local_call") as command:
+                self.assertTrue(self.call_host_hook(host, "repo", payload))
+                command.assert_not_called()
 
     def workflow_root(self, name):
         root = self.base / name
@@ -405,40 +406,21 @@ class InstallerTests(unittest.TestCase):
         with patch.object(sys, "stdin", io.StringIO(json.dumps(payload))), patch.object(api.os, "getcwd", return_value=str(self.base / "home/.cursor")):
             return api.host_hook(argparse.Namespace(host=host, scope=scope))
 
-    def test_real_cursor_gate_and_claude_compatibility_wrappers_share_results(self):
+    def test_notifications_preserve_no_test_limits_across_hosts_and_scopes(self):
         payload = self.real_hook_fixture()
-        count = self.repo / ".ai/state/gate-count"
-        for passing, number in ((True, 1), (False, 2)):
-            (self.repo / "smoke.json").write_text(json.dumps({"passing": passing}))
-            payload["tool_use_id"] = f"edit-{number}"
-            for host, scope in (("cursor", "global"), ("claude", "global"), ("cursor", "repo"), ("claude", "repo")):
-                context = dict(payload)
-                if host == "claude":
-                    context.update(tool_name="Edit", hook_event_name="PostToolUse", cwd=str(self.repo))
-                result = self.call_host_hook(host, scope, context)
-                self.assertEqual(bool(result), not passing, (host, scope, result))
-                if not passing:
-                    self.assertIn("additional_context", result)
-                self.assertEqual(count.read_text(), str(number))
-        records = (self.repo / ".ai/state/hook-dedupe/records.json").read_text()
-        self.assertNotIn("private-input", records)
-        self.assertNotIn("private-output", records)
-        self.assertNotIn("conversation", records)
-        self.assertEqual({record["result"]["status"] for record in json.loads(records).values()}, {"passed", "error"})
+        for host in ("cursor", "claude", "codex", "copilot"):
+            for scope in ("global", "repo"):
+                with self.subTest(host=host, scope=scope):
+                    self.assertIn("Workflow edit observed", json.dumps(self.call_host_hook(host, scope, payload)))
+        self.assertFalse((self.repo / ".ai/state/gate-count").exists())
 
-    def test_real_hook_rechecks_changed_input_distinct_events_and_missing_identity(self):
+    def test_changed_inputs_and_missing_event_identity_never_trigger_hidden_checks(self):
         payload = self.real_hook_fixture()
-        self.assertEqual(self.call_host_hook("cursor", "global", payload), {})
+        self.call_host_hook("cursor", "global", payload)
         (self.repo / "smoke.json").write_text('{"passing": false}')
-        self.assertIn("additional_context", self.call_host_hook("claude", "global", payload))
-        self.call_host_hook("cursor", "repo", dict(payload, tool_use_id="edit-2"))
-        self.call_host_hook("cursor", "repo", dict(payload, tool_name="Read"))
-        for host in ("cursor", "claude"):
-            self.call_host_hook(host, "global", dict(payload, tool_use_id=None))
-        native_claude = {key: value for key, value in payload.items() if key not in {"workspace_roots", "conversation_id", "generation_id"}}
-        native_claude["cwd"] = str(self.repo)
-        self.assertIn("hookSpecificOutput", self.call_host_hook("claude", "global", native_claude))
-        self.assertEqual((self.repo / ".ai/state/gate-count").read_text(), "7")
+        for host in ("cursor", "claude", "codex", "copilot"):
+            self.call_host_hook(host, "repo", dict(payload, tool_use_id=None))
+        self.assertFalse((self.repo / ".ai/state/gate-count").exists())
 
     def test_ambiguous_cursor_payload_returns_feedback_without_running_gate(self):
         payload = self.real_hook_fixture()
@@ -474,8 +456,8 @@ class InstallerTests(unittest.TestCase):
                 results = list(pool.map(invoke, calls))
             for completed in results:
                 self.assertEqual(completed.returncode, 0, completed.stdout + completed.stderr)
-                self.assertEqual(bool(json.loads(completed.stdout)), not passing)
-            self.assertEqual((self.repo / ".ai/state/gate-count").read_text(), str(number))
+                self.assertIn("Workflow edit observed", completed.stdout)
+            self.assertFalse((self.repo / ".ai/state/gate-count").exists())
 
     def test_declared_skill_digest_is_verified_before_install(self):
         path = self.source / "manifest.json"

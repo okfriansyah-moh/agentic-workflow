@@ -717,7 +717,7 @@
     "Commands are required build contracts for application setup; missing wrappers/tasks/scripts block applicable checks.",
     "Do not run application tasks during workflow installation.",
     "Documentation mockup scripts are source requirements, not application components; their content remains fingerprinted.",
-    "Service changes conservatively select all checks because identity and data calls cross service boundaries in both directions; frontend-only changes can remain narrow."
+    "Ordinary component changes select affected components and downstream consumers; unknown executable inputs and shared build or policy changes broaden conservatively."
   ],
   "source_exclude": [
     "docs/**"
@@ -776,6 +776,6 @@
     "ops/**",
     "build-tools/**",
     "services/shared/**",
-    "services/**"
+    "libraries/backend-support/**"
   ]
 }

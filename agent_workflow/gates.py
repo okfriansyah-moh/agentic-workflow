@@ -190,7 +190,9 @@ def validate_outputs(repo, check, result, started):
             result.update(status='failed', reason='Sonar proof was not refreshed by this command')
 
 
-def coverage_result(repo, coverage, base, checks, run_started):
+def coverage_result(repo, coverage, base, checks, run_started, threshold=80):
+    if isinstance(threshold, bool) or not isinstance(threshold, (int, float)) or not 0 <= threshold <= 100:
+        raise ValueError('Project changed coverage threshold must be between 0 and 100')
     component = coverage['component']
     result = {'id': f'{component}-changed-coverage', 'component': component, 'required': True}
     if not base:
@@ -208,12 +210,12 @@ def coverage_result(repo, coverage, base, checks, run_started):
             return result | {'status': 'blocked', 'reason': 'Missing or stale coverage report'}
         lines = gate_reports.coverage_lines(reports, coverage['format'], coverage.get('source_prefix', ''))
         measurement = gate_reports.measure_coverage(repo, changes, lines, coverage.get('exclude', []))
-        status = 'passed' if measurement['percent'] >= 80 else 'failed'
+        status = 'passed' if measurement['percent'] >= threshold else 'failed'
         if measurement['missing_files']:
             status = 'failed'
         if measurement['executable'] == 0 and not measurement['missing_files']:
             status = 'not-applicable'
-        return result | measurement | {'status': status, 'threshold': 80}
+        return result | measurement | {'status': status, 'threshold': threshold}
     except (ValueError, OSError) as error:
         return result | {'status': 'blocked', 'reason': str(error)}
 
@@ -280,7 +282,7 @@ def check_results(repo, registry, checks, output_dir, files, reuse):
     return results
 
 
-def run_gates(repo, stage='fast', registry_path=None, component=None, base=None, affected=False, reuse=False):
+def run_gates(repo, stage='fast', registry_path=None, component=None, base=None, affected=True, reuse=False):
     repo = Path(repo).resolve()
     registry = load_registry(repo, registry_path)
     components = {check.get('component', 'shared') for check in registry['checks']}
@@ -300,7 +302,7 @@ def run_gates(repo, stage='fast', registry_path=None, component=None, base=None,
             if selected is not None and coverage['component'] not in selected:
                 continue
             if applicable(repo, coverage):
-                results.append(coverage_result(repo, coverage, base, results, started))
+                results.append(coverage_result(repo, coverage, base, results, started, registry.get('limits', {}).get('changed_coverage_percent', 80)))
     results.extend(source_support(repo, registry))
     after = fingerprint(repo)
     if before != after:
@@ -326,7 +328,7 @@ def register(subparsers):
     parser.add_argument('--registry')
     parser.add_argument('--component')
     parser.add_argument('--base')
-    parser.add_argument('--affected', action='store_true')
+    parser.add_argument('--affected', action='store_true', default=True, help='Select affected components and consumers (default)')
     parser.add_argument('--reuse', action='store_true')
     parser.set_defaults(handler=lambda a: run_gates(a.repo, a.stage, a.registry, a.component, a.base, a.affected, a.reuse))
     parser = subparsers.add_parser('fingerprint', help='Hash implementation and requirement inputs')

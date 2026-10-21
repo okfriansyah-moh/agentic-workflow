@@ -52,6 +52,28 @@ class SelectionTests(GitFixture):
         return {'owner': 'worker-a', 'plan': 'PLAN.md', 'outcome': 'Requested groups work',
                 'product_paths': ['src'], 'required_checks': self.spec()['required_checks']}
 
+    def test_cross_host_transfer_preserves_inputs_constraints_and_budget(self):
+        item = self.start(inputs={'Target': 'T1,T2', 'Mode': 'implement'}, constraints=['NO TEST'])
+        self.action(item, 'repair', phase='begin', reason='Optional capture')
+        self.action(item, 'repair', phase='end', outcome='Use direct observation')
+        before = self.action(item, 'status')['selection']
+        new = self.action(item, 'transfer', next_owner='claude-coordinator', expected_revision=revision(self.repo))['selection']
+        self.assertEqual(new['inputs'], before['inputs'])
+        self.assertEqual(new['constraints'], ['NO TEST'])
+        self.assertIn('claude-coordinator', new['implementers'])
+        self.assertEqual(new['repair_budget_id'], before['repair_budget_id'])
+        with self.assertRaisesRegex(CoordinationError, 'recorded selection owner'):
+            self.action(item, 'checkpoint', next_action='Old host must not continue')
+        self.assertEqual(selection(self.repo, 'status', {'selection_id': item['id'], 'owner': 'claude-coordinator'})['repair_budget']['attempts'], 1)
+
+    def test_transfer_rejects_active_claim_and_stale_revision(self):
+        item = self.start()
+        with self.assertRaisesRegex(CoordinationError, 'expected_revision'):
+            self.action(item, 'transfer', next_owner='new', expected_revision='stale')
+        create_claim(self.repo, self.spec(task_ids=['T1'], reuse_worktree=True))
+        with self.assertRaisesRegex(CoordinationError, 'Release'):
+            self.action(item, 'transfer', next_owner='new', expected_revision=revision(self.repo))
+
     def test_group_and_two_group_selection_have_one_review_unit(self):
         spec = self.plan()
         item = selection(self.repo, 'start', {**spec, 'group_ids': ['G1', 'G2']})['selection']

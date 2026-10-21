@@ -119,9 +119,9 @@ class ProbeParserTests(unittest.TestCase):
         for host in ('codex', 'claude', 'copilot'):
             prompt = smoke_prompt('fixture', 'pass', host)
             self.assertIn('aw-forge', prompt)
-            self.assertIn('aw-backend', prompt)
+            self.assertNotIn('delegate implementation to aw-backend', prompt)
             self.assertIn('aw-review-verify', prompt)
-            self.assertIn('Forge coordinates and does not edit', prompt)
+            self.assertIn('implements directly', prompt)
 
 
 class DelegationProofTests(unittest.TestCase):
@@ -147,7 +147,8 @@ class DelegationProofTests(unittest.TestCase):
     def test_reviewer_only_and_requested_main_role_cannot_pass(self):
         events = self.claude_events()
         reviewer_only = [event for event in events if 'backend1' not in json.dumps(event) and 'aw-backend' not in json.dumps(event)]
-        self.assertEqual(delegation_observation('claude', reviewer_only)['status'], 'blocked')
+        self.assertEqual(delegation_observation('claude', reviewer_only)['status'], 'passed')
+        self.assertEqual(delegation_observation('claude', reviewer_only, '/fixture')['status'], 'blocked')
         del events[0]['agent_type']
         self.assertEqual(delegation_observation('claude', events)['status'], 'blocked')
 
@@ -160,6 +161,29 @@ class DelegationProofTests(unittest.TestCase):
         events = self.claude_events()
         late_edit = events[:2] + events[4:-1] + events[2:4] + events[-1:]
         self.assertEqual(delegation_observation('claude', late_edit, '/fixture')['status'], 'blocked')
+
+    def test_direct_coordinator_edit_precedes_independent_review(self):
+        events = [
+            {'type': 'system', 'subtype': 'init', 'agent_type': 'aw-forge', 'session_id': 'main'},
+            {'type': 'assistant', 'session_id': 'main', 'message': {'content': [{'type': 'tool_use', 'id': 'edit', 'name': 'Write', 'input': {'file_path': '/fixture/smoke.json'}}]}},
+            {'type': 'user', 'session_id': 'main', 'message': {'content': [{'type': 'tool_result', 'tool_use_id': 'edit'}]}},
+            {'type': 'assistant', 'session_id': 'main', 'message': {'content': [{'type': 'tool_use', 'id': 'review', 'name': 'Agent', 'input': {'subagent_type': 'aw-review-verify'}}]}},
+            {'type': 'user', 'session_id': 'main', 'message': {'content': [{'type': 'tool_result', 'tool_use_id': 'review'}]}},
+            {'type': 'result', 'session_id': 'main', 'is_error': False}]
+        self.assertEqual(delegation_observation('claude', events, '/fixture')['status'], 'passed')
+        events[1]['session_id'] = 'unrelated'
+        self.assertEqual(delegation_observation('claude', events, '/fixture')['status'], 'blocked')
+
+    def test_codex_direct_native_stream_edit_and_reviewer_lifecycle(self):
+        events = [
+            {'type': 'thread.started', 'thread_id': 'main'},
+            {'type': 'item.completed', 'item': {'id': 'edit', 'type': 'file_change', 'status': 'completed', 'changes': [{'path': 'smoke.json'}]}},
+            {'type': 'item.completed', 'item': {'type': 'collab_agent_tool_call', 'tool': 'spawn_agent', 'agent_type': 'aw-review-verify', 'sender_thread_id': 'main', 'receiver_thread_ids': ['review']}},
+            {'type': 'item.completed', 'item': {'type': 'collab_agent_tool_call', 'tool': 'wait', 'agents_states': {'review': {'status': 'completed'}}}},
+            {'type': 'turn.completed'}]
+        self.assertEqual(delegation_observation('codex', events, '/fixture')['status'], 'passed')
+        events[1]['thread_id'] = 'unrelated'
+        self.assertEqual(delegation_observation('codex', events, '/fixture')['status'], 'blocked')
 
     def test_malformed_or_negative_ui_lifecycle_order_cannot_pass(self):
         graph = [{'id': 'forge', 'role': 'aw-forge', 'started': 0, 'completed': 10, 'parent_id': None},
@@ -205,11 +229,11 @@ class DelegationProofTests(unittest.TestCase):
 
     def test_gate_files_without_host_events_never_pass(self):
         phases = [{'phase': name, 'actual_value': name, 'exit_code': 0, 'timed_out': False, 'output_truncated': False, 'hook_events': [],
-                   'native_edit_ids': ['edit-' + name], 'gate_artifacts': [{'status': expected, 'fingerprint': 'input-' + name}]} for name, expected in (('pass', 'passed'), ('fail', 'failed'))]
+                   'native_edit_ids': ['edit-' + name], 'gate_artifacts': []} for name, expected in (('pass', 'passed'), ('fail', 'failed'))]
         self.assertEqual(_hook_verdict(phases, [])['status'], 'blocked')
         for phase in phases:
             phase['hook_events'] = [{'id': 'native-' + phase['phase'], 'source': '/fixture/.claude/settings.json',
-                                     'status': 'completed', 'tool_id': 'edit-' + phase['phase'], 'output': 'Workflow fast checks need attention'}]
+                                     'status': 'completed', 'tool_id': 'edit-' + phase['phase'], 'output': 'Workflow edit observed'}]
         sources = ['/fixture/.claude/settings.json']
         self.assertEqual(_hook_verdict(phases, [], sources)['status'], 'passed')
         phases[1]['exit_code'], phases[1]['timed_out'] = 124, True

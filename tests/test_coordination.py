@@ -262,13 +262,32 @@ class ReceiptTests(GitFixture):
 
 
 class IntegrationTests(GitFixture):
+    def integration(self, workers, commands=None):
+        from agent_workflow.selection import selection
+        lane, spec = super().integration(workers, commands)
+        with registry(lane) as state:
+            tasks = sorted({task for worker in workers for task in state['claims'][worker['claim_id']]['task_ids']})
+        item = selection(lane, 'start', {'owner': 'integrator', 'task_ids': tasks,
+                         'outcome': 'Combined contribution', 'product_paths': ['src'],
+                         'required_checks': spec['commands']})['selection']
+        spec['selection_id'] = item['id']
+        return lane, spec
+
+    def test_integration_without_selection_rejects_before_mutation(self):
+        _, _, worker = self.ready()
+        lane, spec = super().integration([worker])
+        head = revision(lane)
+        with self.assertRaisesRegex(CoordinationError, 'requires selection_id'):
+            integrate(lane, spec)
+        self.assertEqual(revision(lane), head)
+
     def test_parallel_contributions_preserved_and_checked(self):
         _, _, a = self.ready()
         _, _, b = self.ready('T2', 'src/b.txt', 'worker-b')
         lane, spec = self.integration([b, a])
         b['depends_on'] = ['T1']
         result = integrate(lane, spec)
-        self.assertEqual(result['status'], 'passed', result)
+        self.assertEqual(result['status'], 'pending-review', result)
         self.assertEqual((lane / 'src/a.txt').read_text(), 'changed by worker-a\n')
         self.assertEqual((lane / 'src/b.txt').read_text(), 'changed by worker-b\n')
         self.assertEqual(result['result']['merged_claims'], [a['claim_id'], b['claim_id']])
@@ -280,15 +299,11 @@ class IntegrationTests(GitFixture):
         with self.assertRaisesRegex(CoordinationError, 'claimed branch'):
             integrate(lane, spec)
 
-    def test_unreviewed_worker_cannot_merge(self):
+    def test_worker_review_is_not_a_separate_acceptance_gate(self):
         _, _, worker = self.ready()
-        review = read_json(worker['review'])
-        review['verdict'] = 'changes-required'
-        write_json(worker['review'], review)
+        Path(worker['review']).unlink()
         lane, spec = self.integration([worker])
-        with self.assertRaisesRegex(CoordinationError, 'review'):
-            integrate(lane, spec)
-        self.assertEqual(revision(lane), self.base)
+        self.assertEqual(integrate(lane, spec)['status'], 'pending-review')
 
     def test_unclaimed_file_cannot_merge(self):
         claim, lane = self.lane()
@@ -320,17 +335,14 @@ class IntegrationTests(GitFixture):
     def test_cleanup_preserves_evidence_and_unaccepted_work(self):
         claim, worker_lane, worker = self.ready()
         lane, spec = self.integration([worker])
-        self.assertEqual(integrate(lane, spec)['status'], 'passed')
+        self.assertEqual(integrate(lane, spec)['status'], 'pending-review')
         with self.assertRaisesRegex(CoordinationError, 'release'):
             cleanup_worktree(self.repo, claim['id'], claim['owner'])
-        release_claim(self.repo, claim['id'], claim['owner'], 'Integrated fixture')
-        with self.assertRaisesRegex(CoordinationError, 'Archive'):
+        release_claim(self.repo, claim['id'], claim['owner'], 'Retain pending review contribution')
+        with self.assertRaisesRegex(CoordinationError, 'successful retained integration'):
             cleanup_worktree(self.repo, claim['id'], claim['owner'])
-        shutil.move(str(worker_lane / '.ai/evidence'), str(self.root / 'archived-evidence'))
-        result = cleanup_worktree(self.repo, claim['id'], claim['owner'])
-        self.assertEqual(result['status'], 'ok')
-        self.assertFalse(worker_lane.exists())
-        self.assertEqual(revision(self.repo, result['branch_retained']), worker['commit'])
+        self.assertTrue(worker_lane.exists())
+        self.assertTrue((worker_lane / '.ai/evidence').exists())
 
     def test_two_failed_corrections_stop_without_deleting_work(self):
         _, _, worker = self.ready()

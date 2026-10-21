@@ -295,31 +295,21 @@ def _run_smoke(host, runtime, fixture, artifact_dir, expected_roles, expected_sk
 
 def _hook_verdict(phases, captures, expected_sources=()):
     if len(phases) != 2:
-        return result('blocked', 'Both passing and failing native edits were not completed', captures, phases=phases)
+        return result('blocked', 'Both native edit notifications were not observed', captures, phases=phases)
     for phase in phases:
-        expected = 'passed' if phase['phase'] == 'pass' else 'failed'
         if phase.get('exit_code') != 0 or phase.get('timed_out'):
-            return result('blocked', 'Native phase failed or timed out; partial hook events cannot establish complete execution', captures, phases=phases)
+            return result('blocked', 'Native phase failed or timed out', captures, phases=phases)
         if phase['actual_value'] != phase['phase'] or phase['output_truncated'] or len(phase.get('native_edit_ids', [])) != 1:
-            return result('blocked', 'Native edit or complete native event capture is missing', captures, phases=phases)
+            return result('blocked', 'Complete native edit capture is missing', captures, phases=phases)
         matching = [event for event in phase['hook_events'] if event.get('source') in expected_sources
                     and event.get('tool_id') == phase['native_edit_ids'][0] and event.get('id')]
-        if not matching:
-            return result('blocked', 'Native hook source and edit correlation are unavailable; gate files alone cannot establish execution', captures, phases=phases)
-        phase['matched_hook_events'] = matching
-        if not all(event.get('status') in ('completed', 'success', 'succeeded') for event in matching):
-            return result('blocked', 'Native hook execution did not complete successfully', captures, phases=phases)
-        if len(phase['gate_artifacts']) != 1:
-            return result('failed', 'Expected one gate run per edit after same-event deduplication', captures, phases=phases)
-        if phase['gate_artifacts'][0]['status'] != expected:
-            return result('failed', 'Native hook did not capture the expected passing/failing result', captures, phases=phases)
-    fingerprints = [phase['gate_artifacts'][0].get('fingerprint') for phase in phases]
-    if not all(fingerprints) or fingerprints[0] == fingerprints[1]:
-        return result('blocked', 'Hook receipts do not distinguish the two edited input fingerprints', captures, phases=phases)
-    outputs = phases[1]['matched_hook_events']
-    if not any('Workflow fast checks need attention' in json.dumps(item.get('output')) for item in outputs):
-        return result('blocked', 'Failure feedback from the native hook was not captured', captures, phases=phases)
-    return result('passed', 'Native edits produced one passing and one failing gate with visible failure feedback', captures, phases=phases)
+        if not matching or not all(event.get('status') in ('completed', 'success', 'succeeded') for event in matching):
+            return result('blocked', 'Native notification hook source and edit correlation are unavailable', captures, phases=phases)
+        if phase['gate_artifacts']:
+            return result('failed', 'Notification hooks must not execute checks during the no-test smoke', captures, phases=phases)
+        if not any('Workflow edit observed' in json.dumps(event.get('output')) for event in matching):
+            return result('blocked', 'Native notification feedback was not captured', captures, phases=phases)
+    return result('passed', 'Native edit notifications preserved explicit no-test constraints', captures, phases=phases)
 
 
 def import_ui_evidence(path, record, attested):
@@ -348,9 +338,10 @@ def import_ui_evidence(path, record, attested):
             raise ValueError('Each UI observation needs captures, native identifiers and a concrete observation')
         if category == 'role_invocation' and observation['status'] == 'passed':
             graph = delegation_graph_result(observation.get('native_lifecycles', []))
-            backend = next((node for node in graph['native_lifecycles'] if node['role'] == 'aw-backend'), {})
-            if graph['status'] != 'passed' or not valid_implementation_edit(observation.get('implementation_edit', {}), backend):
-                raise ValueError('UI delegation requires Forge, backend and reviewer lifecycles with parent/order and backend edit ownership')
+            backend = next((node for node in graph['native_lifecycles'] if node['role'] == 'aw-backend'), next((node for node in graph['native_lifecycles'] if node['role'] == 'aw-forge'), {}))
+            review_start = next((node['started'] for node in graph['native_lifecycles'] if node['role'] == 'aw-review-verify'), -1)
+            if graph['status'] != 'passed' or not valid_implementation_edit(observation.get('implementation_edit', {}), backend) or observation['implementation_edit']['completed'] >= review_start:
+                raise ValueError('UI review requires coordinator and independent reviewer lifecycles with ordered implementation ownership')
         for artifact in observation['artifacts']:
             if not Path(artifact['path']).is_file() or sha256_file(artifact['path']) != artifact.get('sha256'):
                 raise ValueError('UI capture is missing or changed')

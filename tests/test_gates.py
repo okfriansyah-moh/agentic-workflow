@@ -4,6 +4,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from agent_workflow import gates, gate_reports
 
@@ -24,6 +25,17 @@ class GateTests(unittest.TestCase):
 
     def check(self, argv, **options):
         return dict(id='test', stage='fast', argv=argv, **options)
+
+    def test_coverage_uses_project_threshold_without_changing_measurement(self):
+        report = self.repo / 'coverage.xml'
+        report.write_text('<report/>')
+        coverage = {'component': 'app', 'roots': ['src'], 'reports': ['coverage.xml'], 'format': 'jacoco'}
+        measurement = {'percent': 70, 'missing_files': [], 'executable': 10}
+        with patch.object(gate_reports, 'changed_lines', return_value={'src/app.ts': {1}}), patch.object(gate_reports, 'coverage_lines', return_value={}), patch.object(gate_reports, 'measure_coverage', return_value=measurement):
+            self.assertEqual(gates.coverage_result(self.repo, coverage, 'HEAD', [], 0, 65)['status'], 'passed')
+            result = gates.coverage_result(self.repo, coverage, 'HEAD', [], 0, 80)
+            self.assertEqual(result['status'], 'failed')
+            self.assertEqual(result['threshold'], 80)
 
     def test_exit_code_is_captured(self):
         result = self.run_gate([self.check([sys.executable, '-c', 'raise SystemExit(7)'])])

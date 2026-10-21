@@ -13,7 +13,7 @@ This release aligns Codex, Cursor AI, Claude Code and GitHub Copilot around dire
 
 ## Verification status
 
-This document describes the release candidate. Source tests, independent review, publication, global/project installation, rollback verification and live-host observations must be reported from actual results; none is established by this document.
+This document describes the 1.3.0 behavior. The delivery report records source tests, independent review, publication, installation, rollback and live-host observations for their assessed revisions. Generated support alone does not establish live loading.
 
 | Host | Adapter support | Live status |
 |---|---|---|

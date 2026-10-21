@@ -93,6 +93,33 @@ class GateSelectionTests(unittest.TestCase):
         (self.repo / 'web/app.ts').write_text('changed')
         self.assertEqual(self.run_gate(affected=True, base='HEAD')['selection']['components'], ['web'])
 
+    def test_default_selection_is_affected_when_base_is_available(self):
+        (self.repo / 'web/app.ts').write_text('changed')
+        self.assertEqual(self.run_gate(base='HEAD')['selection']['components'], ['web'])
+
+    def test_documentation_changes_do_not_select_application_tests(self):
+        (self.repo / 'README.md').write_text('Usage instructions')
+        self.assertEqual(self.run_gate(base='HEAD')['selection']['components'], [])
+        self.assertEqual(self.run_gate(base='HEAD')['results'], [])
+
+    def test_unknown_executable_and_deleted_shared_inputs_remain_conservative(self):
+        (self.repo / 'unknown.py').write_text('print(1)')
+        self.assertIsNone(self.run_gate(base='HEAD')['selection']['components'])
+        (self.repo / 'unknown.py').unlink()
+        (self.repo / 'api/app.ts').unlink()
+        self.assertEqual(self.run_gate(base='HEAD')['selection']['components'], ['api', 'web'])
+
+    def test_text_build_inputs_are_not_mistaken_for_documentation(self):
+        for name in ('requirements.txt', 'CMakeLists.txt'):
+            with self.subTest(name=name):
+                (self.repo / name).write_text('build input')
+                self.assertIsNone(self.run_gate(base='HEAD')['selection']['components'])
+                (self.repo / name).unlink()
+        self.registry['shared_input_patterns'].append('docs/policy.md')
+        (self.repo / 'docs').mkdir()
+        (self.repo / 'docs/policy.md').write_text('shared policy')
+        self.assertIsNone(self.run_gate(base='HEAD')['selection']['components'])
+
     def test_full_and_component_modes_remain(self):
         self.assertEqual(len(self.run_gate()['results']), 3)
         self.assertEqual([r['id'] for r in self.run_gate(component='web')['results']], ['web'])

@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "version": "1.2.1",
+  "version": "1.3.0",
   "bundle": {
     "name": "agent-workflow",
-    "version": "1.2.1"
+    "version": "1.3.0"
   },
   "counts": {
     "reuse": 47,
@@ -32,12 +32,14 @@
         "when": [
           "Explore substantial feature or architecture choices and turn an idea into an approved design and implementation plan. Use for brainstorming or unresolved design decisions; skip routine edits and already-approved implementation."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "planning",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "forge",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "6298e58ad58e0d7cbcc6a766d5c64e23d13dc5b117272d686b2b2b624cb5a192"
+        "value": "131dc06c5ac63af73df2fa1e6b50e8f607491baad17cfaeb8bcb5f768a648d37"
       },
       "conditional_dependencies": [
         "failure"
@@ -62,7 +64,9 @@
         "when": [
           "Create or update one standalone Markdown Product Requirements Document with release scope, product behavior, traceable requirements, stories, and acceptance criteria for technical-design handoff. Use for PRD authoring before implementation."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "planning",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "forge",
       "checksum": {
@@ -94,7 +98,9 @@
         "when": [
           "Create or update one application-focused technical design document with detailed engineering responsibilities, complete applicable contracts, database design and requirement traceability. Setup or research alone does not generate a document."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "planning",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "forge",
       "checksum": {
@@ -146,7 +152,9 @@
         "when": [
           "Create or update a requirements-based design-system package for web, mobile, or games, with a design specification, shared tokens, component catalog, and visual screen/flow/state examples. Orchestrates design, review, and conditional technology handoff without selecting a production stack."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "planning",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "forge",
       "checksum": {
@@ -180,7 +188,9 @@
         "when": [
           "Create or update one acceptance-test specification from requirements, design artifacts and technical contracts, with traceable product and engineering scenarios. Use for ATDD document authoring before implementation; skill setup and research alone do not generate an ATDD document."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "planning",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "forge",
       "checksum": {
@@ -229,12 +239,14 @@
         "when": [
           "Create, update, or review a detailed implementation-plan package with feature groups, AI-ready task files, dependency order, acceptance mapping, and review requirements. Use for PLAN.md authoring before implementation."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "planning",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "forge",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "fee91cb36830fd151fc788a44742e50ed546a0c38f3eeb09a3a81c89879c0ec4"
+        "value": "b06a688d4d13436232c827893c8450ebcec56e343023278ec9d38dd401c0ce82"
       },
       "conditional_dependencies": [
         "design-system",
@@ -259,14 +271,16 @@
       "dependencies": [],
       "activation": {
         "when": [
-          "Define three-layer design tokens, component specifications, and visual"
+          "Define three-layer design tokens, component specifications, and visual states. Supporting foundation for the design-system orchestrator; also retains the original presentation references for explicitly requested slide work."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "planning",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "forge",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "c4fcb66132014087dfcac3ae21dec7889db24301ed6297f05ed6e6a9248fb60c"
+        "value": "610da057108ad5f317e67e647af7fff3990fddfdb1b15241aa7b7218c6226201"
       },
       "conditional_dependencies": [
         "design-system"
@@ -289,14 +303,16 @@
       "dependencies": [],
       "activation": {
         "when": [
-          "Guidance for distinctive, intentional visual design when building new UI or reshaping an existing one. Helps with aesthetic direction, typography, and making choices that don't read as templated defaults."
+          "Create a visual direction for new or reshaped UI when design choices are unresolved. Approved design implementation follows its references without reopening design exploration."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "planning",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "forge",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "876b05d60d77c8c935acf12b933cb0e6ae903399ea553162c585816e1c757406"
+        "value": "14bde4f814409b601a3f05acebb42c95b1e903952bcb5d92566edaa402e9b522"
       },
       "conditional_dependencies": [
         "failure"
@@ -321,12 +337,14 @@
         "when": [
           "Review and refine existing frontend designs using Impeccable visual craft, hierarchy, responsive, state, and accessibility criteria. Use as a targeted review companion for a chosen design direction or PRD-based design-system package."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "verification",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "forge",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "f03cb994d7aa19fb8c1dfddf26d0d749bde9ee695c7ce6d77fb61129a48a520d"
+        "value": "7b7a4a3fd16e7b231ab1c096f937ee4f7275a690e3c3f14a80d7bc9022a723b8"
       },
       "conditional_dependencies": [
         "design-system",
@@ -352,12 +370,14 @@
         "when": [
           "Audit and fix HTML accessibility issues including ARIA labels, keyboard navigation, focus management, color contrast, and form errors. Use when adding interactive controls, forms, dialogs, or reviewing WCAG compliance."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "verification",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "forge",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "7e4a7f6f5b1e849432e985e1e37184bbc63bdc709f838333c948bbd6e2457753"
+        "value": "3a2329c4a1bebf882fdf4011cbd93b81883b79d25bd220d53798f8d8b5f9ac4a"
       },
       "conditional_dependencies": [
         "failure"
@@ -380,11 +400,13 @@
       "dependencies": [],
       "activation": {
         "when": [
-          "Search bundled UI/UX references for a focused unresolved choice or UX review within the selected framework and adopted design."
+          "Search the bundled UI/UX reference data for a focused design or implementation question within the selected framework and adopted design."
         ],
         "unless": [
           "The task has no unresolved design/review question; a recommendation cannot replace an approved design or select a framework."
-        ]
+        ],
+        "purpose": "specialist",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "forge",
       "checksum": {
@@ -414,7 +436,9 @@
         "when": [
           "Design or review system boundaries, interactions, quality attributes and architectural tradeoffs from approved requirements or implementation evidence. Produce architecture decisions and diagrams without imposing a language, framework or deployment topology."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "planning",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "forge",
       "checksum": {
@@ -444,7 +468,9 @@
         "when": [
           "Record significant architectural decisions with source context, alternatives, consequences and stable history. Embed records in a parent document when requested, or use an explicitly selected existing ADR convention."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "planning",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "forge",
       "checksum": {
@@ -472,7 +498,9 @@
         "when": [
           "Build and sharpen a project's domain model. Use when discussing codebase terminology, writing or editing a GLOSSARY.md, or recording or editing an ADR."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "specialist",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "forge",
       "checksum": {
@@ -500,12 +528,14 @@
         "when": [
           "Shared vocabulary for designing deep modules. Use when the user wants to design or improve a module's interface, find deepening opportunities, decide where a seam goes, make code more testable or AI-navigable, or when another skill needs the deep-module vocabulary."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "specialist",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "forge",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "a886e4ffd16f06981e071099e1f53b4bdb79fc3303489ae68d5e7fc4471a4560"
+        "value": "e03b8afcd1dd2f748f1d58ea324de66fd6ced09a5c837487508d9e869f00fff1"
       },
       "conditional_dependencies": []
     },
@@ -528,7 +558,9 @@
         "when": [
           "Design or validate module boundaries, ownership, and public interfaces. Use when changing cross-module dependencies or isolating responsibilities."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "specialist",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "forge",
       "checksum": {
@@ -561,7 +593,9 @@
         "when": [
           "Map component dependencies and identify cycles, coupling, or safe execution order. Use for architectural dependency analysis and parallel-work planning."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "specialist",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "forge",
       "checksum": {
@@ -592,7 +626,9 @@
         "when": [
           "Organize a feature around its end-to-end behavior when vertical slices fit the architecture. Use for feature boundaries or an explicitly requested vertical-slice refactor."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "specialist",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "forge",
       "checksum": {
@@ -625,7 +661,9 @@
         "when": [
           "Design or evolve an external or inter-component API contract. Use for endpoint, RPC, event, or library-boundary design and compatibility decisions."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "specialist",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "forge",
       "checksum": {
@@ -658,7 +696,9 @@
         "when": [
           "Define or evolve data contracts across process, module, or persistence boundaries. Use for DTOs, schemas, serialization, and producer-consumer compatibility."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "specialist",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "forge",
       "checksum": {
@@ -688,7 +728,9 @@
         "when": [
           "Design or validate configuration sources, precedence, defaults, and startup checks. Use when adding configuration or diagnosing inconsistent settings."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "specialist",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "forge",
       "checksum": {
@@ -718,7 +760,9 @@
         "when": [
           "Establish reproducible behavior within a defined computation or test boundary. Use for stable ordering, repeatable outputs, hashing, and nondeterminism diagnosis."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "specialist",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "forge",
       "checksum": {
@@ -748,7 +792,9 @@
         "when": [
           "Make repeated or concurrent operations safe without duplicating effects. Use for retryable writes, request keys, jobs, and checkpoint resume."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "specialist",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "forge",
       "checksum": {
@@ -778,7 +824,9 @@
         "when": [
           "Design failure classification, bounded retries, partial results, and recovery. Use when defining resilience behavior or fixing repeated failures."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "specialist",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "forge",
       "checksum": {
@@ -809,7 +857,9 @@
         "when": [
           "Design or verify staged processing, dependency ordering, handoffs, and checkpoint recovery. Use for data or application pipelines, including fan-out and fan-in."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "specialist",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "forge",
       "checksum": {
@@ -841,7 +891,9 @@
         "when": [
           "Create or review database schema and data migrations using the project migration system. Use for schema evolution, backfills, and migration recovery planning."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "specialist",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "forge",
       "checksum": {
@@ -874,7 +926,9 @@
         ],
         "unless": [
           "Project explicitly supports one database engine only."
-        ]
+        ],
+        "purpose": "specialist",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "forge",
       "checksum": {
@@ -905,12 +959,14 @@
         "when": [
           "Establish or apply coding conventions for the affected language and component. Use when implementing code or reviewing consistency with project standards."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "implementation",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "review-verify",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "0ba7599799508ac6b31900944193cfee321e50d485070492ef9f4288d9f2ec67"
+        "value": "0007be7f20d19b63258f84a5e7fe6fc8db84990cff8fadee74ece9cc26ab6dfd"
       },
       "conditional_dependencies": [
         "code-review",
@@ -937,7 +993,9 @@
         "when": [
           "Assess maintainability and correctness of changed code against project conventions. Use for a focused quality pass; use code-review for a full branch or PR review."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "verification",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "review-verify",
       "checksum": {
@@ -963,21 +1021,22 @@
         "global",
         "repository"
       ],
-      "dependencies": [
-        "coding-standards"
-      ],
+      "dependencies": [],
       "activation": {
         "when": [
-          "Review the changes since a fixed point (commit, branch, tag, or merge-base) along two axes: Standards (does the code follow this repo''s documented coding standards?) and Spec (does the code match what the originating issue/spec asked for?). Evaluates both axes and reports evidence-backed findings. Use when the user wants to review a branch, a PR, work-in-progress changes, or asks to \"review since X\"."
+          "Review the changes since a fixed point (commit, branch, tag, or merge-base) along two axes: Standards (does the code follow this repo's documented coding standards?) and Spec (does the code match what the originating issue/spec asked for?). Evaluates both axes and reports evidence-backed findings. Use when the user wants to review a branch, a PR, work-in-progress changes, or asks to \"review since X\"."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "verification",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "review-verify",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "dbdfb0136598b025c57e9b3897a6147ef0745356a773f870a5e5cafc5a62024b"
+        "value": "c42f143ead0de371623077a0e50602f2242ccc80a163b8ef44ff73a74b512886"
       },
       "conditional_dependencies": [
+        "coding-standards",
         "failure"
       ]
     },
@@ -998,14 +1057,16 @@
       "dependencies": [],
       "activation": {
         "when": [
-          "Test-driven development. Use when the user wants to build features or fix bugs test-first, mentions \"red-green-refactor\", or wants integration tests."
+          "Test-driven development. Use when the user wants to build features or fix bugs test-first, mentions \"red-green-refactor\", or an approved task explicitly selects test-first development."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "verification",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "forge",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "79093e124c8e3125c3d98df7bbb5044317084cc2fa4ab97b374e01f938343756"
+        "value": "f813ac1b29a46b6cd1bb3537c58aa9617124dc127c4c79294e78a10e93a83e6c"
       },
       "conditional_dependencies": [
         "code-review",
@@ -1026,14 +1087,14 @@
         "global",
         "repository"
       ],
-      "dependencies": [
-        "tdd"
-      ],
+      "dependencies": [],
       "activation": {
         "when": [
           "Run test-first development through the installed tdd workflow. Use when explicitly requested by this name or when an accepted task calls for TDD."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "verification",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "forge",
       "checksum": {
@@ -1042,6 +1103,7 @@
       },
       "conditional_dependencies": [
         "coding-standards",
+        "tdd",
         "test-generation"
       ]
     },
@@ -1064,7 +1126,9 @@
         "when": [
           "Add meaningful behavior tests or assess missing coverage using the project test framework. Use for regression tests, boundary coverage, and test-suite improvements."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "verification",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "forge",
       "checksum": {
@@ -1096,12 +1160,14 @@
         "when": [
           "Diagnosis loop for hard bugs and performance regressions. Use when the user says \"diagnose\"/\"debug this\", or reports something broken/throwing/failing/slow."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "specialist",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "forge",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "b49df2579ba96260cd33681448e1e6ecdfc1e9bd13144530233c7c28720ca8af"
+        "value": "6e5776af508d682008e8f66de2cdb037a000fbe4878b17281d4599b993cb74cd"
       },
       "conditional_dependencies": [
         "failure"
@@ -1126,7 +1192,9 @@
         "when": [
           "Perform a scoped security review with evidence-backed findings and remediation. Use when a security audit is requested or a change presents material security risk."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "specialist",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "review-verify",
       "checksum": {
@@ -1156,7 +1224,9 @@
         "when": [
           "Translate concrete threats and approved security obligations into enforceable requirements, control mappings and observable acceptance criteria. Supports technical-design sections without generating implementation or claiming compliance."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "specialist",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "review-verify",
       "checksum": {
@@ -1186,7 +1256,9 @@
         "when": [
           "Identify concrete threats across system trust boundaries using STRIDE, with assets, attacker capabilities, impact and mitigation evidence. Use for architecture security design and scoped threat-model review."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "specialist",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "review-verify",
       "checksum": {
@@ -1214,7 +1286,9 @@
         "when": [
           "Initialize a requested new project or component using its chosen ecosystem and conventions. Use for scaffolding; do not trigger setup for ordinary feature work."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "implementation",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "forge",
       "checksum": {
@@ -1245,7 +1319,9 @@
         "when": [
           "Investigate and improve a measured performance bottleneck. Use for latency, throughput, memory, query, or resource-consumption problems."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "specialist",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "forge",
       "checksum": {
@@ -1275,7 +1351,9 @@
         "when": [
           "Resolve merge or concurrent-edit conflicts by preserving intended behavior. Use for conflicted files, integration disagreements, and incompatible parallel changes."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "specialist",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "forge",
       "checksum": {
@@ -1305,7 +1383,9 @@
         "when": [
           "Reconcile documentation and implementation against current requirements. Use when behavior changes, documentation drifts, or a documentation consistency review is requested."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "maintenance",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "forge",
       "checksum": {
@@ -1335,7 +1415,9 @@
         "when": [
           "Use when writing a PR body."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "specialist",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "forge",
       "checksum": {
@@ -1363,7 +1445,9 @@
         "when": [
           "Draft or rewrite prose on behalf of Muhammad Okfriansyah in his polished conversational, casually phrased voice. Use for humanizing text or writing in his voice; preserve facts and technical content. English by default, unless requested otherwise."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "specialist",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "forge",
       "checksum": {
@@ -1393,12 +1477,14 @@
         "when": [
           "Writing documents for agents. Use when creating or editing skills, or modifying AGENTS.md or CLAUDE.md."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "maintenance",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "forge",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "07a9a831206f34ebf88b721baa6d906e58235db60e0079e2136420db01afd57a"
+        "value": "6dcc5e8d923c235587f30c87d54c52820e229a01fc50cf953312ff1b5409fcc3"
       },
       "conditional_dependencies": [
         "failure"
@@ -1423,12 +1509,14 @@
         "when": [
           "Observe substantive work for reusable skill improvements and user corrections. Capture concise proposals in the shared global observation log; review or update skills when requested. Also use for skill-observation and One Skill to Rule Them All requests."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "maintenance",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "forge",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "465ce991071a377a7a5c61034df212f9747019573079548b37d32db2bf73f77a"
+        "value": "e01782787ff9ef948968eff6cbbb430e5ade57f594f50c01c457c7c17976285a"
       },
       "conditional_dependencies": []
     },
@@ -1451,7 +1539,9 @@
         "when": [
           "Use an available RTK CLI to reduce verbose command output. Use when RTK is requested or suitable for large logs; fall back to ordinary tools when unavailable."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "specialist",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "forge",
       "checksum": {
@@ -1482,7 +1572,9 @@
         "when": [
           "Reduce unnecessary context and tool-output volume while preserving task evidence. Use for context-pressure problems or an explicitly requested token-efficiency pass."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "specialist",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "forge",
       "checksum": {
@@ -1513,7 +1605,9 @@
         "when": [
           "Install or maintain a managed agent-workflow bundle globally or in a repository; inspect conflicts, portability, upgrades and removal."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "maintenance",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "operations",
       "checksum": {
@@ -1536,22 +1630,24 @@
         "global",
         "repository"
       ],
-      "dependencies": [
-        "conflict-resolution",
-        "dependency-analysis"
-      ],
+      "dependencies": [],
       "activation": {
         "when": [
           "Coordinate concurrent repository writers with claimed paths, isolated worktrees and verified semantic integration."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "execution",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "integrator",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "7581fb77d34298fcd4dc6594193da95b91ed630ff0538e47de1f6bd905259dcd"
+        "value": "7eddd19b64b6e707eb3d554c6b3a5c7e04bb547f8cdc118b4f829138083edd9d"
       },
-      "conditional_dependencies": []
+      "conditional_dependencies": [
+        "conflict-resolution",
+        "dependency-analysis"
+      ]
     },
     {
       "name": "quality-gates",
@@ -1572,12 +1668,14 @@
         "when": [
           "Run configured quality and security checks with revision-bound results; diagnose failed, unavailable or inapplicable gates."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "verification",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "review-verify",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "a6c78d59478093bffba3444708277f78dbdde987c7e68e356549acb4847a59c0"
+        "value": "a476ae13364cd54fe167eeb63abb72073b09528e4eea20734d2701f183bcca9a"
       },
       "conditional_dependencies": [
         "code-quality",
@@ -1598,24 +1696,25 @@
         "global",
         "repository"
       ],
-      "dependencies": [
-        "spring-dependency-injection",
-        "jpa-hibernate"
-      ],
+      "dependencies": [],
       "activation": {
         "when": [
           "Implement approved Kotlin/Spring Boot service and transport behavior with explicit validation, lifecycle and error handling."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "implementation",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "backend",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "0f291ee51e9dc300224c66d9ae7bfff49d3bf0f7ce008b46b777f70a7269002d"
+        "value": "0f302c2845565e03073fc22673e44a371f9a0f5135b9b74171e6ccb563b1be31"
       },
       "conditional_dependencies": [
         "failure",
-        "idempotency"
+        "idempotency",
+        "jpa-hibernate",
+        "spring-dependency-injection"
       ]
     },
     {
@@ -1637,7 +1736,9 @@
         "when": [
           "Implement or review Spring bean wiring, constructor injection, qualifiers and lifecycle without dependency cycles."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "implementation",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "backend",
       "checksum": {
@@ -1665,7 +1766,9 @@
         "when": [
           "Implement JPA/Hibernate entities, transactions, locking and queries with PostgreSQL-backed behavior tests."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "implementation",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "backend",
       "checksum": {
@@ -1688,23 +1791,24 @@
         "global",
         "repository"
       ],
-      "dependencies": [
-        "design-system-foundations",
-        "fixing-accessibility"
-      ],
+      "dependencies": [],
       "activation": {
         "when": [
           "Implement approved Svelte/TypeScript screens and states with typed data flow, responsive behavior and accessibility."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "implementation",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "frontend",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "3baa47e0ffa31d077895b914bc3a21ce34fee51bb8e27d8612aea55e118e985e"
+        "value": "0b108c3d1e5f3375174865ec192767b6270f975f5586c8622a9df874c5ac1765"
       },
       "conditional_dependencies": [
-        "design-system"
+        "design-system",
+        "design-system-foundations",
+        "fixing-accessibility"
       ]
     },
     {
@@ -1726,12 +1830,14 @@
         "when": [
           "Implement Node/TypeScript services or the selected MCP adapter with validated input, cancellation and controlled I/O."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "implementation",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "backend",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "2dc297d98f3361791ea486c6a52276257603df3783f47ad01892f3ad99ea56f8"
+        "value": "ff26a6542abd283d7f965965b843cf8b18ed8652e75a2110ad31445e335757e4"
       },
       "conditional_dependencies": []
     },
@@ -1754,7 +1860,9 @@
         "when": [
           "Implement reproducible local/CI builds, Compose environments and operational release or recovery checks."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "implementation",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "operations",
       "checksum": {
@@ -1784,7 +1892,9 @@
         "when": [
           "Implement or review useful application logs, metrics, traces and alerts with redaction and operational checks."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "specialist",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "operations",
       "checksum": {
@@ -1815,7 +1925,9 @@
         "when": [
           "Map assigned ATDD cases to executable verification at their required proof boundary and evaluate feature acceptance."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "verification",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "qa-evidence",
       "checksum": {
@@ -1823,8 +1935,8 @@
         "value": "46feeaeab4d7c4ea4e8867e65bab1272451fc4f8d98c0b432f15c74ddf7bc030"
       },
       "conditional_dependencies": [
-        "verify-test-evidence",
-        "record-test-video"
+        "record-test-video",
+        "verify-test-evidence"
       ]
     },
     {
@@ -1841,25 +1953,26 @@
         "global",
         "repository"
       ],
-      "dependencies": [
-        "task-implement",
-        "quality-gates",
-        "task-delivery"
-      ],
+      "dependencies": [],
       "activation": {
         "when": [
-          "Execute an approved multi-task plan through native subagents, claimed worktrees and independently verified receipts."
+          "Coordinate an approved selection with direct serial implementation, bounded recovery and one combined independent review."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "execution",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "forge",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "d93206ce2c77a87c8ea051000e3d74598b4531354b866345bd773deb61cae303"
+        "value": "39554b31985bd78d7eac56517b899201b881367eeab4ec11617a8c665e6e00f3"
       },
       "conditional_dependencies": [
         "acceptance-verification",
         "design-system",
+        "quality-gates",
+        "task-delivery",
+        "task-implement",
         "worktree-integration"
       ]
     },
@@ -1877,28 +1990,29 @@
         "global",
         "repository"
       ],
-      "dependencies": [
-        "forge",
-        "task-implement",
-        "task-delivery"
-      ],
+      "dependencies": [],
       "activation": {
         "when": [
           "Route an authorized task through necessary planning, implementation, verification and delivery using one execution state."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "execution",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "forge",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "af977281ac768e90600ea34b303cbd7c855fa0eb947f0445284d21c86958233f"
+        "value": "1fb3169c1cf91f42a64e0839b942204e698c4c6e416d93dc27187f37c9f7416f"
       },
       "conditional_dependencies": [
         "atdd-creation",
         "brainstorming",
         "deliver-prd",
         "design-system",
+        "forge",
         "plan-creation",
+        "task-delivery",
+        "task-implement",
         "techdoc-creation"
       ]
     },
@@ -1916,23 +2030,24 @@
         "global",
         "repository"
       ],
-      "dependencies": [
-        "coding-standards",
-        "quality-gates"
-      ],
+      "dependencies": [],
       "activation": {
         "when": [
           "Implement one bounded approved task, apply its selected test strategy and return a verifiable receipt."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "execution",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "forge",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "f5b5e47b1a759ab95576ab3fccf57a8cc3760aa673192bfd0b2c0a5ad5644bce"
+        "value": "35ca39eebdcc604718888a8d05c8c46812870d8152628281cf70c37c612b959c"
       },
       "conditional_dependencies": [
+        "coding-standards",
         "failure",
+        "quality-gates",
         "tdd"
       ]
     },
@@ -1950,22 +2065,23 @@
         "global",
         "repository"
       ],
-      "dependencies": [
-        "quality-gates",
-        "pr"
-      ],
+      "dependencies": [],
       "activation": {
         "when": [
           "Deliver verified scoped changes through commits and an authorized draft pull request when the remote is configured."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "execution",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "forge",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "eadb7b2ac7675f2c4690cc34981ab2c6b451078fe34ad1169c60626824411137"
+        "value": "ed2d1454f4657488efe4c73dd8885027c4b37f16f92e87a0c72514fc580ba439"
       },
       "conditional_dependencies": [
+        "pr",
+        "quality-gates",
         "verify-test-evidence"
       ]
     },
@@ -1983,14 +2099,14 @@
         "global",
         "repository"
       ],
-      "dependencies": [
-        "observability"
-      ],
+      "dependencies": [],
       "activation": {
         "when": [
           "Investigate a supplied alert using observed telemetry, source context and a bounded incident timeline."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "specialist",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "operations",
       "checksum": {
@@ -1998,6 +2114,7 @@
         "value": "75ac448eaafcb25c09f8ee81ee7e7881682ddee40fc5d963a5ef75f7e318e46d"
       },
       "conditional_dependencies": [
+        "observability",
         "task-implement"
       ]
     },
@@ -2015,21 +2132,22 @@
         "global",
         "repository"
       ],
-      "dependencies": [
-        "acceptance-verification"
-      ],
+      "dependencies": [],
       "activation": {
         "when": [
           "Record real UI acceptance journeys with readable actions, case timestamps and linked assertions."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "verification",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "qa-evidence",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "04758a9ec845fa3c241d340adfadcf0455b1591b5a6e57e4e2c402ca47589cf1"
+        "value": "c4516d6b5405c36d4bc7a1178bbbe01d91c19c36aa288c0f283fd09e352ecf4e"
       },
       "conditional_dependencies": [
+        "acceptance-verification",
         "verify-test-evidence"
       ]
     },
@@ -2052,7 +2170,9 @@
         "when": [
           "Independently validate acceptance evidence mapping, provenance, freshness and recording readability."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "verification",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "review-verify",
       "checksum": {
@@ -2081,12 +2201,14 @@
         "when": [
           "Apply a focused filter for generic UI, copy and interaction output within the adopted design and one review process."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "verification",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "review-verify",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "a6d0be443750edac7f48dcaf7c4610ae5838a058899faec5c5e47e520064b018"
+        "value": "f52745d42f84e7ce9261a2f69a350a9afaaf048c9fd6fbc767044bdfbc36d49c"
       },
       "conditional_dependencies": [
         "antislop-code",
@@ -2112,21 +2234,23 @@
         "global",
         "repository"
       ],
-      "dependencies": [
-        "antislop"
-      ],
+      "dependencies": [],
       "activation": {
         "when": [
           "Review visual composition and working UI against the adopted design, avoiding generic decorative filler."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "verification",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "review-verify",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "a3cc9ecedc6a1b4e5e5f37ee69ee007a6ae80eb5aebc8df94cd8c5e7ed1534d7"
+        "value": "f0d994ea032e12d1c24d0c0441610bf9b94fdfe35e1672707e0e25f34f2b80b6"
       },
-      "conditional_dependencies": []
+      "conditional_dependencies": [
+        "antislop"
+      ]
     },
     {
       "name": "antislop-copywriting",
@@ -2143,21 +2267,22 @@
         "global",
         "repository"
       ],
-      "dependencies": [
-        "antislop"
-      ],
+      "dependencies": [],
       "activation": {
         "when": [
           "Write or review specific factual product copy without invented claims, filler or repetitive framing."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "verification",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "review-verify",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "8693eeac4971f0824f569011c1fbbd97d3ae9fd34456d0832c72a26cf61759c6"
+        "value": "11147de1e9897c30aca152c0373c297a77b20ee86dfd8fc77a37cffb22adac86"
       },
       "conditional_dependencies": [
+        "antislop",
         "failure",
         "humanizer"
       ]
@@ -2177,21 +2302,23 @@
         "global",
         "repository"
       ],
-      "dependencies": [
-        "antislop"
-      ],
+      "dependencies": [],
       "activation": {
         "when": [
           "Verify that changed UI works for users with different input, vision and motion needs."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "verification",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "review-verify",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "a92cbaf7dbe94f9f31132accca00a2048dddf5adffe7865051700c8c82035322"
+        "value": "e97250c24aff4d5605ce9e12927503f5f2da58ad7b5f93cd15ebaf8a489fed7b"
       },
-      "conditional_dependencies": []
+      "conditional_dependencies": [
+        "antislop"
+      ]
     },
     {
       "name": "antislop-layoutmobile",
@@ -2208,21 +2335,23 @@
         "global",
         "repository"
       ],
-      "dependencies": [
-        "antislop"
-      ],
+      "dependencies": [],
       "activation": {
         "when": [
           "Verify responsive reflow, content sizing, touch interactions and mobile navigation across meaningful viewport widths."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "verification",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "review-verify",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "d39767eba5f7df61bd4b7759f15e71afe723daa5868db9ec39c4e7593a3c9eef"
+        "value": "16f5ad37487381d1b6234cfd2e6fad0d28683cabcfa7afedecae9f3be7cdabec"
       },
-      "conditional_dependencies": []
+      "conditional_dependencies": [
+        "antislop"
+      ]
     },
     {
       "name": "antislop-code",
@@ -2239,21 +2368,22 @@
         "global",
         "repository"
       ],
-      "dependencies": [
-        "antislop"
-      ],
+      "dependencies": [],
       "activation": {
         "when": [
           "Review comment hygiene while preserving necessary explanations and leaving executable code quality to its owning skills."
         ],
-        "unless": []
+        "unless": [],
+        "purpose": "verification",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "review-verify",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "17c1b70e74d2d2c199d04d328632732cd7ab4b1371f3409d2cd70c9d9b1909fe"
+        "value": "1216421d1996f44b6e0141d815061cc5d691a81796badb71e2bec5ffc634a113"
       },
       "conditional_dependencies": [
+        "antislop",
         "code-review",
         "coding-standards"
       ]
@@ -2276,22 +2406,24 @@
       ],
       "dependencies": [],
       "conditional_dependencies": [
+        "antislop-ui",
         "record-test-video",
-        "verify-test-evidence",
-        "antislop-ui"
+        "verify-test-evidence"
       ],
       "activation": {
         "when": [
-          "\"Drive the managed Playwright CLI for real browser journeys, screenshots, traces and readable video evidence.\""
+          "Drive the managed Playwright CLI for real browser journeys, screenshots, traces and readable video evidence."
         ],
         "unless": [
           "Required executable, account or scope is unavailable; report the prerequisite."
-        ]
+        ],
+        "purpose": "verification",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "qa-evidence",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "4f09462da9e462f5b4a0cd97bff6e43bde42e821e0bc93ccc62c87fc779eab60"
+        "value": "803f241818e03a7e5c7ecdbc9ad10856d685b7418f6d47902e5cdcaeebaf0c1b"
       }
     },
     {
@@ -2314,11 +2446,13 @@
       "conditional_dependencies": [],
       "activation": {
         "when": [
-          "\"Retrieve current library documentation through the configured Context7 MCP server when implementation depends on version-specific APIs.\""
+          "Retrieve current library documentation through the configured Context7 MCP server when implementation depends on version-specific APIs."
         ],
         "unless": [
           "Required executable, account or scope is unavailable; report the prerequisite."
-        ]
+        ],
+        "purpose": "specialist",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "forge",
       "checksum": {
@@ -2349,11 +2483,13 @@
       ],
       "activation": {
         "when": [
-          "\"Prepare or review an explicitly requested Strix security assessment for an authorized target; ingest findings without treating them as verified acceptance.\""
+          "Prepare or review an explicitly requested Strix security assessment for an authorized target; ingest findings without treating them as verified acceptance."
         ],
         "unless": [
           "Required executable, account or scope is unavailable; report the prerequisite."
-        ]
+        ],
+        "purpose": "specialist",
+        "supporting_policy": "Read only concern-specific supporting sections; no automatic skill chain."
       },
       "owner": "security",
       "checksum": {

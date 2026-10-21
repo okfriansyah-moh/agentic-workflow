@@ -41,7 +41,7 @@ def _worker_order(workers, claims, completed):
     return ordered
 
 
-def _accepted_worker(worker, state, require_review=True):
+def _accepted_worker(worker, state):
     claim = get_claim(state, worker['claim_id'])
     worktree = claim.get('worktree')
     if not worktree or not Path(worktree).is_dir():
@@ -56,11 +56,9 @@ def _accepted_worker(worker, state, require_review=True):
         raise CoordinationError('Receipt does not belong to this worker claim')
     errors = verify_receipt(worktree, receipt)
     captured = state.get('receipts', {}).get(receipt.get('id'), {})
-    if not require_review and (captured.get('sha256') != digest(worker['receipt'])
+    if (captured.get('sha256') != digest(worker['receipt'])
                                or captured.get('path') != str(Path(worker['receipt']).resolve())):
         errors.append('Selection composition requires an unchanged registry-captured worker receipt')
-    if require_review:
-        errors += validate_review(receipt, read_json(worker['review']))
     required = {check['id']: check for check in claim['required_checks']}
     captured = {check['id']: check.get('contract') for check in receipt.get('commands', [])}
     if any(captured.get(identity) != contract for identity, contract in required.items()):
@@ -110,9 +108,9 @@ def _check_integration_lane(repo, spec, state):
     return claim
 
 
-def _merge_workers(repo, workers, state, record, require_review=True):
+def _merge_workers(repo, workers, state, record):
     for worker in workers:
-        claim, commit = _accepted_worker(worker, state, require_review)
+        claim, commit = _accepted_worker(worker, state)
         if git(repo, 'merge-base', '--is-ancestor', commit, 'HEAD', check=False).returncode == 0:
             record['merged_claims'].append(claim['id'])
             continue
@@ -130,8 +128,8 @@ def _merge_workers(repo, workers, state, record, require_review=True):
 def integrate(repo, spec):
     root = repository(repo)
     with registry(root) as state:
-        claim = _check_integration_lane(root, spec, state)
         selected = _composition_selection(root, spec, state)
+        claim = _check_integration_lane(root, spec, state)
         completed = set()
         for prior in state['integrations']:
             eligible = prior['status'] == 'passed' or (selected is not None and prior.get('selection_id') == selected['id'] and prior['status'] == 'pending-review')
@@ -141,11 +139,11 @@ def integrate(repo, spec):
         workers = _worker_order(spec['workers'], state['claims'], completed)
         # Validate every lane before changing the integration branch.
         for worker in workers:
-            _accepted_worker(worker, state, require_review=selected is None)
+            _accepted_worker(worker, state)
         record = {'id': 'integration-' + uuid.uuid4().hex, 'group_id': spec['group_id'],
                   'owner': spec['owner'], 'initial_revision': revision(root), 'merged_claims': [],
                   'started_at': time.time(), 'status': 'running'}
-        merged = _merge_workers(root, workers, state, record, require_review=selected is None)
+        merged = _merge_workers(root, workers, state, record)
         if merged:
             output = root / '.ai/evidence' / record['id']
             output.mkdir(parents=True)
@@ -170,7 +168,7 @@ def integrate(repo, spec):
 
 def _composition_selection(repo, spec, state):
     if not spec.get('selection_id'):
-        return None
+        raise CoordinationError('Integration requires selection_id; start or resume the single workflow before integration')
     from .selection import get_selection, require_checkpoint
     item = get_selection(state, spec['selection_id'], spec['owner'])
     require_checkpoint(item)
@@ -247,7 +245,7 @@ def _resume_command(args):
 def register(subparsers):
     delivery = subparsers.add_parser('selection', help='Track one delivery selection, progress, repair limits and combined acceptance')
     delivery.add_argument('--repo', required=True)
-    delivery.add_argument('--action', choices=('start', 'checkpoint', 'repair', 'accept', 'status', 'migrate'), required=True)
+    delivery.add_argument('--action', choices=('start', 'checkpoint', 'repair', 'accept', 'status', 'migrate', 'transfer'), required=True)
     delivery.add_argument('--spec', required=True)
     delivery.set_defaults(handler=_selection_command)
     index = subparsers.add_parser('task-index', help='Read plan/task sources, dependencies and ownership without dispatching work')

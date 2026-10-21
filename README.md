@@ -83,4 +83,4 @@ cd ../../..
 python3 scripts/check-fixtures.py --jvm-tools /path/to/verified/jars --output /tmp/workflow-fixtures.json
 ```
 
-Source changes, independent review, publication and installation are separate results. The source repository has no established publication remote; report publication pending until a destination is established, without inventing a remote. Retained [1.1 verification](docs/VERIFICATION-1.1.md) and [earlier fixtures](docs/VERIFICATION.md) are historical evidence, not proof for this release. Measure later task overhead from available counters without creating automation or claiming unmeasured savings.
+Source changes, independent review, publication and installation are separate results. The standalone source repository has no remote. This release is published as a source bundle through the movie-app PR; a separate harness repository will be created by its owner later. Retained [1.1 verification](docs/VERIFICATION-1.1.md) and [earlier fixtures](docs/VERIFICATION.md) are historical evidence, not proof for this release. Measure later task overhead from available counters without creating automation or claiming unmeasured savings.

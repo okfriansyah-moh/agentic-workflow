@@ -67,7 +67,11 @@ def select_components(repo, registry, base, affected):
     shared = registry.get('shared_input_patterns', [])
     for name in paths:
         owners = {c for c, patterns in registry['component_inputs'].items() if matches(name, patterns)}
-        if '/' not in name or name.startswith(('.ai/', '.github/')) or matches(name, shared) or not owners:
+        if matches(name, shared):
+            return None, 'Shared build or policy input; full selection'
+        if Path(name).suffix.lower() in {'.md', '.rst'} or (name.startswith('docs/') and Path(name).suffix == '.txt'):
+            continue
+        if not owners:
             return None, 'Shared or unclassified change; full selection'
         selected.update(owners)
     while True:

@@ -4,7 +4,7 @@
 
 ## One durable selection
 
-Use `.ai/bin/agent-workflow selection --repo . --action ACTION --spec INPUT.json`. Actions are `start`, `checkpoint`, `repair`, `accept`, `status`, and `migrate`. They use Git-shared locked state across all worktrees; they never dispatch application work or publish source.
+Use `.ai/bin/agent-workflow selection --repo . --action ACTION --spec INPUT.json`. Actions are `start`, `checkpoint`, `repair`, `accept`, `status`, `transfer`, and `migrate`. They use Git-shared locked state across all worktrees; they never dispatch application work or publish source.
 
 A start input identifies the owner, outcome, product paths, task IDs (or `plan` plus `group_ids`), dependency map, required check contracts and known PR head. Example:
 
@@ -256,3 +256,7 @@ The locked operation validates source task records from Git, current sequential 
 The registry stores the mapping digest and source/target revisions. Repeating the same mapping is idempotent; a different second migration on the same selection is rejected. Failure before the locked transaction completes leaves state unchanged. Migration does not mark tasks Done or establish current passing checks.
 
 An explicit migration spec `rebind_branch: true` binds the live selection and its active owned claims to the current named Git branch after a coordinated checkout switch. It requires a clean repository, including nonignored untracked files, and every affected claim in the current worktree; detached HEAD is rejected. Git supplies the branch and assessed target revision. The migration audit retains previous and new branch bindings. Claim repository/worktree locations, base revisions, historical checkpoints/receipts and budgets remain unchanged. Omitting the flag preserves current branch bindings. When the agreed handoff changes checkout branches, include this flag on the first migration invocation; an idempotent replay retains the original migration audit and does not perform a later branch rebind.
+
+## Transfer a selection between hosts
+
+Stop the previous coordinator after its current operation completes. Release its active ownership claims using the existing release command; preserve the checkout and evidence. Then the recorded owner submits `selection --action transfer --spec TRANSFER.json` with `selection_id`, `owner`, `next_owner`, and `expected_revision` equal to the current full Git revision. The registry lock changes ownership atomically. Stale revisions, accepted selections, active coordinator claims, and old-owner mutations are rejected. Inputs, constraints, findings, task IDs, checks and repair counters remain in the same record. The new host resumes with `next_owner`; do not create another selection.

@@ -114,6 +114,7 @@ def _start(root, spec, state):
     state.setdefault('repair_budgets', {}).setdefault(budget_id, {'attempts': []})
     item = {'id': identity, 'owner': spec['owner'], 'task_ids': tasks, 'outcome': spec['outcome'],
             'group_ids': spec.get('group_ids', []), 'dependencies': dependencies,
+            'inputs': spec.get('inputs', {}), 'constraints': _strings(spec.get('constraints', []), 'constraints', False),
             'completed_task_ids': completed, 'product_paths': paths, 'required_checks': commands,
             'requirements': spec.get('requirements'), 'status': 'implementing', 'repair_budget_id': budget_id,
             'created_at': now, 'last_checkpoint_at': now, 'branch': git(root, 'branch', '--show-current').stdout.strip(),
@@ -353,6 +354,26 @@ def _finish_acceptance(root, item, state, spec, receipt, review):
     return {'status': 'passed', 'selection': item}
 
 
+def _transfer(root, item, state, spec):
+    next_owner = spec.get('next_owner')
+    if not isinstance(next_owner, str) or not next_owner.strip() or next_owner == item['owner']:
+        raise CoordinationError('Transfer requires a distinct nonempty next_owner')
+    if item['status'] == 'accepted' or spec.get('expected_revision') != revision(root):
+        raise CoordinationError('Transfer requires an unfinished selection at expected_revision')
+    active = [claim for claim in state['claims'].values()
+              if claim['status'] == 'active' and claim['owner'] == item['owner']
+              and set(claim['task_ids']) & set(item['task_ids'])]
+    if active:
+        raise CoordinationError('Release current coordinator claims before transferring ownership')
+    previous = item['owner']
+    item['owner'] = next_owner
+    if next_owner not in item['implementers']:
+        item['implementers'].append(next_owner)
+    item.setdefault('transfers', []).append({'from': previous, 'to': next_owner,
+                                             'revision': revision(root), 'created_at': time.time()})
+    return {'status': 'ok', 'selection': item}
+
+
 def selection(repo, action, spec):
     root = repository(repo)
     with registry(root) as state:
@@ -366,7 +387,7 @@ def selection(repo, action, spec):
         if action == 'migrate':
             from .numbering_migration import migrate
             return migrate(root, item, state, spec)
-        actions = {'checkpoint': _checkpoint, 'repair': _repair, 'accept': _accept}
+        actions = {'checkpoint': _checkpoint, 'repair': _repair, 'accept': _accept, 'transfer': _transfer}
         if action not in actions:
             raise CoordinationError(f'Unknown selection action: {action}')
         return actions[action](root, item, state, spec)

@@ -150,11 +150,11 @@ def role_text(role, host, prefix):
     if isinstance(instructions, list):
         instructions = "\n".join(instructions)
     instructions += "\n\nRead the repository AGENTS.md and selected .ai/config.json first when present. "
-    instructions += "Only Forge dispatches native subagents; workers return to their parent. Inherit the host model settings and never start a nested Forge. "
+    instructions += "Inherit host model settings. Follow your assigned responsibility and selected checks. Contributors and reviewers return to the current coordinator; they do not dispatch another coordinator or repeat the final combined review. "
     instructions += "Role skill catalog (load only relevant entries): " + ", ".join(role.get("skills", [])) + ". "
     instructions += "Resolve .ai/config.json bundle relative to .ai, then read that bundle skills/<name>/SKILL.md directly. Do not resolve a pinned skill through a global name match. "
     instructions += f"Only when no project configuration exists, use skill files under {prefix}/skills.\n"
-    name = "aw-" + role.get("id", role["name"])
+    name = "aw-" + (role.get("id") or role["name"])
     if host == "codex":
         fields = {"name": name, "description": role["description"], "developer_instructions": instructions}
         return "\n".join(key + " = " + json.dumps(value) for key, value in fields.items()) + "\n"
@@ -195,7 +195,7 @@ def adapter_files(source, root, bundle, global_install, version):
         directory = ".copilot" if global_install and host == "copilot" else (".github" if host == "copilot" else "." + host)
         for role in roles(source):
             suffix = ".toml" if host == "codex" else (".agent.md" if host == "copilot" else ".md")
-            name = "aw-" + role.get("id", role["name"]) + suffix
+            name = "aw-" + (role.get("id") or role["name"]) + suffix
             prefix = "~/.local/share/agent-workflow/bundles/" + version if global_install else bundle.as_posix()
             text = role_text(role, host, prefix)
             files[f"{directory}/agents/{name}"] = {"kind": "file", "data": text.encode()}
@@ -785,23 +785,16 @@ def deduplicated_hook(root, host, payload):
 def host_hook(args):
     payload = json.load(sys.stdin) if not sys.stdin.isatty() else {}
     if not isinstance(payload, dict):
-        return hook_feedback(args.host, "Workflow hook received unsupported native context. Run the fast gate explicitly.")
+        return hook_feedback(args.host, "Workflow hook received unsupported native context. Continue only the agreed checks; no check was executed.")
     host = effective_hook_host(args.host, payload)
     try:
         root = hook_repository(payload, host, args.scope)
     except (ValueError, OSError, RuntimeError):
-        return hook_feedback(host, "Workflow hook could not identify one safe repository from the native workspace and edit paths. Run the fast gate explicitly in the intended repository.")
+        return hook_feedback(host, "Workflow hook could not identify one safe repository from the native workspace and edit paths. Identify the intended repository before continuing its agreed checks; no check was executed.")
     if root is None:
         return {}
-    config = load(root / ".ai/config.json", {})
-    if config.get("hook_mode") == "feedback":
-        # Final selection verification is explicit; edits must not rerun full suites.
-        return {}
-    result = deduplicated_hook(root, host, normalized_hook_payload(root, host, payload))
-    if result.get("status") in {"failed", "blocked", "error"}:
-        message = "Workflow fast checks need attention. Run .ai/bin/agent-workflow gate --repo . --stage fast for details."
-        return hook_feedback(host, message)
-    return {}
+    # Edit notifications never execute commands: explicit task limits apply in every host.
+    return hook_feedback(host, "Workflow edit observed. Continue the approved work and run only its agreed checks explicitly.")
 
 
 def hook_feedback(host, message):

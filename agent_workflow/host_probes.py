@@ -217,6 +217,13 @@ def role_observation(host, events, role):
 def _codex_delegation(events):
     nodes = {}
     for index, event in enumerate(events):
+        if event.get('type') == 'thread.started' and event.get('thread_id'):
+            identity = event['thread_id']
+            nodes[identity] = {'id': identity, 'role': 'aw-forge', 'parent_id': None, 'started': index, 'origin': 'session', 'role_source': 'current-session coordinator; named profile unverified'}
+        if event.get('type') == 'turn.completed':
+            for node in nodes.values():
+                if node.get('origin') == 'session':
+                    node['completed'] = index
         thread = event.get('params', {}).get('thread', {})
         if event.get('method') == 'thread/started' and thread.get('agentRole') in SMOKE_ROLES and thread.get('id'):
             nodes[thread['id']] = {'id': thread['id'], 'role': thread['agentRole'], 'parent_id': thread.get('parentThreadId'), 'started': index}
@@ -318,22 +325,30 @@ def _bind_copilot_workers(nodes, completions, calls):
 
 def delegation_graph_result(nodes):
     if not isinstance(nodes, list) or any(not valid_lifecycle(node) for node in nodes):
-        return result('blocked', 'Native lifecycle records are malformed', native_lifecycles=[], required_roles=list(SMOKE_ROLES))
+        return result('blocked', 'Native lifecycle records are malformed', native_lifecycles=[])
     roles = {role: [node for node in nodes if node['role'] == role] for role in SMOKE_ROLES}
-    details = {'required_roles': list(SMOKE_ROLES), 'native_lifecycles': nodes}
-    if any(len(roles[role]) != 1 or type(roles[role][0].get('completed')) is not int for role in SMOKE_ROLES):
-        return result('blocked', 'One completed native Forge, backend and independent reviewer lifecycle is required; requested roles and assistant prose are insufficient', **details)
-    forge, backend, reviewer = [roles[role][0] for role in SMOKE_ROLES]
-    if len({node['id'] for node in (forge, backend, reviewer)}) != 3:
-        return result('blocked', 'Implementation and review must use distinct native role identities', **details)
-    native_ids = [node.get('native_agent_id') for node in (forge, backend, reviewer)]
-    if all(native_ids) and len(set(native_ids)) != 3:
+    details = {'required_roles': ['aw-forge', 'aw-review-verify'], 'native_lifecycles': nodes}
+    required = ['aw-forge', 'aw-review-verify']
+    if any(len(roles[role]) != 1 for role in required) or len(roles['aw-backend']) > 1:
+        return result('blocked', 'One coordinator and one independent reviewer are required', **details)
+    if any(type(node.get('completed')) is not int for node in nodes):
+        return result('blocked', 'Native implementation and review must complete', **details)
+    forge, reviewer = [roles[role][0] for role in required]
+    implementer = roles['aw-backend'][0] if roles['aw-backend'] else forge
+    if len({node['id'] for node in nodes}) != len(nodes):
+        return result('blocked', 'Implementation and review must use distinct native identities', **details)
+    native_ids = [node.get('native_agent_id') for node in nodes]
+    if all(native_ids) and len(set(native_ids)) != len(nodes):
         return result('blocked', 'Implementation and review reused a native agent identity', **details)
-    if backend.get('parent_id') != forge['id'] or reviewer.get('parent_id') != forge['id']:
-        return result('blocked', 'Native parent metadata does not connect both workers to the same Forge', **details)
-    if backend['started'] <= forge['started'] or reviewer['started'] <= backend['completed'] or forge['completed'] <= reviewer['completed']:
-        return result('blocked', 'Native lifecycle order does not establish implementation followed by independent review', **details)
-    return result('passed', 'Native Forge delegated implementation and subsequent independent review to distinct child roles', **details)
+    if reviewer.get('parent_id') != forge['id']:
+        return result('blocked', 'Reviewer must belong to the current coordinator', **details)
+    if implementer is not forge and (implementer.get('parent_id') != forge['id'] or implementer['started'] <= forge['started']):
+        return result('blocked', 'Contributor must belong to the current coordinator', **details)
+    if reviewer['started'] <= implementer['started'] or reviewer['completed'] >= forge['completed']:
+        return result('blocked', 'Native lifecycle order does not establish independent review', **details)
+    if implementer is not forge and reviewer['started'] <= implementer['completed']:
+        return result('blocked', 'Contributor implementation must complete before review', **details)
+    return result('passed', 'Native coordinator and independent reviewer completed the single workflow', **details)
 
 
 def valid_lifecycle(node):
@@ -357,6 +372,8 @@ def delegation_observation(host, events, fixture=None, main_role=None, completio
     parsers = {'codex': _codex_delegation, 'claude': _claude_delegation, 'copilot': _copilot_delegation}
     nodes = parsers[host](events) if host in parsers else []
     observed = delegation_graph_result(nodes)
+    if host == 'codex' and any(node.get('role_source') for node in nodes):
+        observed['coordinator_profile_loading'] = 'unverified'
     if main_role == 'aw-forge':
         observed['requested_main_role'] = main_role
         mains = [node for node in nodes if node['role'] == main_role and node.get('origin') == 'session']
@@ -372,9 +389,9 @@ def delegation_observation(host, events, fixture=None, main_role=None, completio
     if fixture is not None:
         edits = native_edit_observations(host, events, fixture)
         observed['native_implementation_edits'] = edits
-        backend = next((node for node in nodes if node['role'] == 'aw-backend'), None)
-        if observed['status'] == 'passed' and (len(edits) != 1 or not valid_implementation_edit(edits[0], backend)):
-            observed.update(status='blocked', reason='The implementation edit is not within the backend lifecycle before independent review')
+        backend = next((node for node in nodes if node['role'] == 'aw-backend'), next((node for node in nodes if node['role'] == 'aw-forge'), None))
+        if observed['status'] == 'passed' and (len(edits) != 1 or not valid_implementation_edit(edits[0], backend) or edits[0].get('completed', len(events)) >= next(node['started'] for node in nodes if node['role'] == 'aw-review-verify')):
+            observed.update(status='blocked', reason='The implementation edit lacks owner provenance before independent review')
     if completion is not None and (completion.get('exit_code') != 0 or completion.get('timed_out')):
         observed.update(status='blocked', reason='Native delegation phase failed or timed out; partial lifecycle evidence cannot pass')
     return observed
@@ -383,22 +400,24 @@ def delegation_observation(host, events, fixture=None, main_role=None, completio
 def native_edit_observations(host, events, fixture):
     identities = set(native_edit_events(host, events, fixture))
     edits = {}
+    main_id = next((event.get('thread_id') for event in events if event.get('type') == 'thread.started'), None)
     for index, event in enumerate(events):
         item = event.get('item', {})
         if host == 'codex' and item.get('id') in identities:
-            edit = edits.setdefault(item['id'], {'id': item['id'], 'owner': event.get('threadId', event.get('thread_id')), 'started': index})
+            identity = item['id']
+            edit = edits.setdefault(identity, {'id': identity, 'owner': event.get('thread_id', event.get('threadId', main_id)), 'started': index})
             if event.get('type') == 'item.completed':
                 edit['completed'] = index
         if host == 'claude':
             content = event.get('message', {}).get('content', [])
             for block in content if isinstance(content, list) else []:
                 if block.get('type') == 'tool_use' and block.get('id') in identities:
-                    edits[block['id']] = {'id': block['id'], 'owner': event.get('parent_tool_use_id'), 'started': index}
+                    edits[block['id']] = {'id': block['id'], 'owner': event.get('parent_tool_use_id') or event.get('session_id'), 'started': index}
                 if block.get('type') == 'tool_result' and block.get('tool_use_id') in edits and not block.get('is_error', False):
                     edits[block['tool_use_id']]['completed'] = index
         data = event.get('data', {})
         if host == 'copilot' and event.get('type') == 'tool.execution_start' and data.get('toolCallId') in identities:
-            edits[data['toolCallId']] = {'id': data['toolCallId'], 'owner': data.get('parentToolCallId'), 'started': index}
+            edits[data['toolCallId']] = {'id': data['toolCallId'], 'owner': data.get('parentToolCallId') or data.get('sessionId', event.get('sessionId')), 'started': index}
         if host == 'copilot' and event.get('type') == 'tool.execution_complete' and data.get('toolCallId') in edits and data.get('success') is True:
             edits[data['toolCallId']]['completed'] = index
     return list(edits.values())
@@ -469,7 +488,7 @@ def fixture_read_paths(fixture):
         if not bundle.is_relative_to(root / '.ai'):
             raise ValueError('Fixture read grants must remain inside its selected bundle')
         paths.extend(bundle / 'skills' / name / 'SKILL.md' for name in ('forge', 'task-implement', 'code-review'))
-        paths.append(bundle / 'docs/COORDINATION.md')
+        paths.extend(bundle / 'docs' / name for name in ('COORDINATION.md', 'DELIVERY.md'))
     return paths
 
 
@@ -497,19 +516,13 @@ def smoke_argv(host, runtime, fixture, prompt, main_role='aw-forge', unattended_
 
 
 def smoke_prompt(nonce, phase, host):
-    delegation = ('Use the selected aw-forge main role. ' if host in ('claude', 'copilot') else
-                  'Delegate this bounded smoke to exactly one native aw-forge role and wait for its completed result. ')
-    delegation += ('Forge must delegate the one smoke.json edit to aw-backend and wait for completion, '
-                   'then delegate a read-only inspection of the changed file to a separate aw-review-verify worker and wait. '
-                   'Forge coordinates and does not edit; no worker may spawn Forge. ') if phase == 'pass' else ''
-    if phase == 'fail':
-        delegation = ('Use the selected aw-backend main role for the one failing fixture edit. ' if host in ('claude', 'copilot') else
-                      'Delegate the one failing fixture edit to aw-backend and wait; no Forge is needed for this separate hook check. ')
-    return (f'Authorized bounded agent-workflow host smoke {nonce}. Work only inside this temporary fixture. '
-            'This fresh fixture is the pre-isolated smoke lane; the harness owns its captured checks and receipts. '
-            'Only native delegation, the fixture edit, read-only review and hooks are assigned; no Git, claim, task-status or delivery work is assigned. '
-            f'{delegation}The backend worker must use the native file-edit tool once to replace smoke.json with {{"value":"{phase}"}}. '
-            'Do not impersonate a role, reuse the implementer as reviewer, start another orchestration loop, or use a fallback role. '
-            'Do not use a shell to edit, alter configuration, approve trust, run a gate directly, read credentials, change models, '
-            'or execute application tasks. Let the installed PostToolUse hook run normally. '
-            'Report any unavailable native role, denied operation, trust prompt, or authentication failure and stop; do not retry.')
+    role = 'aw-forge' if phase == 'pass' else 'aw-backend'
+    review = ('After the edit completes, use one native aw-review-verify agent for read-only inspection and wait for its result. '
+              'The reviewer must be independent; do not delegate implementation or start another coordinator. ') if phase == 'pass' else ''
+    return (f'Authorized bounded agent-workflow host smoke {nonce}. Work only inside this disposable fixture. '
+            f'The current {role} session implements directly: use the native file-edit tool once to replace '
+            f'smoke.json with {{"value":"{phase}"}}. {review}'
+            'This task assigns only the fixture edit, independent review when requested, and observation of installed hooks. '
+            'Do not run tests, Git commands, gates, application tasks, configuration changes, trust approval, or credential reads. '
+            'Let edit notification hooks return feedback without executing checks. '
+            'Report unavailable native roles, denied operations, trust prompts, or authentication failure and stop without retry.')
