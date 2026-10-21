@@ -7,6 +7,7 @@ This release aligns Codex, Cursor AI, Claude Code and GitHub Copilot around dire
 - Shared delivery policy, six prompts and generated role adapters preserve approved visual references, complete journeys, protected harness files and explicit test limits.
 - Skill activation is conditional; implementation avoids automatic planning regeneration, specialist rosters, TDD and exhaustive evidence campaigns.
 - Integration requires an existing selection before mutation, composes tested contributions without per-worker review, and remains pending final combined review.
+- Managed edit hooks emit notifications only; retained legacy hook settings cannot execute checks or bypass test limits.
 - Affected checking distinguishes component/consumer changes, documentation and genuine shared inputs. Existing project thresholds remain intact.
 - Current guides explain four-host discovery, project pin precedence, cross-host resume, review independence and CLI versus desktop/IDE proof.
 

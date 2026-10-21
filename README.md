@@ -33,7 +33,7 @@ python3 scripts/agent-workflow doctor --global
 python3 scripts/agent-workflow doctor --repo /path/to/project
 ```
 
-Use `general` for other stacks and configure actual project checks before implementation. Installation preserves unrelated settings, permissions, skills, hooks and Git work; it does not install accounts/application dependencies or resume product tasks.
+Use `general` for other stacks and configure actual project checks before implementation. Managed edit hooks notify only; they never execute checks, even with retained older hook settings. Installation preserves unrelated settings, permissions, skills, hooks and Git work; it does not install accounts/application dependencies or resume product tasks.
 
 Commit `.ai/bundles/1.3.0/`, configuration, native adapters, discovery links and `.ai/bin/agent-workflow` together. A repository pin governs all hosts before global fallback; global updates leave other project pins unchanged.
 
@@ -83,4 +83,4 @@ cd ../../..
 python3 scripts/check-fixtures.py --jvm-tools /path/to/verified/jars --output /tmp/workflow-fixtures.json
 ```
 
-Source changes, independent review, publication and installation are separate results. Retained [1.1 verification](docs/VERIFICATION-1.1.md) and [earlier fixtures](docs/VERIFICATION.md) are historical evidence, not proof for this release. Measure later task overhead from available counters without creating automation or claiming unmeasured savings.
+Source changes, independent review, publication and installation are separate results. The source repository has no established publication remote; report publication pending until a destination is established, without inventing a remote. Retained [1.1 verification](docs/VERIFICATION-1.1.md) and [earlier fixtures](docs/VERIFICATION.md) are historical evidence, not proof for this release. Measure later task overhead from available counters without creating automation or claiming unmeasured savings.
