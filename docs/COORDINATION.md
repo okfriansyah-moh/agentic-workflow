@@ -1,6 +1,6 @@
 # Ownership, execution, integration, and evidence
 
-[Selection delivery](DELIVERY.md) is the default execution policy. Serial work reuses a suitable checkout; concurrent writing lanes are optional. Composition validates current checks and ownership but remains pending-review until one independent review covers the entire requested selection. The legacy strict integration path below remains available explicitly.
+[Delivery policy](DELIVERY.md) defines the only workflow for Codex, Cursor AI, Claude Code and GitHub Copilot. The current chat implements directly in a suitable checkout. Optional concurrent contributors use scoped claims. Composition stays pending one independent combined review. New integration requires an existing selection ID before mutation; historical receipts remain readable.
 
 ## One durable selection
 
@@ -32,12 +32,12 @@ Every later input contains `selection_id` and, for mutation, the recorded `owner
 
 Capture selected checks through `receipt --repo . --spec checks.json` using `selection_id` and the existing claim/check contract fields. The helper retains actual output and input provenance; selection acceptance rejects fabricated, stale or incomplete receipts. Claim input `reuse_worktree: true` records a suitable current checkout instead of creating another one. Include `selection_id` when claiming tested in-selection dependencies.
 
-For concurrent composition, add `selection_id` to the existing integration spec. Worker receipts/ownership remain required; individual worker reviews are not. The result is `pending-review` and cannot substitute for final selection acceptance. Required correction counts follow selection identity rather than mutable group names.
+For every new integration, include `selection_id` in the integration spec. Missing or invalid selection is rejected before any Git mutation. Worker receipts/ownership remain required; individual worker reviews are not. The result is `pending-review` and cannot substitute for final selection acceptance. Required correction counts follow selection identity rather than mutable group names.
 
 Ordinary browser cases may use retained assertion artifacts or `direct_observation`. Set `recording_required: true` only for required media; its stream/timestamp/frame validation remains strict. Requirements with `assistive_technology` require an actual `assistive_observation` containing observer, tool, passed result, observations and a retained artifact. `speech_required: true` additionally requires `speech_observed: true`; DOM or audio-energy checks alone are insufficient.
 
 
-The chat's native Forge coordinator owns task-status updates. Python helpers read plan files, reserve writing lanes, create worktrees, capture actual commands, and inspect receipts. They do not launch an agent, interpret Markdown as commands, edit source requirements, or dispatch an application task during installation.
+The active chat owns task-status updates. Python helpers read plan files, reserve scoped resources, create worktrees, capture actual commands, and inspect receipts. They do not launch an agent, interpret Markdown as commands, edit source requirements, or dispatch an application task during installation.
 
 ## Index an existing plan
 
@@ -49,7 +49,7 @@ The supported version-1 format uses `kind: plan`, a `plan_root`, source IDs/path
 
 The index checks source digests, linked files and Markdown section targets, unique task/group ownership, integration-owner membership, known dependency IDs, and dependency cycles. It preserves IDs, references, acceptance IDs, change surfaces, and task statuses. `execution_eligible` means Ready with Done dependencies; it does not establish installed tools, available services, accepted reviews, task completion, or feature acceptance. Task files remain the execution record. Index output can be rebuilt at any time.
 
-## Concurrent writing lanes and legacy strict integration
+## Optional concurrent ownership
 
 Create a JSON brief under `.ai/state/`. The coordinator supplies exact sources, case IDs, and checks from the accepted task. The `plan` field is recommended for planned implementation: it derives dependencies, verifies eligibility, and rejects claims outside task change surfaces. Omit it for a bounded request without a saved plan, providing explicit dependency IDs instead.
 
@@ -71,8 +71,7 @@ Create a JSON brief under `.ai/state/`. The coordinator supplies exact sources, 
       "cwd": ".",
       "timeout": 300,
       "test_report": {"path": ".ai/evidence/tests.xml", "format": "junit"}
-    },
-    {"id": "self-review", "kind": "check", "argv": ["python3", "scripts/check_local_review.py"]}
+    }
   ]
 }
 ```
@@ -86,9 +85,9 @@ The requested base must equal the integration checkout's current commit. Creatin
 
 Claims are stored in `agent-workflow/registry.json` under Git's shared metadata directory. `flock` serializes writers across participating chats and worktrees; atomic replacement avoids partial registry writes. It does not coordinate unrelated clones. Locks are released by the operating system if a process exits. An old timestamp is an attention flag, never permission to steal a claim.
 
-Overlapping directories, duplicate task IDs, and resource-name collisions block claims. Common schema, generator, dependency-lock, build-config, and migration paths also add shared resource claims. Unusual project generators and external resources still need explicit names. Reserve distinct ports, databases, namespaces, and output directories. Directory claims without a file extension conservatively reserve every shared mutation category, including planned files that do not exist yet. Use narrow file claims when independent lanes need concurrency. Writing lanes are limited to the minimum of three, repository `max_workers`, and the brief's optional `host_capacity`; only one active integrator is allowed.
+Overlapping directories, duplicate task IDs, and resource-name collisions block claims. Common schema, generator, dependency-lock, build-config, and migration paths also add shared resource claims. Unusual project generators and external resources still need explicit names. Reserve distinct ports, databases, namespaces, and output directories. Directory claims without a file extension conservatively reserve every shared mutation category, including planned files that do not exist yet. Use narrow file claims when independent contributions need concurrency. Concurrent writers are limited to the minimum of three, repository `max_workers`, and the brief's optional `host_capacity`; only one active integrator is allowed.
 
-An integrator brief uses `"role": "integrator"`, a unique integration task label, empty `paths`, and the combined check contracts in `required_checks`. Its writes consist of accepting reviewed worker commits and resolving their integration defects. The integrator also receives an isolated worktree from its recorded base.
+An integrator brief uses `"role": "integrator"`, a unique integration task label, empty `paths`, and the combined check contracts in `required_checks`. Its writes consist of composing tested worker commits and resolving integration defects, pending final combined review. The integrator also receives an isolated worktree from its recorded base.
 
 ## Capture actual command results
 
@@ -107,8 +106,7 @@ Commit the bounded implementation before capturing the receipt. Place command sp
       "argv": ["python3", "tests/run_selected.py", "--task", "T001"],
       "test_report": {"path": ".ai/evidence/tests.xml", "format": "junit"},
       "timeout": 300
-    },
-    {"id": "self-review", "kind": "check", "argv": ["python3", "scripts/check_local_review.py"]}
+    }
   ]
 }
 ```
@@ -121,7 +119,7 @@ The fingerprint covers all tracked and unignored files, including executable mod
 
 ## Independent review and integration
 
-A different native worker reads the brief, source requirements, commit diff, receipt, test output, and evidence. It records JSON such as:
+After implementation/composition, a separate supported reviewer reads the whole selection brief, approved references, requirements, diff, actual checks and evidence. Self-review is insufficient; if no independent reviewer is available, review remains pending. It records JSON such as:
 
 ```json
 {
@@ -140,6 +138,7 @@ Each nonempty finding records its ID, whether it is required, and its resolution
 ```json
 {
   "owner": "integrator-worker",
+  "selection_id": "selection-ID",
   "integration_claim_id": "lane-INTEGRATOR",
   "expected_head": "FULL_INTEGRATION_HEAD",
   "group_id": "G01",
@@ -148,7 +147,6 @@ Each nonempty finding records its ID, whether it is required, and its resolution
       "claim_id": "lane-WORKER",
       "commit": "FULL_WORKER_REVISION",
       "receipt": "PATH_TO_WORKER_RECEIPT",
-      "review": "PATH_TO_INDEPENDENT_REVIEW",
       "depends_on": []
     }
   ],
@@ -158,11 +156,11 @@ Each nonempty finding records its ID, whether it is required, and its resolution
 }
 ```
 
-Checks must match the integrator brief's exact required contracts. The checkout must still be on its claimed integration branch. The helper verifies every worker before modifying the integration branch: active ownership, exact reviewed revision, unchanged input and artifact hashes, successful command capture, independent review, clean tracked files, ancestry from the recorded base, and changed paths within the claim. It orders worker commits by declared dependencies. Dependencies outside the selected workers must have a successful integration record already contained in the integration checkout.
+Checks must match the integrator brief's exact required contracts. The checkout must still be on its claimed integration branch. The helper verifies every worker before modifying the integration branch: matching selection, active ownership, exact contributed revision, unchanged input and artifact hashes, successful development-check capture, clean tracked files, ancestry from the recorded base, and changed paths within the claim. Independent worker review is unnecessary; the complete result receives one independent combined review. It orders worker commits by declared dependencies. Dependencies outside the selected workers must have a successful integration record already contained in the integration checkout.
 
-Accepted commits are merged with ordinary Git merge semantics. The workflow does not use the line-union merge driver. Merge conflicts remain in the integration worktree with both branches and the exact next action retained. Resolve conflicts against behavior and source contracts, commit the resolution, obtain fresh review as appropriate, and rerun combined checks. A successful merge/check receipt still requires independent review of the integrated result and the feature owner's acceptance evidence.
+Tested commits are merged with ordinary Git merge semantics. The workflow does not use the line-union merge driver. Merge conflicts remain in the integration worktree with both branches and the exact next action retained. Resolve conflicts against behavior and source contracts, commit the resolution, obtain fresh review as appropriate, and rerun combined checks. A successful merge/check receipt still requires independent review of the integrated result and the feature owner's acceptance evidence.
 
-Two failed required integration/correction attempts stop that group with branches and records retained. Optional media repair additionally shares a selection-wide two-attempt/20-minute budget; renamed phases cannot reset it. An operator must inspect the failures and define a revised work-group decision before using a new group identifier; renaming a group to hide a failure is not a repair. The helper does not auto-reset a branch, discard changes, delete a worker, or publish a PR.
+The configured required-correction limit follows the selection, with branches and records retained. Optional media repair additionally shares a selection-wide two-attempt/20-minute budget; renamed groups, phases, hosts and workers cannot reset either limit. Inspect the actual failure and continue independent work or report the blocker. The helper does not auto-reset a branch, discard changes, delete a worker, or publish a PR.
 
 ## Verify acceptance evidence
 
@@ -245,7 +243,7 @@ Hash and metadata checks establish provenance and completeness of declared revie
 .ai/bin/agent-workflow worktree --repo . --claim lane-ID --owner backend-worker-1 --cleanup
 ```
 
-Resume reports current worktree revisions/fingerprints, merge conflicts, old claim timestamps, prior integration records, correction counts, and a next action. Reconcile task files, source revisions, claims, and current evidence before resuming execution. Prior success records are not trusted as proof of current inputs.
+Resume in any host restores the same selection, constraints, ownership, check contracts, findings, cumulative limits and next action from Git-shared state. Transfer ownership before another coordinator mutates it; do not assume conversational history transfers. Explicit inputs override retained values only where supplied. Resume reports current worktree revisions/fingerprints, merge conflicts, old claim timestamps, prior integration records, correction counts, and a next action. Reconcile task files, source revisions, claims, and current evidence before resuming execution. Prior success records are not trusted as proof of current inputs.
 
 Release retains the worktree and branch. Cleanup requires a released claim owned by the caller and a recorded successful integration containing the worker head. It refuses any local tracked/untracked content or retained evidence directory. Archive evidence into the integration checkout's evidence area and inspect all other files first. Cleanup uses Git's ordinary worktree removal without force and retains the branch. It never deletes unrelated branches or worktrees.
 

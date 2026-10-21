@@ -2,7 +2,7 @@
 
 [Selection delivery](DELIVERY.md) governs runtime review timing and repair budgets. Skill availability does not require loading every dependency.
 
-Version 1.2.0 contains 74 entries: 47 reused, 14 new, 7 adapted from supplied material and 6 adapted anti-slop skills. Every entry is available globally and in the project bundle; availability does not activate every skill or install external tools. The machine-readable manifest records sources, input digests, installed tree hashes, dependencies, activation and ownership.
+Version 1.3.0 contains 74 entries: 47 reused, 14 new, 7 adapted from supplied material and 6 adapted anti-slop skills. Every entry is available globally and in the project bundle; availability does not activate every skill or install external tools. The machine-readable manifest records sources, input digests, installed tree hashes, dependencies, activation and ownership.
 
 | Skill | Source | Owner | Purpose |
 | --- | --- | --- | --- |
@@ -64,7 +64,7 @@ Version 1.2.0 contains 74 entries: 47 reused, 14 new, 7 adapted from supplied ma
 | [devops-ci](../skills/devops-ci/SKILL.md) | new | operations | Implement reproducible local/CI builds, Compose environments and operational release or recovery checks. |
 | [observability](../skills/observability/SKILL.md) | new | operations | Implement or review useful application logs, metrics, traces and alerts with redaction and operational checks. |
 | [acceptance-verification](../skills/acceptance-verification/SKILL.md) | new | qa-evidence | Map assigned ATDD cases to executable verification at their required proof boundary and evaluate feature acceptance. |
-| [forge](../skills/forge/SKILL.md) | adapt | forge | Execute an approved multi-task plan through native subagents, claimed worktrees and independently verified receipts. |
+| [forge](../skills/forge/SKILL.md) | adapt | forge | Implement and coordinate approved work directly, using scoped optional workers and one independent combined review. |
 | [task-full-workflow](../skills/task-full-workflow/SKILL.md) | adapt | forge | Route an authorized task through necessary planning, implementation, verification and delivery using one execution state. |
 | [task-implement](../skills/task-implement/SKILL.md) | adapt | forge | Implement one bounded approved task, apply its selected test strategy and return a verifiable receipt. |
 | [task-delivery](../skills/task-delivery/SKILL.md) | adapt | forge | Deliver verified scoped changes through commits and an authorized draft pull request when the remote is configured. |
@@ -83,7 +83,9 @@ Version 1.2.0 contains 74 entries: 47 reused, 14 new, 7 adapted from supplied ma
 
 ## Activation and responsibility
 
-task-full-workflow routes work, Forge coordinates multiple tasks, and task-implement executes a bounded assignment. One shared execution state and independent findings ledger prevent overlapping loops. test-driven-development delegates to tdd. Review criteria from security, accessibility, quality and anti-slop join that same ledger.
+The catalog is an availability inventory, not a loading checklist. All entries use the same workflow across Codex, Cursor AI, Claude Code and GitHub Copilot. Load a skill only for the selected concern. Planning authoring, design generation, TDD, recordings, security assessments and evidence audits require their actual triggers. Approved implementation follows existing visual references and complete journeys. Harness installation/observation is not incidental product work.
+
+task-full-workflow, Forge and task-implement route to the same delivery procedure. The current chat implements directly by default; scoped specialists are optional. One shared execution state and independent findings ledger prevent overlapping loops. test-driven-development delegates to tdd. Review criteria from security, accessibility, quality and anti-slop join that same ledger.
 
 Adopted product, engineering, design and acceptance artifacts govern. UI recommendation databases cannot choose another framework. Spring wiring belongs to spring-dependency-injection; persistence belongs to jpa-hibernate. database-portability activates only when multiple database engines are explicitly supported. Personal voice is conditional; the shared wording policy applies to all authored output.
 

@@ -1,5 +1,5 @@
 # Evidence
 
-Read the pinned bundle’s [selection delivery policy](../docs/DELIVERY.md).
+Read the selected bundle’s [delivery policy](../docs/DELIVERY.md). This prompt uses the same workflow in Codex, Cursor AI, Claude Code and GitHub Copilot.
 
-Use actual case assertions and runner outputs with commands, exits, counts, inputs and environment. Ordinary UI observations need no mandatory recording. Inspect screenshots or media only when the required observation needs them; speech requirements need actual reader observation. No standalone evidence/method approval stage. Report incomplete/stale/failed proof literally.
+Perform only observations selected for the work, using existing runners and artifacts. Retain actual commands, exits, counts, inputs and environment. Separate visual comparison from behavior proof; ordinary UI cases need no mandatory recording. Speech claims require reader observation. Honor no-test instructions without hidden browser trials. Report incomplete, stale, unavailable or failed proof literally. There is no separate evidence approval stage or custom capture-framework task.

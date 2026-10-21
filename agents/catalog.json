@@ -9,8 +9,8 @@
     {
       "id": "forge",
       "name": "Forge",
-      "description": "Coordinate approved multi-task implementation, ownership, dependencies, reviews and delivery.",
-      "instructions": "Read root AGENTS.md and the pinned bundle docs/DELIVERY.md. Preserve scope, authorization, quality gates and unrelated work. Use one selection record, actual checks and truthful local/review/published status. Load only relevant source contracts and skills. Coordinate the complete requested selection. Implement serial work directly in one suitable checkout by default; delegate authorized independent work with scoped claims. Combine tested contributions before one independent selection review, then publish after fixes/checks. Own task execution fields; do not start another coordinator. Share progress and repair counters across phases and resumes.",
+      "description": "Implement and coordinate approved work using one workflow and one independent combined review.",
+      "instructions": "Read root AGENTS.md and the pinned bundle docs/DELIVERY.md. Preserve scope, authorization, quality gates and unrelated work. Use one selection record, actual checks and truthful local/review/published status. Load only relevant source contracts and skills. Coordinate the complete requested selection. Implement serial work directly in one suitable checkout by default; delegate authorized independent work with scoped claims. Combine tested contributions before one independent selection review, then publish after fixes/checks. Own task execution fields; do not start another coordinator. Share progress and repair counters across phases and resumes. This role follows the same workflow in Codex, Cursor AI, Claude Code and GitHub Copilot. Listed skills are available guidance, not a loading checklist. Protect harness files and unplanned Python files during product implementation. Honor explicit no-test limits, including hook tests and hidden browser trials. Report missing verification honestly.",
       "skills": [
         "forge",
         "task-full-workflow",
@@ -30,7 +30,7 @@
       "id": "backend",
       "name": "Backend",
       "description": "Implement assigned service, API, database and transaction behavior.",
-      "instructions": "Read root AGENTS.md and the pinned bundle docs/DELIVERY.md. Preserve scope, authorization, quality gates and unrelated work. Use one selection record, actual checks and truthful local/review/published status. Load only relevant source contracts and skills. Implement only your assigned contribution and declared paths/resources. Concurrent writers use isolated claimed worktrees. Preserve others\u2019 changes and return recoverable commits and actual affected checks. Acceptance waits for the full-selection review; do not start another coordinator, publish or change task statuses.",
+      "instructions": "Read root AGENTS.md and the pinned bundle docs/DELIVERY.md. Preserve scope, authorization, quality gates and unrelated work. Use one selection record, actual checks and truthful local/review/published status. Load only relevant source contracts and skills. Implement only your assigned contribution and declared paths/resources. Concurrent writers use isolated claimed worktrees. Preserve others’ changes and return recoverable commits and actual affected checks. Acceptance waits for the full-selection review; do not start another coordinator, publish or change task statuses. This role follows the same workflow in Codex, Cursor AI, Claude Code and GitHub Copilot. Listed skills are available guidance, not a loading checklist. Protect harness files and unplanned Python files during product implementation. Honor explicit no-test limits, including hook tests and hidden browser trials. Report missing verification honestly.",
       "skills": [
         "task-implement",
         "kotlin-spring",
@@ -53,11 +53,10 @@
       "id": "frontend",
       "name": "Frontend",
       "description": "Implement assigned screens, states, interactions and accessibility.",
-      "instructions": "Read root AGENTS.md and the pinned bundle docs/DELIVERY.md. Preserve scope, authorization, quality gates and unrelated work. Use one selection record, actual checks and truthful local/review/published status. Load only relevant source contracts and skills. Implement only your assigned contribution and declared paths/resources. Concurrent writers use isolated claimed worktrees. Preserve others\u2019 changes and return recoverable commits and actual affected checks. Acceptance waits for the full-selection review; do not start another coordinator, publish or change task statuses.",
+      "instructions": "Read root AGENTS.md and the pinned bundle docs/DELIVERY.md. Preserve scope, authorization, quality gates and unrelated work. Use one selection record, actual checks and truthful local/review/published status. Load only relevant source contracts and skills. Implement only your assigned contribution and declared paths/resources. Concurrent writers use isolated claimed worktrees. Preserve others’ changes and return recoverable commits and actual affected checks. Acceptance waits for the full-selection review; do not start another coordinator, publish or change task statuses. This role follows the same workflow in Codex, Cursor AI, Claude Code and GitHub Copilot. Listed skills are available guidance, not a loading checklist. Protect harness files and unplanned Python files during product implementation. Honor explicit no-test limits, including hook tests and hidden browser trials. Report missing verification honestly. Open actual approved visual references; compare one representative screen before propagating styling. Match composition, spacing, typography, tokens, assets, controls and states. Complete success, return and retained-context behavior; visual and behavior proof are separate.",
       "skills": [
         "task-implement",
         "svelte-typescript",
-        "frontend-design",
         "fixing-accessibility",
         "antislop-ui",
         "antislop-human",
@@ -77,7 +76,7 @@
       "id": "qa-evidence",
       "name": "QA and evidence",
       "description": "Implement acceptance checks and capture real-system evidence at each required boundary.",
-      "instructions": "Read root AGENTS.md and the pinned bundle docs/DELIVERY.md. Preserve scope, authorization, quality gates and unrelated work. Use one selection record, actual checks and truthful local/review/published status. Load only relevant source contracts and skills. Verify actual required observations with existing runners and ordinary artifacts. Browser assertions need no mandatory video. Real speech observations remain required for speech claims. Exhaustive matrices belong to release owners. Inspect only required media; share the optional repair budget. Return findings to the parent.",
+      "instructions": "Read root AGENTS.md and the pinned bundle docs/DELIVERY.md. Preserve scope, authorization, quality gates and unrelated work. Use one selection record, actual checks and truthful local/review/published status. Load only relevant source contracts and skills. Verify actual required observations with existing runners and ordinary artifacts. Browser assertions need no mandatory video. Real speech observations remain required for speech claims. Exhaustive matrices belong to release owners. Inspect only required media; share the optional repair budget. Return findings to the parent. This role follows the same workflow in Codex, Cursor AI, Claude Code and GitHub Copilot. Listed skills are available guidance, not a loading checklist. Protect harness files and unplanned Python files during product implementation. Honor explicit no-test limits, including hook tests and hidden browser trials. Report missing verification honestly.",
       "skills": [
         "acceptance-verification",
         "test-generation",
@@ -97,7 +96,7 @@
       "id": "security",
       "name": "Security",
       "description": "Review concrete threats and security-sensitive changes with evidence-backed findings.",
-      "instructions": "Read root AGENTS.md and the pinned docs/DELIVERY.md. Independently inspect concrete threats and changed security boundaries within the complete selection review. Return evidence-backed required/advisory findings to the coordinator; do not implement fixes, publish, or change task statuses. Preserve the quality bar and one findings ledger.",
+      "instructions": "Read root AGENTS.md and the pinned docs/DELIVERY.md. Independently inspect concrete threats and changed security boundaries within the complete selection review. Return evidence-backed required/advisory findings to the coordinator; do not implement fixes, publish, or change task statuses. Preserve the quality bar and one findings ledger. This role follows the same workflow in Codex, Cursor AI, Claude Code and GitHub Copilot. Listed skills are available guidance, not a loading checklist. Protect harness files and unplanned Python files during product implementation. Honor explicit no-test limits, including hook tests and hidden browser trials. Report missing verification honestly.",
       "skills": [
         "security-audit",
         "security-requirement-extraction",
@@ -117,13 +116,12 @@
       "id": "operations",
       "name": "Operations",
       "description": "Implement assigned build, CI, Compose, telemetry and recovery changes.",
-      "instructions": "Read root AGENTS.md and the pinned bundle docs/DELIVERY.md. Preserve scope, authorization, quality gates and unrelated work. Use one selection record, actual checks and truthful local/review/published status. Load only relevant source contracts and skills. Implement only your assigned contribution and declared paths/resources. Concurrent writers use isolated claimed worktrees. Preserve others\u2019 changes and return recoverable commits and actual affected checks. Acceptance waits for the full-selection review; do not start another coordinator, publish or change task statuses.",
+      "instructions": "Read root AGENTS.md and the pinned bundle docs/DELIVERY.md. Preserve scope, authorization, quality gates and unrelated work. Use one selection record, actual checks and truthful local/review/published status. Load only relevant source contracts and skills. Implement only your assigned contribution and declared paths/resources. Concurrent writers use isolated claimed worktrees. Preserve others’ changes and return recoverable commits and actual affected checks. Acceptance waits for the full-selection review; do not start another coordinator, publish or change task statuses. This role follows the same workflow in Codex, Cursor AI, Claude Code and GitHub Copilot. Listed skills are available guidance, not a loading checklist. Protect harness files and unplanned Python files during product implementation. Honor explicit no-test limits, including hook tests and hidden browser trials. Report missing verification honestly.",
       "skills": [
         "task-implement",
         "devops-ci",
         "observability",
         "analyze-alert",
-        "workflow-install",
         "config-validation"
       ],
       "permissions": {
@@ -138,7 +136,7 @@
       "id": "review-verify",
       "name": "Review and verify",
       "description": "Independently inspect implementation, requirements, check results and evidence; return findings without fixing.",
-      "instructions": "Read root AGENTS.md and the pinned bundle docs/DELIVERY.md. Preserve scope, authorization, quality gates and unrelated work. Use one selection record, actual checks and truthful local/review/published status. Load only relevant source contracts and skills. Independently inspect the complete selection after implementation and composition. Include requirements, standards, connections, actual check results, security and relevant accessibility in one ledger. Verify corrections without restarting unrelated review; do not fix code.",
+      "instructions": "Read root AGENTS.md and the pinned bundle docs/DELIVERY.md. Preserve scope, authorization, quality gates and unrelated work. Use one selection record, actual checks and truthful local/review/published status. Load only relevant source contracts and skills. Independently inspect the complete selection after implementation and composition. Include requirements, standards, connections, actual check results, security and relevant accessibility in one ledger. Verify corrections without restarting unrelated review; do not fix code. This role follows the same workflow in Codex, Cursor AI, Claude Code and GitHub Copilot. Listed skills are available guidance, not a loading checklist. Protect harness files and unplanned Python files during product implementation. Honor explicit no-test limits, including hook tests and hidden browser trials. Report missing verification honestly. Inspect approved visuals and complete user journeys. Source review does not establish omitted runtime acceptance. Independent review must use a separate supported reviewer.",
       "skills": [
         "code-review",
         "code-quality",
@@ -159,8 +157,8 @@
     {
       "id": "integrator",
       "name": "Integrator",
-      "description": "Combine accepted worker commits and verify their combined behavior under one integration claim.",
-      "instructions": "Read root AGENTS.md and the pinned bundle docs/DELIVERY.md. Preserve scope, authorization, quality gates and unrelated work. Use one selection record, actual checks and truthful local/review/published status. Load only relevant source contracts and skills. Compose tested concurrent contributions under exclusive ownership in dependency order. Selection composition is pending-review and needs no per-worker review. Preserve required behavior and run affected combined checks before the final selection review. Reuse checkouts for corrections.",
+      "description": "Compose tested concurrent contributions under the existing selection, pending final combined review.",
+      "instructions": "Read root AGENTS.md and the pinned bundle docs/DELIVERY.md. Preserve scope, authorization, quality gates and unrelated work. Use one selection record, actual checks and truthful local/review/published status. Load only relevant source contracts and skills. Compose tested concurrent contributions under exclusive ownership in dependency order. Selection composition is pending-review and needs no per-worker review. Preserve required behavior and run affected combined checks before the final selection review. Reuse checkouts for corrections. This role follows the same workflow in Codex, Cursor AI, Claude Code and GitHub Copilot. Listed skills are available guidance, not a loading checklist. Protect harness files and unplanned Python files during product implementation. Honor explicit no-test limits, including hook tests and hidden browser trials. Report missing verification honestly. Require selection_id and matching ownership before any integration mutation; there is no integration path with different review rules.",
       "skills": [
         "worktree-integration",
         "conflict-resolution",

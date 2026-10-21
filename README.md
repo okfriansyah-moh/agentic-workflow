@@ -1,16 +1,30 @@
 # Portable agent workflow
 
-Version 1.2.1 provides eight native agent roles, 74 skills, worktree ownership, command receipts, quality gates and acceptance-evidence checks. Start work in your existing Codex, Claude Code, Copilot or Cursor chat. Python helpers coordinate files and verification; they do not launch a separate agent service.
+Version **1.3.0** provides one implementation workflow for **Codex, Cursor AI, Claude Code and GitHub Copilot**. Start in your existing chat; the current chat coordinates and implements directly. Python helpers manage existing selection state, ownership and verification without a separate agent service.
 
-Use [the skill catalog](docs/SKILLS.md) to see every installed skill and its purpose. [Installation](docs/INSTALLATION.md), [host setup](docs/HOSTS.md), [coordination](docs/COORDINATION.md), [quality gates](docs/GATES.md) and [release 1.1 verification](docs/VERIFICATION-1.1.md) describe the operational details.
+**Read the approved outcome → implement → run agreed affected checks → obtain one independent combined review → correct findings → deliver.** There are no workflow tiers. Optional workers, resume actions and delivery destinations use the same completion rules. Read [delivery policy](docs/DELIVERY.md); load other guidance only when needed.
 
-## Selection delivery
+## Start or resume
 
-Read [the delivery policy](docs/DELIVERY.md). Implement the requested tasks/groups, verify affected behavior with unchanged blocking thresholds, obtain one independent combined review, fix findings, then publish. Track actual product progress every 45 minutes and share two optional capture-repair attempts or 20 minutes across the entire selection. Report local and published commits separately. New installations use feedback-only edit hooks; final explicit checks remain required.
+In any supported host:
+
+> Use running prompt for T001.
+
+For a group:
+
+> Implement G02 from docs/06-PLAN.md using its approved references and agreed checks. Implement directly; use scoped workers only when useful. Obtain one independent combined review and deliver within existing authorization.
+
+To resume, including in another host:
+
+> Resume the retained selection. Restore its scope, ownership, constraints, valid results and next action. Preserve its correction and repair limits.
+
+A task can also be requested in ordinary language. The approved brief supplies outcome, complete journey, exact design references, allowed changes, dependencies, checks and destination. Protect harness files and unplanned Python files during product work. Match approved UI and verify completion/return behavior instead of reopening design. Explicit no-test requests prohibit tests, hooks that execute tests, and hidden browser trials; report pending verification.
+
+These examples do not start application work during installation. Preserve existing tasks, source requirements and evidence. Models and permissions remain host-owned. Separate reviewer availability is necessary for independent review; self-review cannot substitute.
 
 ## Install and inspect
 
-Python 3.11 or newer and Git are required. macOS and Linux are supported. From this source checkout:
+Python 3.11 or newer and Git are required on macOS/Linux. From this reviewed source checkout:
 
 ```sh
 python3 scripts/agent-workflow install --global
@@ -19,26 +33,29 @@ python3 scripts/agent-workflow doctor --global
 python3 scripts/agent-workflow doctor --repo /path/to/project
 ```
 
-Use the `general` profile for another stack. Configure its actual checks before implementation; unsupported language checks are reported as blocked. The installer does not install application dependencies, scanners, browsers or accounts. It preserves existing user content and reports conflicts. Host trust and reload requirements remain visible.
+Use `general` for other stacks and configure actual project checks before implementation. Installation preserves unrelated settings, permissions, skills, hooks and Git work; it does not install accounts/application dependencies or resume product tasks.
 
-Each project contains its selected version at `.ai/bundles/1.2.1/`, native role adapters, skill discovery links, and `.ai/bin/agent-workflow`. Commit these together. Links point inside the project; no source-repository path is needed after a clone. A project pin governs its workflow even when the global bundle changes.
+Commit `.ai/bundles/1.3.0/`, configuration, native adapters, discovery links and `.ai/bin/agent-workflow` together. A repository pin governs all hosts before global fallback; global updates leave other project pins unchanged.
 
 ```sh
 python3 .ai/bin/agent-workflow doctor --repo .
 python3 .ai/bin/agent-workflow task-index --plan docs/06-PLAN.md
-python3 .ai/bin/agent-workflow gate --repo . --stage integration --base BASE_COMMIT
+python3 .ai/bin/agent-workflow gate --repo . --stage delivery --base BASE_COMMIT --reuse
 python3 .ai/bin/agent-workflow resume --repo .
 ```
 
-## Start and resume in a chat
+`--stage` selects a technical check set, not an execution tier. Use agreed affected checks and existing project thresholds. See [gates](docs/GATES.md).
 
-To execute a bounded task: “Use task-full-workflow to implement T001 from docs/06-PLAN.md. Reuse the approved documents and its test strategy. Use the installed Forge role for coordination, then independent review and evidence.” Native role profiles use the `aw-` prefix, such as `aw-forge` and `aw-review-verify`.
+## Four host adapters
 
-To execute a task group: “Use Forge to implement the eligible tasks in G02. Implement serially in one suitable checkout by default. Claim isolated lanes only for concurrent writers, then compose tested contributions before one combined selection review.” Reduce worker count to host capacity. Forge never delegates to another Forge.
+| Host | Project entry points | Start/resume |
+|---|---|---|
+| Codex | Root AGENTS.md, `.codex/agents`, `.agents/skills` | Use the chat examples above. |
+| Cursor AI | Root AGENTS.md, `.cursor/rules`, `.cursor/agents`, `.cursor/skills` | Use the same chat examples in the trusted workspace. |
+| Claude Code | Managed CLAUDE.md, `.claude/agents`, `.claude/skills` | Use the same chat examples after loading project instructions. |
+| GitHub Copilot | `.github/copilot-instructions.md`, `.github/agents`, `.github/skills` | Use the same chat examples; inspect CLI/IDE discovery separately. |
 
-To resume: “Resume the retained workflow. Reconcile task files, Git revisions, claims, receipts and evidence before continuing. Reuse valid work and report the precise next action for stale or blocked work.”
-
-These are usage examples, not instructions to dispatch movie-app tasks during installation. The installation indexes all 46 existing tasks without starting them. PRD, technical design, design system and ATDD remain unchanged. A draft PR requires a configured remote. Merge, deployment, production changes and external messages require authorization covering those actions; explicit standing authorization counts within the requested outcome and established destination.
+Adapters translate formats, not workflow semantics. Read [host setup and verification](docs/HOSTS.md) for discovery paths, inheritance, precedence, reload and trust. Generated files establish configuration only; CLI results do not establish desktop/IDE behavior. [Release 1.3.0](docs/RELEASE-1.3.md) separates candidate implementation from installed/live verification.
 
 ## Maintain the installation
 
@@ -49,7 +66,7 @@ python3 scripts/agent-workflow uninstall --repo /path/to/project
 python3 scripts/agent-workflow uninstall --global
 ```
 
-Updates are explicit. A locally edited managed file is retained and reported; inspect it before choosing how to reconcile it. Backups support rollback, and uninstall removes only unchanged managed content. Existing unrelated and host-managed skills remain host-owned.
+Update explicitly from reviewed source. Managed-file conflicts are retained, and transactional backups support rollback. See [installation](docs/INSTALLATION.md), [coordination](docs/COORDINATION.md), [skill catalog](docs/SKILLS.md), [tools](docs/TOOLS.md) and [provenance](docs/PROVENANCE.md).
 
 ## Develop this package
 
@@ -57,7 +74,7 @@ Updates are explicit. A locally edited managed file is retained and reported; in
 python3 -m unittest discover -s tests -v
 ```
 
-The optional external-tool fixtures have a committed npm lock and run separately:
+For changed external-tool profiles only:
 
 ```sh
 cd tests/fixtures/web
@@ -66,19 +83,4 @@ cd ../../..
 python3 scripts/check-fixtures.py --jvm-tools /path/to/verified/jars --output /tmp/workflow-fixtures.json
 ```
 
-See [release 1.1 verification](docs/VERIFICATION-1.1.md) for current rollout results and [historical fixture verification](docs/VERIFICATION.md) for the earlier tool versions and jar digests. Fixture validation does not establish live application behavior or native hook trust. Keep source changes, a versioned release and explicit installation in that order. This source repository is local; publication has not been requested.
-
-## Release 1.1 commands
-
-```sh
-agent-workflow resolve-skills --global --hosts claude cursor --skills design-system ui-ux-pro-max --use-bundle
-agent-workflow tools install all
-agent-workflow tools status --probe
-agent-workflow verify-host --host codex --scope both --repo /path/to/project --live
-```
-
-Read [tool setup](docs/TOOLS.md), [native host verification](docs/HOSTS.md) and the [release results](docs/VERIFICATION-1.1.md). Context7 host authentication and exact hook trust are reported separately from configuration. Strix stays inactive until an assessment is explicitly scoped.
-
-## Release 1.1.1 autonomy
-
-The workflow honors explicit standing authorization without repeated action approvals. `doctor` reports sanitized permission defaults and override candidates for each host separately from native verification. Installation and diagnostics preserve host permission settings. See [unattended execution](docs/HOSTS.md#unattended-execution) for opt-in host settings, session overrides and bounded native checks. Release 1.1 verification records above remain historical evidence.
+Source changes, independent review, publication and installation are separate results. Retained [1.1 verification](docs/VERIFICATION-1.1.md) and [earlier fixtures](docs/VERIFICATION.md) are historical evidence, not proof for this release. Measure later task overhead from available counters without creating automation or claiming unmeasured savings.
