@@ -102,6 +102,41 @@ python3 .ai/bin/agent-workflow resources --repo .
 
 Replace the example plan path with your own. The shared resource controller admits substantial checks using the execution device's available capacity. Unsafe or unmeasured checks stay pending; resource stops require inspection and explicit healthy recovery. See [check configuration and resource budgets](docs/GATES.md).
 
+## From idea to delivery: stages and outputs
+
+[SpoolIn](https://github.com/okfriansyah-moh/spoolIn) is a movie and TV discovery and catalog-management app. Its public documents show how an idea becomes product requirements, visual and technical specifications, acceptance cases, and implementation tasks.
+
+**Brainstorming → PRD → Design system → Technical design → Acceptance specification → Implementation plan → Implementation and verification → Review and delivery**
+
+Use the stages needed for your project. An approved existing specification can be reused; a routine change does not require recreating every document. The numbered filenames below are SpoolIn's convention, not required filenames for every project.
+
+| Stage and skill | What goes in → what comes out | SpoolIn output example |
+| --- | --- | --- |
+| **1. Brainstorming** — `brainstorming` | Idea, constraints, and open choices → agreed direction, scope, alternatives, decisions, and unresolved questions. | [`docs/01-brainstorming-result.md`](https://github.com/okfriansyah-moh/spoolIn/blob/main/docs/01-brainstorming-result.md) records the movie-app direction and delivery decisions. |
+| **2. Product requirements** — `deliver-prd` | Agreed direction and source obligations → a PRD defining users, permissions, journeys, business rules, release scope, and observable acceptance criteria. | [`docs/02-PRD.md`](https://github.com/okfriansyah-moh/spoolIn/blob/main/docs/02-PRD.md) describes the initial SpoolIn release and its requirements. |
+| **3. Design system** — `design-system` | Approved product behavior and visual direction → a design specification, tokens, component contracts, screen/state examples, and requirements coverage. | [`docs/03-design-system.md`](https://github.com/okfriansyah-moh/spoolIn/blob/main/docs/03-design-system.md), [tokens](https://github.com/okfriansyah-moh/spoolIn/blob/main/docs/design-system/tokens.json), [component contracts](https://github.com/okfriansyah-moh/spoolIn/blob/main/docs/design-system/components.md), and [mockup source](https://github.com/okfriansyah-moh/spoolIn/blob/main/docs/design-system/mockup/index.html). |
+| **4. Technical design** — `techdoc-creation` | PRD, adopted design, and engineering constraints → architecture, frontend/backend responsibilities, API and data contracts, database design, security controls, and operational behavior. | [`docs/04-spoolin-techdoc.md`](https://github.com/okfriansyah-moh/spoolIn/blob/main/docs/04-spoolin-techdoc.md) connects the browser application, services, contracts, and storage. |
+| **5. Acceptance specification** — `atdd-creation` | Requirements, technical contracts, and UI states → traceable acceptance cases with preconditions, actions, expected outcomes, and required proof boundaries. | [`docs/05-atdd.md`](https://github.com/okfriansyah-moh/spoolIn/blob/main/docs/05-atdd.md) defines the acceptance cases; authored cases are separate from execution results. |
+| **6. Implementation planning** — `plan-creation` | Approved specifications and acceptance cases → a plan index, dependency-ordered feature groups, and task files with scope, source references, implementation guidance, and verification requirements. | [`docs/06-PLAN.md`](https://github.com/okfriansyah-moh/spoolIn/blob/main/docs/06-PLAN.md), the [plan directory](https://github.com/okfriansyah-moh/spoolIn/tree/main/docs/plan), and a [foundation group](https://github.com/okfriansyah-moh/spoolIn/blob/main/docs/plan/01-reproducible-foundation/group.md). |
+| **7. Implementation and verification** — `forge`, with relevant implementation and acceptance skills | A selected task or group → working code, relevant tests, check results, verification receipts, and retained progress or findings. | SpoolIn's [source repository](https://github.com/okfriansyah-moh/spoolIn) and [release evidence documents](https://github.com/okfriansyah-moh/spoolIn/tree/main/docs/release) show implementation and recorded observations. |
+| **8. Independent review and delivery** — independent reviewer, then `task-delivery` | The complete implemented selection and actual check results → review findings, verified corrections, commits, and the authorized delivery destination with remaining limits stated. | [`docs/release/handoff.md`](https://github.com/okfriansyah-moh/spoolIn/blob/main/docs/release/handoff.md) records the release handoff and remaining obligations. |
+
+### Example stage requests
+
+Request each output explicitly and pass the approved outputs into the next stage. For example:
+
+> Use brainstorming to explore a movie catalog with Viewer and Maintainer journeys. Record the agreed direction and open questions in docs/01-brainstorming-result.md.
+
+> Use deliver-prd to turn the approved brainstorming decisions into docs/02-PRD.md. Define the release scope, permissions, journeys, and acceptance criteria.
+
+> Use design-system with docs/02-PRD.md. Create docs/03-design-system.md and the supporting package under docs/design-system/, including tokens, component contracts, and screen/state examples.
+
+> Use techdoc-creation with the approved PRD and design system. Write docs/04-spoolin-techdoc.md with engineering responsibilities, interfaces, storage, security, and verification boundaries.
+
+> Use atdd-creation to derive docs/05-atdd.md from the approved requirements, design, and technical contracts. Then use plan-creation to produce docs/06-PLAN.md and dependency-ordered groups and tasks under docs/plan/.
+
+After reviewing the plan, select a bounded task or group using the examples below. Writing specifications or mockups does not establish that software was implemented or tested. SpoolIn is an example to inspect; its product scope, stack, and historical results do not become requirements or verification evidence for your project.
+
 ## Everyday use
 
 Give the agent the desired outcome, allowed changes, relevant requirements or designs, acceptance checks, and delivery destination. Ordinary language works; saved tasks are useful for larger selections.
