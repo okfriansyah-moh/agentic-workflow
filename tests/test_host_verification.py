@@ -63,6 +63,16 @@ class ProbeParserTests(unittest.TestCase):
         self.assertEqual(native_edit_events('codex', [event], '/tmp/fixture'), [])
         self.assertEqual(native_edit_events('codex', [{'type': 'assistant', 'text': 'I edited smoke.json'}], '/tmp/fixture'), [])
 
+    def test_copilot_completed_patch_uses_native_file_edits(self):
+        event = {'type': 'tool.execution_complete', 'data': {'toolCallId': 'patch1', 'success': True,
+                 'fileEdits': [{'path': '/tmp/fixture/smoke.json', 'kind': 'update'}]}}
+        self.assertEqual(native_edit_events('copilot', [event], '/tmp/fixture'), ['patch1'])
+        event['data']['success'] = False
+        self.assertEqual(native_edit_events('copilot', [event], '/tmp/fixture'), [])
+        event['data']['success'] = True
+        event['data']['fileEdits'][0]['path'] = '/other/smoke.json'
+        self.assertEqual(native_edit_events('copilot', [event], '/tmp/fixture'), [])
+
     def test_native_hook_event_parser_ignores_assistant_claims(self):
         self.assertEqual(native_hook_events('codex', [{'type': 'assistant', 'text': 'hook completed'}]), [])
         native = {'method': 'hook/completed', 'params': {'run': {'id': 'event1', 'eventName': 'postToolUse', 'status': 'completed', 'sourcePath': '/tmp/fixture/.codex/hooks.json'}}}
@@ -282,6 +292,28 @@ class MeasuredStreamTests(unittest.TestCase):
         spawn['item']['agent_type'] = 'aw-review-verify'
         self.assertEqual(role_observation('codex', [spawn], 'aw-review-verify')['status'], 'passed')
 
+    def test_copilot_direct_json_stream_keeps_profile_loading_unverified(self):
+        events = [{'type': 'user.message', 'data': {}},
+                  {'type': 'tool.execution_start', 'data': {'toolName': 'apply_patch', 'toolCallId': 'edit1'}},
+                  {'type': 'tool.execution_complete', 'data': {'toolCallId': 'edit1', 'success': True,
+                    'fileEdits': [{'path': '/fixture/smoke.json', 'kind': 'update'}]}},
+                  {'type': 'tool.execution_start', 'data': {'toolName': 'task', 'toolCallId': 'review1',
+                    'arguments': {'agent_type': 'aw-review-verify'}}},
+                  {'type': 'subagent.started', 'agentId': 'native-review', 'data': {
+                    'toolCallId': 'review1', 'agentName': 'aw-review-verify'}},
+                  {'type': 'subagent.completed', 'agentId': 'native-review', 'data': {
+                    'toolCallId': 'review1', 'agentName': 'aw-review-verify'}},
+                  {'type': 'tool.execution_complete', 'data': {'toolCallId': 'review1', 'success': True}},
+                  {'type': 'result', 'sessionId': 'session1', 'exitCode': 0}]
+        observed = delegation_observation('copilot', events, '/fixture', main_role='aw-forge')
+        self.assertEqual(observed['status'], 'passed')
+        self.assertEqual(observed['coordinator_profile_loading'], 'unverified')
+        events[5]['data']['cancelled'] = True
+        self.assertEqual(delegation_observation('copilot', events, '/fixture', main_role='aw-forge')['status'], 'blocked')
+        events[5]['data']['cancelled'] = False
+        events[1]['agentId'] = 'native-review'
+        self.assertEqual(delegation_observation('copilot', events, '/fixture', main_role='aw-forge')['status'], 'blocked')
+
     def test_copilot_native_catalog_preserves_user_and_project_scope(self):
         roles = ['aw-forge', 'aw-backend', 'aw-review-verify']
         events = [{'type': 'session.custom_agents_updated', 'data': {'agents': [
@@ -352,13 +384,25 @@ class MeasuredStreamTests(unittest.TestCase):
         events[0].pop('agent_type')
         events[0]['agents'] = ['aw-forge', 'aw-backend', 'aw-review-verify']
         observed = delegation_observation('claude', events, '/fixture', main_role='aw-forge', completion={'exit_code': 0, 'timed_out': False})
-        self.assertEqual(observed['status'], 'blocked')
-        self.assertIn('omits the selected main Forge identity', observed['reason'])
-        self.assertEqual(len(observed['native_lifecycles']), 2)
+        self.assertEqual(observed['status'], 'passed')
+        self.assertEqual(observed['coordinator_profile_loading'], 'unverified')
+        self.assertEqual(len(observed['native_lifecycles']), 3)
         self.assertEqual(len(observed['native_implementation_edits']), 1)
 
 
 class NativeCaptureFixtureTests(unittest.TestCase):
+    def setUp(self):
+        from agent_workflow import resources
+        from test_resources import healthy
+        self.resource_temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.resource_temp.cleanup)
+        for target, name, options in [(resources, 'state_directory', {'return_value': Path(self.resource_temp.name)}),
+                                      (resources.resource_system, 'snapshot', {'side_effect': lambda *a: healthy()}),
+                                      (resources.resource_system, 'process_tree', {'return_value': {'known': True, 'rss_bytes': 1, 'descendants': 0, 'pids': []}}),
+                                      (resources, 'INTERVAL', {'new': 0})]:
+            mock = patch.object(target, name, **options)
+            mock.start(); self.addCleanup(mock.stop)
+
     def test_fresh_global_and_project_fixtures_use_selected_local_bundle(self):
         source = Path(__file__).resolve().parents[1]
         with tempfile.TemporaryDirectory() as temp:
@@ -406,6 +450,9 @@ class NativeCaptureFixtureTests(unittest.TestCase):
 
 class VerificationRecordTests(unittest.TestCase):
     def setUp(self):
+        admission = patch('agent_workflow.resources.inspect_resources', return_value={'status': 'healthy'})
+        admission.start(); self.addCleanup(admission.stop)
+
         self.temp = tempfile.TemporaryDirectory()
         self.root = Path(self.temp.name)
         self.home, self.repo = self.root / 'home', self.root / 'repo'

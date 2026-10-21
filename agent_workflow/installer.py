@@ -137,6 +137,7 @@ def instruction_body(source, version, global_install):
         body = "## Portable workflow\n\nUse a repository's `.ai/config.json` and root AGENTS.md when present. Its pinned bundle governs all workflow checks. Otherwise use the installed agent-workflow skill catalog under `~/.local/share/agent-workflow/bundles/" + version + "/docs/SKILLS.md`. Keep personal and repository instructions intact. Use native subagents only when delegated work is authorized; keep reviewers independent. Honor explicit standing authorization within its stated scope; continue covered actions without asking again. Resolve routine choices from the request and project conventions, and ask only for essential missing information.\n"
     if global_install:
         body += "Read the selected bundle docs/DELIVERY.md before implementation; it governs selection-wide review, preserved quality gates, progress and repair budgets. Serial work can run directly; publication follows one combined independent review.\n"
+    body += "\nUse shared execution-device resource admission before substantial checks; retain stop/recovery state across hosts and leave unsafe checks pending.\n"
     return START + "\n" + body.rstrip() + "\n" + END + "\n"
 
 
@@ -151,6 +152,7 @@ def role_text(role, host, prefix):
         instructions = "\n".join(instructions)
     instructions += "\n\nRead the repository AGENTS.md and selected .ai/config.json first when present. "
     instructions += "Inherit host model settings. Follow your assigned responsibility and selected checks. Contributors and reviewers return to the current coordinator; they do not dispatch another coordinator or repeat the final combined review. "
+    instructions += "Use shared resource admission for substantial commands. One host/surface at a time; preserve resource stops and pending checks across resumes. Do not bypass the runner with direct heavy commands. "
     instructions += "Role skill catalog (load only relevant entries): " + ", ".join(role.get("skills", [])) + ". "
     instructions += "Resolve .ai/config.json bundle relative to .ai, then read that bundle skills/<name>/SKILL.md directly. Do not resolve a pinned skill through a global name match. "
     instructions += f"Only when no project configuration exists, use skill files under {prefix}/skills.\n"
@@ -382,6 +384,9 @@ def inventory(source, root, state_root, global_install, profile):
     files.update(adapter_files(source, root, bundle, global_install, version))
     files.update(skill_links(source, bundle, global_install))
     config = {"schema_version": 1, "bundle_version": version, "bundle": f"bundles/{version}", "profile": profile, "max_workers": 3, "max_correction_rounds": 2, "hook_mode": "feedback"}
+    existing_resources = load(state_root / "config.json", {}).get("resources")
+    if existing_resources is not None:
+        config["resources"] = existing_resources
     files[(prefix / "config.json").as_posix()] = {"kind": "file", "data": encoded(config)}
     launcher_path = ".local/bin/agent-workflow" if global_install else ".ai/bin/agent-workflow"
     files[launcher_path] = {"kind": "file", "data": launcher(global_install), "mode": 0o755}

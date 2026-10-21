@@ -121,19 +121,18 @@ def execute_check(repo, check, output_dir):
     result = {'id': check['id'], 'required': check.get('required', True),
               'component': check.get('component', 'shared'), 'argv': argv,
               'cwd': check.get('cwd', '.'), 'started_at': started}
-    try:
-        process = subprocess.run(argv, cwd=cwd, capture_output=True,
-                                 timeout=check.get('timeout_seconds', 600), shell=False)
-        result.update(exit_code=process.returncode, status='passed' if process.returncode == 0 else 'failed')
-        if check.get('result_format') and process.returncode == 0:
-            result.update(scanner_summary(process.stdout, check['result_format']))
-        output = process.stdout + b'\n' + process.stderr
-    except (FileNotFoundError, PermissionError) as error:
-        result.update(exit_code=None, status='blocked', reason=f'Unavailable executable or directory: {error.filename}')
-        output = b''
-    except subprocess.TimeoutExpired as error:
-        result.update(exit_code=None, status='failed', reason='Command timed out')
-        output = (error.stdout or b'') + (error.stderr or b'')
+    from .process_runner import run_process
+    from .host_probes import sanitized_output
+    captured = run_process(argv, cwd, check.get('timeout_seconds', 600), check.get('resources'))
+    result.update(exit_code=captured['exit_code'], status=captured['status'],
+                  resources=captured.get('resources'), truncated=captured['truncated'],
+                  output_bytes=captured['output_bytes'], cleanup_verified=captured.get('cleanup_verified'), executed_argv=captured.get('executed_argv'))
+    if captured.get('reason'):
+        result['reason'] = captured['reason']
+    if check.get('result_format') and result['status'] == 'passed':
+        result.update(scanner_summary(captured['stdout'], check['result_format']))
+    output = (sanitized_output(captured['stdout'].decode('utf-8', errors='replace')) + '\n' +
+              sanitized_output(captured['stderr'].decode('utf-8', errors='replace'))).encode()
     output_dir.mkdir(parents=True, exist_ok=True)
     log = output_dir / f"{check['id']}.log"
     log.write_bytes(output)
@@ -279,6 +278,10 @@ def check_results(repo, registry, checks, output_dir, files, reuse):
                 gate_selection.attach_provenance(repo, check, result, identity)
             completed[key] = result
         results.append(result)
+        if result.get('resources', {}).get('stopped'):
+            results.append({'id': 'resource-batch-stop', 'status': 'blocked', 'required': True,
+                            'reason': 'Remaining checks were not launched after resource stop'})
+            break
     return results
 
 

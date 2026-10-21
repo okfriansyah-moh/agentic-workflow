@@ -69,30 +69,21 @@ def run_command(argv, cwd, artifact_dir, label, timeout=90):
     artifact_dir = Path(artifact_dir)
     artifact_dir.mkdir(parents=True, exist_ok=True)
     started = time.time()
-    try:
-        process = subprocess.Popen(argv, cwd=cwd, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
-                                   stderr=subprocess.PIPE, start_new_session=True)
-        try:
-            stdout, stderr = process.communicate(timeout=timeout)
-            code, timed_out = process.returncode, False
-        except subprocess.TimeoutExpired:
-            os.killpg(process.pid, signal.SIGTERM)
-            try:
-                stdout, stderr = process.communicate(timeout=2)
-            except subprocess.TimeoutExpired:
-                os.killpg(process.pid, signal.SIGKILL)
-                stdout, stderr = process.communicate()
-            code, timed_out = 124, True
-    except OSError as exc:
-        stdout, stderr, code, timed_out = b'', str(exc).encode(), 127, False
+    from .process_runner import run_process
+    capture = run_process(argv, cwd, timeout, {'minimum_memory_bytes': 1024 ** 3})
+    stdout, stderr = capture['stdout'], capture['stderr']
+    code, timed_out = capture['exit_code'], capture['timed_out']
     decoded = stdout.decode('utf-8', errors='replace')
     events = json_events(decoded)
     retained = {'argv': redact(argv), 'cwd': str(cwd), 'exit_code': code, 'timed_out': timed_out,
+                'resource_status': capture['status'], 'resource_reason': capture.get('reason'),
+                'resources': capture.get('resources'), 'output_bytes': capture['output_bytes'],
+                'cleanup_verified': capture.get('cleanup_verified'),
                 'started_at': started, 'finished_at': time.time(),
-                'stdout_sha256': hashlib.sha256(stdout).hexdigest(), 'stderr_sha256': hashlib.sha256(stderr).hexdigest(),
+                'stdout_sha256': capture.get('stdout_sha256', hashlib.sha256(stdout).hexdigest()), 'stderr_sha256': capture.get('stderr_sha256', hashlib.sha256(stderr).hexdigest()),
                 'events': redact(events), 'stdout': sanitized_output(decoded)[:1000000],
                 'stderr': sanitized_output(stderr.decode('utf-8', errors='replace'))[:200000],
-                'truncated': len(stdout) > 1000000 or len(stderr) > 200000}
+                'truncated': capture['truncated'] or len(stdout) > 1000000 or len(stderr) > 200000}
     path = artifact_dir / f'{label}.json'
     path.write_text(json.dumps(retained, indent=2) + '\n')
     return {'capture': retained, 'artifact': {'path': str(path), 'sha256': sha256_file(path)}}
@@ -246,8 +237,12 @@ def _claude_delegation(events):
     for index, event in enumerate(events):
         role = event.get('agent_type', event.get('agent'))
         session = event.get('session_id')
-        if event.get('type') == 'system' and event.get('subtype') == 'init' and role in SMOKE_ROLES and session:
-            nodes[session] = {'id': session, 'role': role, 'parent_id': None, 'started': index, 'origin': 'session'}
+        if event.get('type') == 'system' and event.get('subtype') == 'init' and session:
+            if role in SMOKE_ROLES:
+                nodes[session] = {'id': session, 'role': role, 'parent_id': None, 'started': index, 'origin': 'session'}
+            elif role is None and not event.get('parent_tool_use_id'):
+                nodes[session] = {'id': session, 'role': 'aw-forge', 'parent_id': None, 'started': index,
+                                  'origin': 'session', 'role_source': 'current-session coordinator; named profile unverified'}
         content = event.get('message', {}).get('content', [])
         for block in content if isinstance(content, list) else []:
             role = block.get('input', {}).get('subagent_type')
@@ -280,7 +275,22 @@ def _copilot_delegation(events):
         if event.get('type') in ('session.end', 'session.idle') and session in nodes:
             nodes[session]['completed'] = index
     _bind_copilot_workers(nodes, completions, _copilot_task_calls(events))
+    session = _copilot_stream_session(events)
+    if session and not any(node.get('origin') == 'session' for node in nodes.values()):
+        identity, completed = session
+        nodes[identity] = {'id': identity, 'role': 'aw-forge', 'parent_id': None, 'started': 0,
+                           'completed': completed, 'origin': 'session',
+                           'role_source': 'current-session coordinator; named profile unverified'}
+        for node in nodes.values():
+            if node.get('origin') == 'subagent' and node.get('parent_id') is None and node.get('parent_native_agent_id') is None:
+                node['parent_id'] = identity
     return list(nodes.values())
+
+
+def _copilot_stream_session(events):
+    sessions = [(event.get('sessionId'), index) for index, event in enumerate(events)
+                if event.get('type') == 'result' and isinstance(event.get('sessionId'), str) and event.get('exitCode') == 0]
+    return sessions[0] if len(sessions) == 1 else None
 
 
 def _copilot_task_calls(events):
@@ -371,8 +381,10 @@ def valid_implementation_edit(edit, backend):
 def delegation_observation(host, events, fixture=None, main_role=None, completion=None):
     parsers = {'codex': _codex_delegation, 'claude': _claude_delegation, 'copilot': _copilot_delegation}
     nodes = parsers[host](events) if host in parsers else []
+    if host in ('claude', 'copilot') and main_role != 'aw-forge':
+        nodes = [node for node in nodes if not node.get('role_source')]
     observed = delegation_graph_result(nodes)
-    if host == 'codex' and any(node.get('role_source') for node in nodes):
+    if any(node.get('role_source') for node in nodes):
         observed['coordinator_profile_loading'] = 'unverified'
     if main_role == 'aw-forge':
         observed['requested_main_role'] = main_role
@@ -401,6 +413,7 @@ def native_edit_observations(host, events, fixture):
     identities = set(native_edit_events(host, events, fixture))
     edits = {}
     main_id = next((event.get('thread_id') for event in events if event.get('type') == 'thread.started'), None)
+    copilot_session = _copilot_stream_session(events) if host == 'copilot' else None
     for index, event in enumerate(events):
         item = event.get('item', {})
         if host == 'codex' and item.get('id') in identities:
@@ -417,7 +430,7 @@ def native_edit_observations(host, events, fixture):
                     edits[block['tool_use_id']]['completed'] = index
         data = event.get('data', {})
         if host == 'copilot' and event.get('type') == 'tool.execution_start' and data.get('toolCallId') in identities:
-            edits[data['toolCallId']] = {'id': data['toolCallId'], 'owner': data.get('parentToolCallId') or data.get('sessionId', event.get('sessionId')), 'started': index}
+            edits[data['toolCallId']] = {'id': data['toolCallId'], 'owner': data.get('parentToolCallId') or data.get('sessionId', event.get('sessionId')) or (copilot_session[0] if copilot_session and not event.get('agentId') else None), 'started': index}
         if host == 'copilot' and event.get('type') == 'tool.execution_complete' and data.get('toolCallId') in edits and data.get('success') is True:
             edits[data['toolCallId']]['completed'] = index
     return list(edits.values())
@@ -446,8 +459,12 @@ def native_edit_events(host, events, fixture):
                 arguments = data.get('arguments', {})
                 if isinstance(arguments, dict) and _edit_path(arguments.get('path'), fixture) == expected:
                     pending[data.get('toolCallId')] = True
-            if event.get('type') == 'tool.execution_complete' and data.get('toolCallId') in pending and data.get('success') is True:
-                edits.append(data['toolCallId'])
+            if event.get('type') == 'tool.execution_complete' and data.get('success') is True:
+                changes = data.get('fileEdits', [])
+                native_patch = isinstance(changes, list) and any(
+                    isinstance(change, dict) and _edit_path(change.get('path'), fixture) == expected for change in changes)
+                if data.get('toolCallId') in pending or native_patch:
+                    edits.append(data.get('toolCallId'))
     return [identity for identity in edits if identity]
 
 
@@ -520,8 +537,8 @@ def smoke_prompt(nonce, phase, host):
     review = ('After the edit completes, use one native aw-review-verify agent for read-only inspection and wait for its result. '
               'The reviewer must be independent; do not delegate implementation or start another coordinator. ') if phase == 'pass' else ''
     return (f'Authorized bounded agent-workflow host smoke {nonce}. Work only inside this disposable fixture. '
-            f'The current {role} session implements directly: use the native file-edit tool once to replace '
-            f'smoke.json with {{"value":"{phase}"}}. {review}'
+            f'The current {role} session implements directly: read smoke.json first, then use the native file-edit tool once to replace '
+            f'smoke.json with {{"value":"{phase}"}}. Update the existing file in one operation; do not delete and recreate it. {review}'
             'This task assigns only the fixture edit, independent review when requested, and observation of installed hooks. '
             'Do not run tests, Git commands, gates, application tasks, configuration changes, trust approval, or credential reads. '
             'Let edit notification hooks return feedback without executing checks. '

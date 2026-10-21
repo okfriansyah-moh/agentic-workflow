@@ -12,6 +12,12 @@ Use scoped optional workers for separable contributions, with isolated worktrees
 
 For changed UI, open the actual approved reference. Implement a representative screen/state and compare it before propagating shared styling. Match layout, density, typography, colors, assets, controls and states at agreed sizes and comparable rendering conditions. Complete the journey through progress, confirmed success, return and retained context. Correct differences before delivery. Appearance and behavior need separate observations; claim pixel identity only when an actual comparison supports it. An unavailable observation stays unverified.
 
+## Execution-device resources
+
+The same workflow adapts to the machine executing each command, including remote/container capacity. Before substantial checks, use the shared runner's resource admission. Default to one substantial workload and one native host/surface at a time; reuse valid evidence. Dynamic budgets and per-command worker settings never weaken acceptance criteria. Never bypass a resource stop by running a heavy command directly, changing hosts or relaunching clients. Arbitrary commands outside the runner are not mechanically contained.
+
+A resource violation, freeze or unexpected restart stops the batch. Preserve findings, limits and the next action. Inspect and address the limiting condition before explicit `resources --resume`; two healthy readings are required. Unavailable measurements, unsupported containment and unsafe commands remain pending. Do not stress-test the device, tune user-wide settings or terminate unrelated applications. See [resource budgets and recovery](GATES.md#execution-device-budgets-and-recovery).
+
 ## Checks and evidence
 
 Use the existing gate registry and actual runners. Select changed components and dependent consumers from the agreed baseline; shared contracts/build inputs retain necessary broader checks. Documentation edits do not launch application suites. Unknown executable ownership or an invalid baseline requires an explained conservative selection. Managed edit hooks emit notifications only and never run check commands; retained legacy hook settings do not change this. Deduplicate explicit check commands and run each once per valid input set. Reuse requires matching source/tests, configuration, command, toolchain/environment and retained artifacts; rerun affected checks after corrections.

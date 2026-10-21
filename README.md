@@ -46,6 +46,10 @@ python3 .ai/bin/agent-workflow resume --repo .
 
 `--stage` selects a technical check set, not an execution tier. Use agreed affected checks and existing project thresholds. See [gates](docs/GATES.md).
 
+## Device-aware execution
+
+One shared controller admits substantial checks according to the execution machine's effective CPU/memory, container limits, disk headroom and current pressure. Work stays serial; unsafe or unmeasured checks remain pending. Inspect with `python3 .ai/bin/agent-workflow resources --repo .`. A resource stop requires inspection and explicit healthy recovery; no automatic retries or user-wide tuning. See [budgets, platform limits and recovery](docs/GATES.md#execution-device-budgets-and-recovery).
+
 ## Four host adapters
 
 | Host | Project entry points | Start/resume |

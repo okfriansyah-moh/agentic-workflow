@@ -83,3 +83,7 @@ An alternate `--home` is an installation target, not an environment override. Se
 Generate all four host adapters from shared roles and policy. Project pins resolve before global fallback; do not overwrite another project pin or personal User Rules. Global Copilot agent IDs can shadow project IDs, so inspect loaded origins. Pass project constraints explicitly when a delegated host session does not inherit them. A host switch resumes the same Git-shared selection after ownership transfer.
 
 After update, run structural checks, inspect generated instructions and restart/reload affected discovery views. Report adapter integrity, installed version, CLI fixture behavior and actual desktop/IDE loading separately. Unsupported hooks or unavailable reviewer invocation stay explicit limitations; do not add substitute services or permission bypasses. See [host guide](HOSTS.md) and [release 1.3.0](RELEASE-1.3.md).
+
+## Resource configuration
+
+Updates preserve the optional `resources` object in the existing installation configuration. Inspect derived device budgets with `resources --repo PATH`; this is separate from installation integrity and native loading. No daemon or new system service is installed. See [budgets and recovery](GATES.md#execution-device-budgets-and-recovery).

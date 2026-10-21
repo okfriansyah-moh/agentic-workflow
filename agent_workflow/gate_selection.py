@@ -145,12 +145,14 @@ def reuse_identity(repo, registry, check, files):
     toolchain = hash_paths(repo, policy.get('toolchain_files', []))
     if tool is None or any(value is None for value in toolchain.values()):
         return None
-    return digest({'inputs': selected, 'registry': registry, 'check': check,
+    from . import resources, resource_system
+    resource_contract = resources.budgets(resource_system.snapshot(repo), resources.configuration(repo))
+    return digest({'inputs': selected, 'registry': registry, 'check': check, 'resource_contract': resource_contract,
                    'environment': dict(os.environ), 'tool': tool,
                    'toolchain': toolchain,
                    'runtime': [sys.version, sys.executable, platform.platform()],
                    'helpers': {name: hashlib.sha256(Path(__file__).with_name(name).read_bytes()).hexdigest()
-                               for name in ['gate_selection.py', 'gates.py', 'gate_reports.py']}})
+                               for name in ['gate_selection.py', 'gates.py', 'gate_reports.py', 'resources.py', 'resource_system.py', 'process_runner.py', 'command_resources.py']}})
 
 
 def artifact_hashes(repo, check, result):

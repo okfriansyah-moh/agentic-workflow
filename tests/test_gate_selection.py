@@ -16,6 +16,15 @@ class GateSelectionTests(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
         self.repo = Path(self.temp.name)
+        from agent_workflow import resources
+        from test_resources import healthy
+        for target, name, options in [(resources, 'state_directory', {'return_value': self.repo / '.ai/state/machine'}),
+                                      (resources.resource_system, 'snapshot', {'side_effect': lambda *a: healthy()}),
+                                      (resources.resource_system, 'process_tree', {'return_value': {'known': True, 'rss_bytes': 1, 'descendants': 0, 'pids': []}}),
+                                      (resources, 'INTERVAL', {'new': 0})]:
+            mock = patch.object(target, name, **options)
+            mock.start(); self.addCleanup(mock.stop)
+
         for component in ['api', 'web', 'other']:
             root = self.repo / component
             root.mkdir()

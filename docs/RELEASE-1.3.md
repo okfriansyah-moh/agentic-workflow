@@ -23,3 +23,7 @@ This document describes the 1.3.0 behavior. The delivery report records source t
 | GitHub Copilot | Repository instructions, agents, skills and supported hooks | Pending observed CLI/IDE results and loaded definition origins. |
 
 The delivery report records reviewed revisions, PR links, actual checks, reviewer verdict, installation versions, backups, rollback results and remaining reload/trust requirements. Historical 1.1 reports remain history. Observe overhead during the next two requested product tasks using available counters, without automation or unsupported savings claims.
+
+## Device-aware verification amendment
+
+After a reported Mac freeze/restart, native verification was stopped. The cause is unconfirmed. Shared gate/native execution now includes device-derived budgets, serial admission shared through stable device state, bounded capture, tracked descendant cleanup and explicit recovery after resource stops. Parser corrections retain actual direct edits and independent reviews from the preceding Codex, Claude and Copilot observations; missing profile origins/hook metadata remain unverified. Platform and runtime observations must be reported separately; resource adapters do not establish live host certification. See [resource limits](GATES.md#execution-device-budgets-and-recovery).
