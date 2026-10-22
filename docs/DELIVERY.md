@@ -12,6 +12,16 @@ Use scoped optional workers for separable contributions, with isolated worktrees
 
 For changed UI, open the actual approved reference. Implement a representative screen/state and compare it before propagating shared styling. Match layout, density, typography, colors, assets, controls and states at agreed sizes and comparable rendering conditions. Complete the journey through progress, confirmed success, return and retained context. Correct differences before delivery. Appearance and behavior need separate observations; claim pixel identity only when an actual comparison supports it. An unavailable observation stays unverified.
 
+## Reuse and evidence-based cleanup
+
+Implementation is the priority. Before adding a file, function, dependency, or document, search the current project for an existing owner and suitable implementation. Extend or reuse it when behavior and responsibility match. Share repeated business rules within the appropriate boundary; preserve service ownership, transaction guarantees and public contracts. Do not create speculative abstractions or turn routine feature work into an unrequested repository cleanup.
+
+Give each documented topic one owning source and link to it from prompts, skills and other documents instead of copying rules. Use the project's established directory for each artifact type; consolidate competing locations when authorized, preserving distinct content and updating consumers together. Project-specific paths and tools remain project conventions, not global requirements.
+
+Remove unused or unrelated material within the approved scope only after checking imports, framework discovery, configuration, generation, operational entry points, tests and current requirements. A missing text reference or matching file hash alone is insufficient evidence. Preserve required generated output, dependency locks, client adapters, independent fixtures, design references, provenance and acceptance evidence. Retire obsolete material after preserving still-needed information and repairing active references; record the evidence and uncertain candidates in the existing findings ledger.
+
+Prefer existing unused-code, dependency, lint and documentation checks. Add focused prevention only for demonstrated recurring problems; avoid blanket duplicate-file bans and extra audit frameworks. The combined reviewer checks reuse boundaries, deletion consumers and affected behavior. Preserve existing acceptance criteria and verify changed flows with the agreed affected checks; source review does not establish runtime acceptance.
+
 ## Execution-device resources
 
 The same workflow adapts to the machine executing each command, including remote/container capacity. Before substantial checks, use the shared runner's resource admission. Default to one substantial workload and one native host/surface at a time; reuse valid evidence. Dynamic budgets and per-command worker settings never weaken acceptance criteria. Never bypass a resource stop by running a heavy command directly, changing hosts or relaunching clients. Arbitrary commands outside the runner are not mechanically contained.

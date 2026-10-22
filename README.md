@@ -75,6 +75,8 @@ Add `~/.local/bin` to your shell's PATH to use the global `agent-workflow` comma
 - **Project bundles** pin the workflow version so a global update does not silently change another project's rules.
 - **Verification receipts** retain the inputs and results behind delivery claims. Missing tools, unavailable services, and unobserved host behavior remain explicit limitations.
 
+The shared [reuse and cleanup policy](docs/DELIVERY.md#reuse-and-evidence-based-cleanup) makes implementation the priority: reuse suitable existing code, keep document topics in one owning source, and require consumer evidence before removing material. Prevention uses existing project checks and focused additions rather than a separate cleanup framework.
+
 Work is serial by default. Authorized workers can own separate contributions, followed by one independent combined review. See the [delivery policy](docs/DELIVERY.md), [role catalog](agents/catalog.json), and [skill catalog](docs/SKILLS.md).
 
 ## Integrate with an existing project

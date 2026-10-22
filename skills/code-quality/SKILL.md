@@ -11,6 +11,7 @@ Read [coding-standards](../coding-standards/SKILL.md) for the convention source.
 
 - Check whether each changed path implements the requirement, handles reachable errors, releases resources, and preserves public compatibility.
 - Trace ownership of mutable state and side effects. Look for hidden dependencies, duplicated business rules, races, and abstractions that make behavior harder to test.
+- Apply the [reuse and cleanup policy](../../docs/DELIVERY.md#reuse-and-evidence-based-cleanup) to shared logic and deletions, checking actual consumers and affected behavior.
 - Check logs and errors for useful context without disclosing secrets. Judge output according to the application interface.
 - Verify through observable behavior and relevant configured checks. A formatter pass does not establish correctness, and a style preference is not a defect.
 

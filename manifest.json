@@ -1000,7 +1000,7 @@
       "owner": "review-verify",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "bc8a4057dd1a0033a374c4cc1356bbde166c41dd918ce8f9bf4bd49eb7589145"
+        "value": "2b5c6de3cd91cea42526983be91620848b748944067c607f28a392972b4b9fac"
       },
       "conditional_dependencies": [
         "code-review",
@@ -2042,7 +2042,7 @@
       "owner": "forge",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "35ca39eebdcc604718888a8d05c8c46812870d8152628281cf70c37c612b959c"
+        "value": "240b58f047c06eeb1ecb2bcf372a9e0941a128e12641d93c80aaa8e66837844e"
       },
       "conditional_dependencies": [
         "coding-standards",
