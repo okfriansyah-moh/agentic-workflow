@@ -209,3 +209,10 @@ class QualityTests(unittest.TestCase):
         self.refresh_reports()
         with self.assertRaisesRegex(ValueError, 'disposition inventory'):
             self.validate()
+
+    def test_changed_coverage_measures_any_instrumented_runtime_language(self):
+        measured = quality.gate_reports.measure_coverage(self.repo, {'src/app.php': {1}}, {'src/app.php': {1: False}})
+        self.assertEqual(measured['executable'], 1)
+        self.assertEqual(measured['covered'], 0)
+        with self.assertRaisesRegex(ValueError, 'below 80'):
+            quality.ratio({'covered': measured['covered'], 'total': measured['executable']}, 'Changed')

@@ -143,6 +143,17 @@ def execute_check(repo, check, output_dir):
             validate_outputs(repo, check, result, started)
         except (OSError, ValueError, KeyError, TypeError, ET.ParseError) as error:
             result.update(status='failed', reason=f'Cannot validate output report: {error}')
+    return retain_outputs(repo, check, result)
+
+
+def retain_outputs(repo, check, result):
+    if result['status'] == 'passed':
+        try:
+            result['outputs'] = gate_selection.artifact_hashes(repo, check, result)
+            if not result['outputs']:
+                result.update(status='blocked', reason='Required command artifacts are unavailable')
+        except (OSError, ValueError) as error:
+            result.update(status='blocked', reason=f'Cannot retain command artifacts: {error}')
     return result
 
 
@@ -318,14 +329,31 @@ def run_gates(repo, stage='fast', registry_path=None, component=None, base=None,
     failures = [r for r in results if r['status'] in {'failed', 'blocked'} and r.get('required', True)]
     status = 'blocked' if any(r['status'] == 'blocked' for r in failures) else 'failed' if failures else 'passed'
     record = {'schema_version': 1, 'status': status, 'stage': stage,
+              'base': base, 'full_acceptance': STAGES[stage] >= STAGES['integration'] and selected != set(),
               'revision': git_revision(repo), 'input_fingerprint': before['sha256'],
               'registry_sha256': hashlib.sha256(json.dumps(registry, sort_keys=True).encode()).hexdigest(),
               'timestamp': datetime.now(timezone.utc).isoformat(), 'results': results,
               'selection': {'affected': affected, 'components': sorted(selected) if selected is not None else None,
                             'reason': selection_reason}, 'reuse_requested': reuse}
     write_json(output_dir / 'result.json', record)
+    try:
+        register_gate_record(repo, output_dir / 'result.json')
+    except ValueError as error:
+        record.update(status='blocked')
+        record['results'].append({'id': 'gate-capture', 'status': 'blocked', 'required': True, 'reason': str(error)})
+        write_json(output_dir / 'result.json', record)
     record['report'] = str((output_dir / 'result.json').relative_to(repo))
     return record
+
+
+def register_gate_record(repo, path):
+    if not git_revision(repo):
+        return
+    from .coordination_state import registry
+    path = Path(path).resolve()
+    with registry(repo, timeout=0) as state:
+        state.setdefault('gate_reports', {})[str(path)] = {
+            'sha256': hashlib.sha256(path.read_bytes()).hexdigest(), 'root': str(Path(repo).resolve())}
 
 
 def register(subparsers):

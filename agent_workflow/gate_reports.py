@@ -130,7 +130,7 @@ def measure_coverage(repo, changes, reports, exclusions=()):
     for name, changed in changes.items():
         if any(fnmatch.fnmatch(name, pattern) for pattern in exclusions):
             continue
-        if Path(name).suffix not in SOURCE_SUFFIXES:
+        if Path(name).suffix not in SOURCE_SUFFIXES and name not in reports:
             continue
         if name not in reports:
             missing.append(name)
