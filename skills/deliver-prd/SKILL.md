@@ -67,3 +67,5 @@ Use **Draft** while material product scope or observable acceptance remains unre
 Save and read back the PRD, confirm the authorized document is the only project artifact changed, and return its path, a short coverage summary, material remaining decisions, and actual verification limitations. Stop after PRD delivery.
 
 For skill maintenance, [behavior-fixtures.json](evals/behavior-fixtures.json) provides realistic authoring cases and review criteria. Fixtures are not evidence that evaluations have run.
+
+Apply the [permanent quality contract](../../docs/GATES.md#permanent-quality-contract) when planning, implementing, testing, reviewing or accepting work. Keep existing failures blocking and reuse only matching evidence.

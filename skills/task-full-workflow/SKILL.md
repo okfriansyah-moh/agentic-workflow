@@ -18,3 +18,5 @@ Use task-implement and applicable stack skills. Load only relevant source sectio
 Report local implementation, actual checks, review acceptance and published source separately. A description-only PR update is not a source delivery.
 
 Apply the [shared wording policy](../../resources/wording/output-wording.md) before delivery.
+
+Apply the [permanent quality contract](../../docs/GATES.md#permanent-quality-contract) for configured checks and feature acceptance. Installation, native loading and passing product evidence require separate results; existing failures remain blocking.

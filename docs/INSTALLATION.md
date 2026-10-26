@@ -1,6 +1,6 @@
 # Install and maintain the workflow
 
-Version 1.3.0 installs one workflow for Codex, Cursor AI, Claude Code and GitHub Copilot, with generated host adapters and feedback-only edit hooks. Final explicit verification and CI preserve the existing quality gates. Updates create transactional backups and never resume application tasks.
+Version 1.4.0 installs one workflow for Codex, Cursor AI, Claude Code and GitHub Copilot, with generated host adapters and feedback-only edit hooks. Final explicit verification and CI preserve the existing quality gates. Updates create transactional backups and never resume application tasks.
 
 
 Python 3.11 or later and Git are the shared runtime requirements. The package itself uses the Python standard library. Native coding-agent clients, language toolchains, scanners, browser tooling and external accounts remain separate dependencies. Installation does not execute application tasks or install those tools.
@@ -82,8 +82,10 @@ An alternate `--home` is an installation target, not an environment override. Se
 
 Generate all four host adapters from shared roles and policy. Project pins resolve before global fallback; do not overwrite another project pin or personal User Rules. Global Copilot agent IDs can shadow project IDs, so inspect loaded origins. Pass project constraints explicitly when a delegated host session does not inherit them. A host switch resumes the same Git-shared selection after ownership transfer.
 
-After update, run structural checks, inspect generated instructions and restart/reload affected discovery views. Report adapter integrity, installed version, CLI fixture behavior and actual desktop/IDE loading separately. Unsupported hooks or unavailable reviewer invocation stay explicit limitations; do not add substitute services or permission bypasses. See [host guide](HOSTS.md) and [release 1.3.0](RELEASE-1.3.md).
+After update, run structural checks, inspect generated instructions and restart/reload affected discovery views. Report adapter integrity, installed version, CLI fixture behavior and actual desktop/IDE loading separately. Unsupported hooks or unavailable reviewer invocation stay explicit limitations; do not add substitute services or permission bypasses. See [host guide](HOSTS.md) and [prior release notes](RELEASE-1.3.md).
 
 ## Resource configuration
 
 Updates preserve the optional `resources` object in the existing installation configuration. Inspect derived device budgets with `resources --repo PATH`; this is separate from installation integrity and native loading. No daemon or new system service is installed. See [budgets and recovery](GATES.md#execution-device-budgets-and-recovery).
+
+Bundle 1.4.0 is installed from its reviewed source commit; no release tag is created by this rollout. Test upgrades and rollback in temporary repositories and homes before updating real installations. Keep customized gates, resource limits and personal instruction blocks. Upgrade only explicitly selected repositories. Verify native instruction loading independently from doctor integrity.

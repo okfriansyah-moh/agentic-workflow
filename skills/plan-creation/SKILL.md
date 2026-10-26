@@ -39,3 +39,5 @@ For existing plans, read [updates](references/updates.md) first. Preserve task/c
 Normal authoring is sequential. Each implementation task references the one independent combined selection review; it does not schedule its own review. An unavailable reviewer leaves selection acceptance pending. Authoring-time delegation follows the current user's authorization and available tools. Supporting skills stay within this skill's authoring scope.
 
 The method and selected adaptations are recorded in [sources](references/sources.md). [Evaluation cases](evals/behavior-fixtures.json) define bounded checks; [validation](references/validation.md) records what was actually run and its limits.
+
+Apply the [permanent quality contract](../../docs/GATES.md#permanent-quality-contract) when planning, implementing, testing, reviewing or accepting work. Keep existing failures blocking and reuse only matching evidence.

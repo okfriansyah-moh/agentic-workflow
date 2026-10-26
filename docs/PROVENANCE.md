@@ -12,7 +12,7 @@ Anti-slop derives from [Miqdad Badjuber's repository](https://github.com/miqdadb
 
 Forge also applies bounded native delegation concepts from the user's existing running-prompt, parallel-dev and subagent-driven-development guidance; these are not additional installed entrypoints. Worktree ownership and semantic integration are adapted conceptually from [Skeleton Parallel](https://github.com/okfriansyah-moh/skeleton-parallel), without copying its daemon/router architecture or application constraints. All role models inherit host settings.
 
-Authoring version: 1.3.0. Publication and installation status are reported separately. The installer records actual managed files and backs up changed installation state separately; this provenance document is not evidence that a host has loaded the resources.
+Authoring version: 1.4.0. Publication and installation status are reported separately. The installer records actual managed files and backs up changed installation state separately; this provenance document is not evidence that a host has loaded the resources.
 
 Role and workflow routing opens the selected bundle skill path explicitly. This prevents retained same-named global versions from replacing a repository adaptation during execution. Worker roles return to the parent and independent reviewers keep product source and task status unchanged.
 
@@ -21,3 +21,5 @@ Release 1.1.0 authors three tool-integration skills and extends recording/eviden
 Release 1.1.1 adds read-only host autonomy diagnostics, explicit opt-in unattended fixture permissions and standing-authorization guidance. Host permissions remain user-owned. Earlier source and release verification records retain their original versions; refreshed tree digests identify these local adaptations.
 
 Release 1.3.0 aligns shared policy, prompts, role adapters, skill activation and current documentation across Codex, Cursor AI, Claude Code and GitHub Copilot. It retains upstream sources, licenses and historical evidence while using direct implementation, one independent combined review and agreed affected checks. Adapter configuration is distinct from live loading; this record makes no live-host verification claim.
+
+Bundle 1.4.0 adds the permanent per-component quality contract, normalized proof enforcement and managed global Cursor/Copilot guidance. It preserves source provenance and personal settings; runtime tests, installations and native loading require separate receipts. This source update does not publish a release tag.

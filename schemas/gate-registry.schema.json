@@ -175,6 +175,159 @@
         "minLength": 1
       },
       "uniqueItems": true
+    },
+    "quality": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "required",
+        "proof",
+        "components"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": 1
+        },
+        "required": {
+          "const": true
+        },
+        "proof": {
+          "type": "string",
+          "minLength": 1
+        },
+        "components": {
+          "type": "array",
+          "minItems": 0,
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "production",
+              "inputs",
+              "commands",
+              "toolchain_files",
+              "unit_report",
+              "test_report",
+              "roots"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z0-9-]+$"
+              },
+              "production": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "uniqueItems": true
+              },
+              "exclude": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "inputs": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "uniqueItems": true
+              },
+              "toolchain_files": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "uniqueItems": true
+              },
+              "roots": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "uniqueItems": true
+              },
+              "commands": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              },
+              "unit_report": {
+                "type": "object",
+                "required": [
+                  "format",
+                  "reports"
+                ],
+                "properties": {
+                  "format": {
+                    "enum": [
+                      "lcov",
+                      "jacoco"
+                    ]
+                  },
+                  "reports": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "uniqueItems": true
+                  },
+                  "source_prefix": {
+                    "type": "string"
+                  }
+                }
+              },
+              "test_report": {
+                "type": "object",
+                "required": [
+                  "format",
+                  "glob"
+                ],
+                "properties": {
+                  "format": {
+                    "enum": [
+                      "junit",
+                      "vitest"
+                    ]
+                  },
+                  "glob": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "runtime_components": {
+      "type": "array",
+      "minItems": 0,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
     }
   }
 }

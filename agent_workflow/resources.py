@@ -286,3 +286,25 @@ def register(subparsers):
     parser.add_argument('--repo', default='.')
     parser.add_argument('--resume', action='store_true', help='After inspecting the limiting condition, require two healthy readings before clearing the stop')
     parser.set_defaults(handler=lambda a: inspect_resources(a.repo, a.resume))
+    run = subparsers.add_parser('run', help='Run a foreground command under the shared device lease')
+    run.add_argument('--repo', default='.')
+    run.add_argument('--timeout', type=int, default=7200)
+    run.add_argument('--log', default='.ai/reports/foreground.log')
+    run.add_argument('argv', nargs=__import__('argparse').REMAINDER)
+    run.set_defaults(handler=run_foreground)
+
+
+def run_foreground(args):
+    """Run an explicit argv under the shared device lease; retain bounded logs."""
+    from .process_runner import run_process
+    argv = args.argv[1:] if args.argv[:1] == ['--'] else args.argv
+    if not argv:
+        raise ValueError('A foreground command is required')
+    repo = Path(args.repo).resolve()
+    log = (repo / args.log).resolve()
+    if not log.is_relative_to(repo):
+        raise ValueError('Foreground log must stay within the repository')
+    result = run_process(argv, repo, args.timeout)
+    log.parent.mkdir(parents=True, exist_ok=True)
+    log.write_bytes(result.pop('stdout') + result.pop('stderr'))
+    return dict(result, log=str(log.relative_to(repo)))

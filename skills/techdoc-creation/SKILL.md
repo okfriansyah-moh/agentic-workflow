@@ -30,3 +30,5 @@ Write direct system-centered prose. Open with product scope and constraints. Put
 6. **Hand off.** Report the document link, material technical dependencies, actual checks and limitations. Keep documented obligations separate from executed evidence. Creation ends before formal ATDD, ticketing or implementation unless separately requested.
 
 The parent scope governs supporting skills. Route only the relevant concern and use implementation-oriented skills to specify/review behavior during documentation work. Normal execution is sequential; this skill does not independently authorize delegation. Missing capabilities are reported in the completion message, with technical consequences recorded in the document only when they affect feasibility or verification.
+
+Apply the [permanent quality contract](../../docs/GATES.md#permanent-quality-contract) when planning, implementing, testing, reviewing or accepting work. Keep existing failures blocking and reuse only matching evidence.

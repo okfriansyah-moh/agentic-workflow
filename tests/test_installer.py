@@ -43,6 +43,41 @@ class InstallerTests(unittest.TestCase):
         values.update(extra)
         return argparse.Namespace(**values)
 
+    def test_global_quality_adapters_preserve_personal_content_and_other_pins(self):
+        personal = self.repo / ".copilot/copilot-instructions.md"
+        personal.parent.mkdir()
+        personal.write_text("Personal instruction.\n")
+        unrelated = self.repo / "other/.ai/config.json"
+        unrelated.parent.mkdir(parents=True)
+        unrelated.write_text('{"version":"0.9.0"}')
+        settings = self.repo / ".cursor/settings.json"
+        settings.parent.mkdir()
+        settings.write_text('{"model":"personal"}')
+        installed = api.install(self.args(global_install=True))
+        self.assertEqual(installed["status"], "installed")
+        self.assertTrue(personal.read_text().startswith("Personal instruction."))
+        self.assertIn("permanent quality contract", personal.read_text())
+        cursor = self.repo / ".cursor/rules/agent-workflow.mdc"
+        ide = self.repo / ".copilot/instructions/agent-workflow.instructions.md"
+        self.assertIn("alwaysApply: true", cursor.read_text())
+        self.assertIn('applyTo: "**"', ide.read_text())
+        self.assertIn("older project pin", ide.read_text())
+        self.assertEqual(api.install(self.args(global_install=True))["changed"], 0)
+        self.assertEqual(unrelated.read_text(), '{"version":"0.9.0"}')
+        self.assertEqual(settings.read_text(), '{"model":"personal"}')
+        self.assertEqual(api.rollback(self.args(global_install=True, backup=installed["backup"]))["status"], "rolled-back")
+        self.assertEqual(personal.read_text(), "Personal instruction.\n")
+        self.assertFalse(cursor.exists())
+        self.assertFalse(ide.exists())
+
+    def test_global_quality_adapter_conflict_is_not_overwritten(self):
+        existing = self.repo / ".cursor/rules/agent-workflow.mdc"
+        existing.parent.mkdir(parents=True)
+        existing.write_text("Personal same-name rule.\n")
+        result = api.install(self.args(global_install=True))
+        self.assertEqual(result["status"], "blocked")
+        self.assertEqual(existing.read_text(), "Personal same-name rule.\n")
+
     def test_clean_repeated_and_relocation(self):
         first = api.install(self.args())
         self.assertEqual(first["status"], "installed")

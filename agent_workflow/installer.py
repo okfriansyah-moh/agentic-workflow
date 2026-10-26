@@ -137,6 +137,7 @@ def instruction_body(source, version, global_install):
         body = "## Portable workflow\n\nUse a repository's `.ai/config.json` and root AGENTS.md when present. Its pinned bundle governs all workflow checks. Otherwise use the installed agent-workflow skill catalog under `~/.local/share/agent-workflow/bundles/" + version + "/docs/SKILLS.md`. Keep personal and repository instructions intact. Use native subagents only when delegated work is authorized; keep reviewers independent. Honor explicit standing authorization within its stated scope; continue covered actions without asking again. Resolve routine choices from the request and project conventions, and ask only for essential missing information.\n"
     if global_install:
         body += "Read the selected bundle docs/DELIVERY.md before implementation; it governs selection-wide review, preserved quality gates, progress and repair budgets. Serial work can run directly; publication follows one combined independent review.\n"
+    body += "\nBefore planning, scaffolding, implementation or acceptance, read the selected bundle docs/GATES.md permanent quality contract. Every maintained runtime component must prove the full minimum; stronger project requirements remain stronger. An older project pin that cannot enforce this contract blocks feature acceptance until explicitly upgraded. Documentation-only work selects document checks without launching application suites.\n"
     body += "\nUse shared execution-device resource admission before substantial checks; retain stop/recovery state across hosts and leave unsafe checks pending.\n"
     return START + "\n" + body.rstrip() + "\n" + END + "\n"
 
@@ -151,6 +152,7 @@ def role_text(role, host, prefix):
     if isinstance(instructions, list):
         instructions = "\n".join(instructions)
     instructions += "\n\nRead the repository AGENTS.md and selected .ai/config.json first when present. "
+    instructions += "Read the selected bundle docs/GATES.md and preserve its permanent quality contract, including existing blockers. "
     instructions += "Inherit host model settings. Follow your assigned responsibility and selected checks. Contributors and reviewers return to the current coordinator; they do not dispatch another coordinator or repeat the final combined review. "
     instructions += "Use shared resource admission for substantial commands. One host/surface at a time; preserve resource stops and pending checks across resumes. Do not bypass the runner with direct heavy commands. "
     instructions += "Role skill catalog (load only relevant entries): " + ", ".join(role.get("skills", [])) + ". "
@@ -211,10 +213,13 @@ def adapter_files(source, root, bundle, global_install, version):
         event, entry = hook_entry(global_install, host)
         files[hook_path] = {"kind": "hooks", "event": event, "entry": entry, "versioned": host in {"cursor", "copilot"}}
     instructions = instruction_body(source, version, global_install)
-    targets = (".codex/AGENTS.md", ".claude/CLAUDE.md") if global_install else ("AGENTS.md", "CLAUDE.md", ".github/copilot-instructions.md")
+    targets = (".codex/AGENTS.md", ".claude/CLAUDE.md", ".copilot/copilot-instructions.md") if global_install else ("AGENTS.md", "CLAUDE.md", ".github/copilot-instructions.md")
     for target in targets:
         files[target] = {"kind": "block", "text": instructions}
-    if not global_install:
+    if global_install:
+        files[".copilot/instructions/agent-workflow.instructions.md"] = {"kind": "file", "data": ('---\napplyTo: "**"\n---\n' + instructions).encode()}
+        files[".cursor/rules/agent-workflow.mdc"] = {"kind": "file", "data": ("---\ndescription: Permanent delivery quality contract\nalwaysApply: true\n---\n" + instructions).encode()}
+    else:
         files[".cursor/rules/agent-workflow.mdc"] = {"kind": "file", "data": b'---\ndescription: Portable implementation workflow\nalwaysApply: true\n---\nRead root AGENTS.md and the pinned .ai/config.json before implementation.\n'}
     return files
 

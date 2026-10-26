@@ -161,6 +161,8 @@ def config_snapshot(host, root, scope, bundle, manifest, home=None):
                  'cursor': ('hooks.json', 'mcp.json', 'rules/agent-workflow.mdc', 'cli-config.json', 'permissions.json'),
                  'copilot': ('hooks/agent-workflow.json', 'copilot-instructions.md', 'settings.json', 'config.json', 'mcp-config.json', 'mcp.json')}[host]
         candidates = [location / directory / name for name in names]
+        if host == 'copilot' and label == 'global':
+            candidates.extend((location / '.copilot/instructions').rglob('*.instructions.md'))
         if host == 'claude' and label == 'global':
             candidates.append(location / '.claude.json')
         if host in ('claude', 'copilot') and label == 'repo':

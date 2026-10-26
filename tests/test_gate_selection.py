@@ -273,6 +273,18 @@ class GateSelectionTests(unittest.TestCase):
         profile = json.loads((gates.BUNDLE / 'profiles/movie-app.json').read_text())
         self.assertEqual(profile['limits'], {'function_lines': 50, 'cyclomatic': 10, 'nesting': 3, 'changed_coverage_percent': 80})
 
+    def test_delivery_checks_full_baseline_despite_affected_component_filter(self):
+        (self.repo / 'web/app.ts').write_text('const app = 2;\n')
+        with patch.object(gates.quality, 'results', return_value=[]):
+            result = self.run_gate(stage='delivery', component='web', base='HEAD')
+        self.assertEqual([r['id'] for r in result['results']], ['api', 'web', 'other'])
+
+    def test_documentation_delivery_does_not_launch_application_checks(self):
+        (self.repo / 'README.md').write_text('Documentation only\n')
+        result = self.run_gate(stage='delivery', base='HEAD')
+        self.assertEqual(result['selection']['components'], [])
+        self.assertEqual(result['results'], [])
+
 
 if __name__ == '__main__':
     unittest.main()

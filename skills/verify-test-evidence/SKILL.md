@@ -18,3 +18,5 @@ Ordinary browser cases can use assertions/direct inspection without video. For e
 Record observable required findings and exact missing proof. A capture command or trace path is provisional until the actual artifact and observation are inspected. Preserve failed results and share the selection-wide optional repair limit.
 
 Apply the [shared wording policy](../../resources/wording/output-wording.md) before delivery.
+
+Apply the [permanent quality contract](../../docs/GATES.md#permanent-quality-contract) for configured checks and feature acceptance. Installation, native loading and passing product evidence require separate results; existing failures remain blocking.

@@ -23,3 +23,5 @@ Completion requires an actual install/doctor receipt, scope/version inventory, u
 Honor explicit standing authorization within its stated scope, including covered edits, installs, commands, worktrees, delegation, checks, commits and delivery. Continue covered actions without per-action approval. Use the request and project conventions for routine decisions; ask only for essential missing information or actions outside that authorization. Standing authorization never turns failed required checks into a pass or grants unrelated work.
 
 Apply the [shared wording policy](../../resources/wording/output-wording.md) to authored output. Read supporting skills only for the current task.
+
+Apply the [permanent quality contract](../../docs/GATES.md#permanent-quality-contract) for configured checks and feature acceptance. Installation, native loading and passing product evidence require separate results; existing failures remain blocking.

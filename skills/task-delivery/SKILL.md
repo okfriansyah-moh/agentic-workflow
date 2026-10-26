@@ -18,3 +18,5 @@ Under existing authorization, push the selection branch and create/update its dr
 Record local head, remote PR head and the actual change: source commits, metadata only, or no publication. State implemented tasks, passed checks, review and remaining work literally. Do not report title/body edits as source delivery or imply unimplemented tasks are complete.
 
 Apply the [shared wording policy](../../resources/wording/output-wording.md) before delivery.
+
+Apply the [permanent quality contract](../../docs/GATES.md#permanent-quality-contract) when planning, scaffolding, implementing, testing, reviewing or accepting work. Keep existing failures blocking and reuse only matching evidence.
