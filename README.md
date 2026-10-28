@@ -2,7 +2,7 @@
 
 A portable workflow for getting software work from an approved brief to verified delivery in **Codex, Cursor AI, Claude Code, and GitHub Copilot**.
 
-Version **1.4.0** (source update; no release tag published) combines 74 bundled skills, native agent roles, and a small Python standard-library CLI. Your existing chat coordinates the work. Helpers track scope, ownership, checks, review findings, and recovery state; no separate agent service is required.
+Version **1.4.0** combines 74 bundled skills, native agent roles, and a small Python standard-library CLI. Your existing chat coordinates the work. Helpers track scope, ownership, checks, review findings, and recovery state; no separate agent service is required.
 
 The workflow is:
 
@@ -23,10 +23,10 @@ The CLI itself uses only the Python standard library. Installing the workflow do
 
 ### Install from a reviewed source checkout
 
-Clone the source repository and select the reviewed commit for bundle 1.4.0. This update does not publish a release tag.
+Clone the source repository at release v1.4.0.
 
 ```sh
-git clone https://github.com/okfriansyah-moh/agentic-workflow.git
+git clone --branch v1.4.0 https://github.com/okfriansyah-moh/agentic-workflow.git
 cd agentic-workflow
 python3 scripts/agent-workflow --version
 python3 scripts/agent-workflow install --global
@@ -233,7 +233,7 @@ Use shared resource admission before substantial checks. Changed external-tool p
 
 ## Documentation and attribution
 
-Start with [installation](docs/INSTALLATION.md), [host setup](docs/HOSTS.md), [coordination](docs/COORDINATION.md), [checks](docs/GATES.md), and [release 1.3.0](docs/RELEASE-1.3.md).
+Start with [installation](docs/INSTALLATION.md), [host setup](docs/HOSTS.md), [coordination](docs/COORDINATION.md), [checks](docs/GATES.md), and [release 1.4.0](docs/RELEASE-1.4.md).
 
 This repository combines project-authored workflow material and adapted skills. The owner has confirmed permission to publish the bundled material. Existing third-party licenses, notices, and attribution remain applicable; publication does not assign a blanket license to every component. Consult [provenance](docs/PROVENANCE.md), `manifest.json`, and each skill's retained license files for source details.
 

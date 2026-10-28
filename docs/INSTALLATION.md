@@ -88,4 +88,4 @@ After update, run structural checks, inspect generated instructions and restart/
 
 Updates preserve the optional `resources` object in the existing installation configuration. Inspect derived device budgets with `resources --repo PATH`; this is separate from installation integrity and native loading. No daemon or new system service is installed. See [budgets and recovery](GATES.md#execution-device-budgets-and-recovery).
 
-Bundle 1.4.0 is installed from its reviewed source commit; no release tag is created by this rollout. Test upgrades and rollback in temporary repositories and homes before updating real installations. Keep customized gates, resource limits and personal instruction blocks. Upgrade only explicitly selected repositories. Verify native instruction loading independently from doctor integrity.
+Install bundle 1.4.0 from the v1.4.0 release tag. Test upgrades and rollback in temporary repositories and homes before updating real installations. Keep customized gates, resource limits and personal instruction blocks. Upgrade only explicitly selected repositories. Verify native instruction loading independently from doctor integrity.
