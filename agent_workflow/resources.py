@@ -1,11 +1,12 @@
 """Shared admission, machine budgets and explicit recovery for foreground work."""
 from __future__ import annotations
 
+import argparse
+import contextlib
 import json
 import math
 import os
 from pathlib import Path
-import contextlib
 import time
 
 from . import resource_system
@@ -290,7 +291,7 @@ def register(subparsers):
     run.add_argument('--repo', default='.')
     run.add_argument('--timeout', type=int, default=7200)
     run.add_argument('--log', default='.ai/reports/foreground.log')
-    run.add_argument('argv', nargs=__import__('argparse').REMAINDER)
+    run.add_argument('argv', nargs=argparse.REMAINDER)
     run.set_defaults(handler=run_foreground)
 
 
