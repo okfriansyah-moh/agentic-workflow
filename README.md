@@ -2,7 +2,7 @@
 
 A portable workflow for getting software work from an approved brief to verified delivery in **Codex, Cursor AI, Claude Code, and GitHub Copilot**.
 
-Version [**1.3.0**](https://github.com/okfriansyah-moh/agentic-workflow/releases/tag/v1.3.0) combines 74 bundled skills, native agent roles, and a small Python standard-library CLI. Your existing chat coordinates the work. Helpers track scope, ownership, checks, review findings, and recovery state; no separate agent service is required.
+Version **1.4.0** (source update; no release tag published) combines 74 bundled skills, native agent roles, and a small Python standard-library CLI. Your existing chat coordinates the work. Helpers track scope, ownership, checks, review findings, and recovery state; no separate agent service is required.
 
 The workflow is:
 
@@ -21,29 +21,21 @@ The CLI itself uses only the Python standard library. Installing the workflow do
 
 ## Quick start
 
-### One-line global install
+### Install from a reviewed source checkout
 
-With the requirements above plus `curl` and `tar`, download and install [version 1.3.0](https://github.com/okfriansyah-moh/agentic-workflow/releases/tag/v1.3.0) without a manual clone:
-
-```sh
-(set -eu; workflow_tmp="$(mktemp -d)"; trap 'rm -rf "$workflow_tmp"' EXIT; curl --fail --location --silent --show-error https://github.com/okfriansyah-moh/agentic-workflow/archive/refs/tags/v1.3.0.tar.gz --output "$workflow_tmp/release.tar.gz"; tar -xzf "$workflow_tmp/release.tar.gz" -C "$workflow_tmp"; python3 "$workflow_tmp/agentic-workflow-1.3.0/scripts/agent-workflow" install --global)
-```
-
-This installs the global bundle and host integration files, then removes the temporary download. Add `~/.local/bin` to PATH and check the installation with `agent-workflow doctor --global`. To install directly into a project instead, replace `install --global` in the command with `install --repo /path/to/project --profile general`.
-
-### Install from a source checkout
-
-Clone the [version 1.3.0 release](https://github.com/okfriansyah-moh/agentic-workflow/releases/tag/v1.3.0):
+Clone the source repository and select the reviewed commit for bundle 1.4.0. This update does not publish a release tag.
 
 ```sh
-git clone --branch v1.3.0 https://github.com/okfriansyah-moh/agentic-workflow.git
+git clone https://github.com/okfriansyah-moh/agentic-workflow.git
 cd agentic-workflow
 python3 scripts/agent-workflow --version
+python3 scripts/agent-workflow install --global
+python3 scripts/agent-workflow doctor --global
 ```
 
 ### Install into a project
 
-From the cloned version 1.3.0 source directory, replace `/path/to/project` with an existing project:
+From the reviewed version 1.4.0 source directory, replace `/path/to/project` with an existing project:
 
 ```sh
 python3 scripts/agent-workflow install --repo /path/to/project --profile general
@@ -58,7 +50,7 @@ Open the target project in your coding agent, load its project instructions, and
 
 ### Optional global installation
 
-From the same version 1.3.0 source directory, make the bundle available across projects:
+From the same reviewed version 1.4.0 source directory, make the bundle available across projects:
 
 ```sh
 python3 scripts/agent-workflow install --global
@@ -81,7 +73,7 @@ Work is serial by default. Authorized workers can own separate contributions, fo
 
 ## Integrate with an existing project
 
-Installation creates `.ai/config.json`, a versioned `.ai/bundles/1.3.0/` bundle, a local `.ai/bin/agent-workflow` launcher, and host-specific discovery files. Commit the generated project configuration, bundle, launcher, adapters, discovery links, and ownership metadata together. Keep transient state, reports, evidence, and installation backups out of version control according to your project's policy; review generated files before committing.
+Installation creates `.ai/config.json`, a versioned `.ai/bundles/1.4.0/` bundle, a local `.ai/bin/agent-workflow` launcher, and host-specific discovery files. Commit the generated project configuration, bundle, launcher, adapters, discovery links, and ownership metadata together. Keep transient state, reports, evidence, and installation backups out of version control according to your project's policy; review generated files before committing.
 
 Existing instructions receive a bounded managed block. Unrelated settings, skills, hooks, permissions, and Git work are preserved. Conflicting managed files are reported rather than silently overwritten. Copy or clone the complete project, including dot directories and symlinks, when moving it.
 
@@ -181,11 +173,9 @@ Resume uses retained Git-shared selection state; chat history does not transfer 
 
 ## Update, rollback, and uninstall
 
-Review the release notes before updating. From an existing source checkout, select version 1.3.0:
+Review the policy and source changes before updating. From the reviewed bundle 1.4.0 source checkout:
 
 ```sh
-git fetch origin tag v1.3.0
-git checkout --detach v1.3.0
 python3 scripts/agent-workflow update --global
 python3 scripts/agent-workflow update --repo /path/to/project
 python3 scripts/agent-workflow doctor --repo /path/to/project
@@ -246,3 +236,7 @@ Use shared resource admission before substantial checks. Changed external-tool p
 Start with [installation](docs/INSTALLATION.md), [host setup](docs/HOSTS.md), [coordination](docs/COORDINATION.md), [checks](docs/GATES.md), and [release 1.3.0](docs/RELEASE-1.3.md).
 
 This repository combines project-authored workflow material and adapted skills. The owner has confirmed permission to publish the bundled material. Existing third-party licenses, notices, and attribution remain applicable; publication does not assign a blanket license to every component. Consult [provenance](docs/PROVENANCE.md), `manifest.json`, and each skill's retained license files for source details.
+
+## Permanent quality standard
+
+The [quality contract](docs/GATES.md#permanent-quality-contract) requires per-component 80% unit and changed-line coverage, analyzer line and combined coverage at least 80%, and zero security, reliability and raw duplication counts. Existing failures block feature completion. Installation establishes enforcement; it does not certify product checks or native instruction loading.

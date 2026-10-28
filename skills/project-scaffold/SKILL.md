@@ -9,7 +9,7 @@ Apply [the personal output wording policy](../../resources/wording/output-wordin
 
 Establish what is being created, its target location, chosen stack, and required capabilities. Inspect existing workspace conventions before selecting a generator. Ask about consequential missing stack choices; reuse decisions already provided.
 
-Use the ecosystem’s supported initializer or a minimal manual scaffold, checking version-matched documentation and generator side effects. Configure only required components: a library need not have an HTTP server, database, containers, or agent pipeline.
+Use the ecosystem’s supported initializer or a minimal manual scaffold, checking version-matched documentation and generator side effects. Configure only required components: a library need not have an HTTP server, database or agent pipeline. Every maintained runtime component still needs pinned Docker quality checks.
 
 Create the smallest runnable path with appropriate package metadata, entry points, ignore rules, useful startup instructions, and native validation. Preserve existing files and user changes; compare before overwriting an existing component. Dependency installation must fit current authorization and permissions.
 
@@ -21,3 +21,7 @@ Apply [coding-standards](../coding-standards/SKILL.md) to native conventions. Ad
 
 Before applying this workflow, read [shared project context](../coding-standards/references/project-context.md) once for the affected components. It governs language/tool discovery, scope, modes, permissions, and validation. Reuse it while the context is unchanged.
 
+
+Apply the [permanent quality contract](../../docs/GATES.md#permanent-quality-contract) when planning, scaffolding, implementing, testing, reviewing or accepting work. Keep existing failures blocking and reuse only matching evidence.
+
+Before accepting a new product, register component ownership, complete production inventory, unit report producers, bounded Docker commands and CI verification in the shared quality contract. Unsupported stacks remain blocked until configured.

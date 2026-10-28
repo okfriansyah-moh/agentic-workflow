@@ -6,5 +6,12 @@
   "coverage": [],
   "notes": [
     "Configure actual supported component checks in .ai/gates.json before source verification."
-  ]
+  ],
+  "runtime_components": [],
+  "quality": {
+    "schema_version": 1,
+    "required": true,
+    "proof": ".ai/reports/quality-proof.json",
+    "components": []
+  }
 }

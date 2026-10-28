@@ -108,7 +108,7 @@ Restart sessions whose discovery directories were created after they started. Re
 
 Use “Use running prompt for T001.” and “Resume the retained selection.” in each host. Resolve `.ai/config.json` before global fallback; supporting resources come from that bundle. Native shortcut syntax is optional. Pass approved scope, references and test limits explicitly to workers when inheritance is incomplete. Resume transfers retained ownership before a new coordinator writes; conversation history is not the execution record.
 
-Cursor’s always-applied rule points briefly to root instructions and the bundle. Preserve personal User Rules; do not invent a global rules file. Claude workers receive selected project constraints explicitly. Copilot profiles retain `include-custom-instructions: true` where supported; inspect source origins because personal IDs can shadow repository IDs. Global discovery does not override the project pin.
+Cursor’s always-applied rule points briefly to root instructions and the bundle. The managed global rule lives in `~/.cursor/rules/agent-workflow.mdc`; preserve other personal User Rules. Claude workers receive selected project constraints explicitly. Copilot profiles retain `include-custom-instructions: true` where supported; inspect source origins because personal IDs can shadow repository IDs. Global discovery does not override the project pin.
 
 | Host/surface | Observation boundary |
 |---|---|
@@ -151,3 +151,11 @@ Platform-enforced confirmations, account authentication, OS permission dialogs, 
 ## Shared device limits
 
 All four adapters point to the same resource policy and runner. Admission measures the actual execution device, including remote/container limits. Verify one host and one surface at a time and reuse completed observations. A resource stop follows the selection across host switches; unsupported native capability remains pending. Manual desktop/IDE actions outside the runner have an instruction boundary, not mechanical containment. See [budgets and recovery](GATES.md#execution-device-budgets-and-recovery).
+
+## Global quality guidance and loading boundaries
+
+Global installation manages Codex `~/.codex/AGENTS.md`, Claude `~/.claude/CLAUDE.md`, Cursor `~/.cursor/rules/agent-workflow.mdc` (`alwaysApply: true`), Copilot CLI `~/.copilot/copilot-instructions.md`, and supported Copilot IDE user instructions `~/.copilot/instructions/agent-workflow.instructions.md` (`applyTo: "**"`). Preserve personal text, permissions, models and other rules. Project instructions resolve their pin; global guidance requires compatible adoption before future feature acceptance when an older pin cannot enforce the minimum contract. Other repository pins remain untouched.
+
+Verify fresh and resumed sessions on every available native surface. Inspect instruction origins and retain actual native evidence identifying the selected bundle and owning quality policy. File existence and doctor integrity prove installation only. Copilot CLI loading does not establish IDE loading; identify the IDE version and instruction source separately. Record missing, unsupported or unavailable surfaces as unverified.
+
+Supported locations: [Copilot instruction support](https://docs.github.com/en/copilot/reference/custom-instructions-support), [Copilot CLI configuration](https://docs.github.com/en/copilot/reference/copilot-cli-reference/cli-config-dir-reference), [VS Code instructions](https://code.visualstudio.com/docs/agent-customization/custom-instructions), [Cursor rules](https://cursor.com/docs/rules).

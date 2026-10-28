@@ -16,6 +16,13 @@ from tests.test_coordination import GitFixture
 
 
 class SelectionTests(GitFixture):
+    def setUp(self):
+        super().setUp()
+        # Coordination tests isolate the separately tested read-only quality boundary.
+        quality_check = patch('agent_workflow.selection_quality.validate_acceptance')
+        quality_check.start()
+        self.addCleanup(quality_check.stop)
+
     def start(self, tasks=None, **extra):
         spec = {'owner': 'worker-a', 'task_ids': tasks or ['T1', 'T2'], 'outcome': 'Both requested behaviors work',
                 'product_paths': ['src'], 'required_checks': self.spec()['required_checks'],

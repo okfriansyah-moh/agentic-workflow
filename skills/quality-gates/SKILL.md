@@ -24,3 +24,5 @@ Use pinned local Semgrep rules, Gitleaks and OSV-Scanner over supported inventor
 Required failures and unresolved required findings block completion. An exception needs rule, narrow scope, rationale, owner and approval; an agent cannot relax a threshold to obtain a pass. Report passed, failed, blocked and not-applicable separately, along with actual inputs and environment.
 
 Apply the [shared wording policy](../../resources/wording/output-wording.md) to authored output. Read supporting skills only for the current task.
+
+Apply the [permanent quality contract](../../docs/GATES.md#permanent-quality-contract) when planning, scaffolding, implementing, testing, reviewing or accepting work. Keep existing failures blocking and reuse only matching evidence.

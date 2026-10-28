@@ -9,6 +9,14 @@ import subprocess
 import xml.etree.ElementTree as ET
 
 
+SOURCE_SUFFIXES = {'.kt', '.java', '.ts', '.tsx', '.js', '.jsx', '.svelte', '.py', '.go', '.rb', '.rs'}
+
+def nonnegative_count(value):
+    if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+        raise ValueError('Invalid report counter')
+    return value
+
+
 def test_summary(paths, format_name):
     executed = failures = skipped = 0
     for path in paths:
@@ -18,11 +26,19 @@ def test_summary(paths, format_name):
             skipped += sum(case.find('skipped') is not None for case in cases)
             executed += sum(case.find('skipped') is None for case in cases)
             failures += sum(case.find('failure') is not None or case.find('error') is not None for case in cases)
+            suite_failures = sum(nonnegative_count(int(suite.get(key, '0'))) for suite in root.iter()
+                                 if suite.tag in {'testsuite', 'testsuites'} for key in ('failures', 'errors'))
+            failures = max(failures, suite_failures)
         elif format_name == 'vitest':
             report = json.loads(path.read_text())
-            executed += report['numPassedTests'] + report['numFailedTests']
-            failures += report['numFailedTests']
-            skipped += report.get('numPendingTests', 0)
+            passed = nonnegative_count(report['numPassedTests'])
+            failed = nonnegative_count(report['numFailedTests'])
+            executed += passed + failed
+            failures += failed
+            skipped += nonnegative_count(report.get('numPendingTests', 0))
+            suite_failures = sum(nonnegative_count(report.get(key, 0))
+                                 for key in ('numFailedTestSuites', 'numRuntimeErrorTestSuites'))
+            failures += max(suite_failures, int(report.get('success') is False))
         else:
             raise ValueError(f'Unsupported test report format: {format_name}')
     return {'executed': executed, 'failures': failures, 'skipped': skipped}
@@ -44,7 +60,10 @@ def lcov_lines(path, prefix):
             result.setdefault(source, {})
         elif line.startswith('DA:') and source:
             number, hits, *_ = line[3:].split(',')
-            result[source][int(number)] = int(hits) > 0
+            number, hits = int(number), nonnegative_count(int(hits))
+            if number <= 0:
+                raise ValueError('Invalid executable line number')
+            result[source][number] = hits > 0
     return result
 
 
@@ -54,8 +73,12 @@ def jacoco_lines(path, prefix):
     for package in root.findall('package'):
         for source in package.findall('sourcefile'):
             name = normalize_source(str(Path(package.attrib['name']) / source.attrib['name']), prefix)
-            result[name] = {int(line.attrib['nr']): int(line.attrib['ci']) > 0
-                            for line in source.findall('line')}
+            result[name] = {}
+            for line in source.findall('line'):
+                number = int(line.attrib['nr'])
+                if number <= 0:
+                    raise ValueError('Invalid executable line number')
+                result[name][number] = nonnegative_count(int(line.attrib['ci'])) > 0
     return result
 
 
@@ -107,7 +130,7 @@ def measure_coverage(repo, changes, reports, exclusions=()):
     for name, changed in changes.items():
         if any(fnmatch.fnmatch(name, pattern) for pattern in exclusions):
             continue
-        if Path(name).suffix not in {'.kt', '.java', '.ts', '.js', '.tsx', '.jsx', '.svelte'}:
+        if Path(name).suffix not in SOURCE_SUFFIXES and name not in reports:
             continue
         if name not in reports:
             missing.append(name)

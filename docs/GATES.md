@@ -13,6 +13,22 @@ The gate registry is the single command source for explicit verification, option
 
 The profile requires actual project commands. Inspect current build definitions before changing them; harness installation does not start foundation work. Gradle needs component `ktlintCheck`, `detekt`, `compileKotlin`, `test`, `architectureTest`, `integrationTest` and `koverXmlReport` tasks. npm workspaces need `lint`, `check`, `check:dependencies`, `test:coverage` and `build`; the root supplies `test:e2e`. Missing scripts must fail. Review the actual linter imports, report paths and test selection before accepting the first foundation task. Do not add no-op tasks with these names.
 
+## Permanent quality contract
+
+This section owns the minimum completion requirements for new products, features and iterations across all four hosts, delegated contributors and independent reviewers. Stronger existing requirements remain stronger. Existing failures block feature completion; installing this policy records debt without granting a passing baseline waiver. Documentation-only selections run document and workflow checks without launching application suites.
+
+Every maintained runtime component must independently demonstrate at least **80% overall unit executable-line coverage** and affected components at least **80% changed executable-line coverage**. Never average services. Include untested maintained production files through explicit source ownership and inventory checks; exclude generated code, tests and fixtures only through reviewed precise patterns. Keep unit measurements separate from integration and architecture executions and preserve their acceptance requirements.
+
+Sonar or an equivalent analyzer must demonstrate at least **80% line coverage and combined line/condition coverage**, **zero security issues**, **zero reliability issues**, and **exactly zero duplicated lines and blocks**. Calculate thresholds from covered/total counters, never rounded display percentages. Report branch and function coverage without additional thresholds. Preserve function size 50, complexity 10 and nesting 3, plus required lint, type, dependency, security and acceptance checks.
+
+The required registry quality contract identifies every maintained component, owned production sources, test/configuration inputs, report producers, pinned Docker toolchains, bounded Docker commands and CI verification. Unsupported stacks and incomplete ownership remain blocked until configured. New-product scaffolding establishes this contract before feature acceptance. Reports and normalized versioned proof bind measured source, tests, configuration, command and toolchain fingerprints to successful nonempty test execution, covered/total line and condition counters, raw issue and duplication counts, completed analyses and successful gates. Reuse requires matching relevant inputs and retained artifact hashes; documentation metadata changes alone do not invalidate unchanged product measurements.
+
+Reject missing components/reports, omitted maintained production files, stale fingerprints, malformed or impossible counters, failed or empty suites, unfinished analyses and failed gates. Missing tools, credentials, safe capacity or required proof remain blocked. Existing failures remain visible and block completion. Preserve reports and CI artifacts on failure.
+
+Use pinned Docker test and analysis toolchains with explicit memory and worker limits, shared resource admission and sequential substantial workloads. Run testing separately from analysis. Edit hooks remain notification-only; install no schedules or background automation.
+
+Only specific evidence-backed false-positive classifications accepted by an independent reviewer may resolve analyzer findings. Retain the exact issue, rule, source scope, rationale, evidence and review identity. Revalidate classifications after relevant changes and assess future findings individually. Keep analyzer rules, maintained source scope, exclusions and duplication thresholds intact; changing them to manufacture a pass is prohibited.
+
 ## Measurement
 
 | Rule | Measurement |
@@ -34,9 +50,9 @@ Gitleaks checks the current directory with redacted findings. OSV-Scanner inspec
 
 ArchUnit and dependency-cruiser own cycles and boundaries. Annotations alone cannot prove Spring starts successfully: real wiring needs context startup tests, and JPA behavior needs PostgreSQL-backed tests. The fixture annotation has the shape of Autowired solely to test the architecture rule; it does not run Spring.
 
-Sonar is optional until explicitly configured required. Its gate command must retrieve actual analysis and write a report containing the current revision and `status: OK`. The helper rejects missing, stale or failing reports. A guessed result or an older analysis is never evidence.
+Sonar or an equivalent analyzer is required by the permanent quality contract. Retrieve completed analysis and gate results tied to the measured inputs; an older result is reusable only when the contract verifies matching relevant fingerprints and retained artifacts. Installation integrity and native instruction loading remain separate from a passing product quality result.
 
-Required failures and unresolved required review findings block completion. Exceptions must identify rule, exact scope, rationale, owner and human approval. Version-control the exception alongside the applicable gate configuration; agents must not relax a rule to make a run green. The helper does not provide a blanket bypass switch.
+Required failures and unresolved required review findings block completion. Reviewed false-positive classifications must identify rule, exact scope, rationale, evidence and independent reviewer. Version-control the classification alongside the applicable gate configuration; agents must not relax a rule to make a run green. The helper does not provide a blanket bypass switch.
 
 ## Git hooks and CI
 
@@ -61,3 +77,9 @@ Known Gradle commands receive bounded workers, no parallel build/daemon and a pe
 POSIX workloads start in owned process groups. Timeout or unsafe execution triggers TERM, a five-second grace period, KILL when needed, and cleanup verification. Remember observed descendant PID/start identities, including children that change group, and refresh identities before signaling. Recovery refuses surviving recorded descendants. POSIX start readings have second resolution and sampling cannot prove containment of a never-observed descendant that detaches between samples; this is not a sandbox or a guarantee against every child escape. Native/tool contracts that require stronger containment remain pending. Never signal unrelated groups or terminate by name. Windows capacity APIs have mocked coverage, but native Windows process containment is unavailable in this release: substantial commands are blocked before launch. The existing installer requires macOS/Linux. Supported Linux/remote/container behavior requires its own live verification; macOS observations do not establish those results.
 
 A pressure stop or unexpected prior owner exit leaves a shared stop record. Inspect the limiting condition and retained results, then deliberately run `resources --repo . --resume` after recovery. It refuses active/unverifiable ownership and requires two healthy readings before clearing the stop. It never retries a check automatically. Keep the stop and pending checks in the selection handoff; repair budgets do not reset. Manual IDE/browser actions outside the runner must follow these same instructions, but the runner cannot mechanically control them.
+
+Direct substantial commands use `run --repo . --log .ai/reports/phase.log -- COMMAND ARGS...` to acquire the shared device lease and retain bounded output. Registry commands already run under that lease; configure the underlying producer argv there to avoid nested acquisition. Capacity inspection alone does not reserve the slot.
+
+Selection acceptance verifies the registered full delivery report, retained command outputs and current component proof without launching checks. A quick or hand-authored report cannot finish a feature. Documentation scope is inferred from actual changes. An explicitly approved workflow-maintenance scope needs matching independent review and cannot include maintained product runtime changes.
+
+Run full delivery gates standalone before importing their retained result into receipts or selection acceptance. Integration callbacks and other leased commands use underlying producers; nested gate execution/registration stays blocked rather than acquiring a second resource slot or waiting on a held coordination lock.

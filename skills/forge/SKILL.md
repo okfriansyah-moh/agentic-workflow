@@ -20,3 +20,5 @@ Combine tested contributions in dependency order before the selection review. Re
 Read [coordination contracts](../../docs/COORDINATION.md) for selection commands and the optional concurrent-contribution helpers.
 
 Apply the [shared wording policy](../../resources/wording/output-wording.md) before delivery.
+
+Apply the [permanent quality contract](../../docs/GATES.md#permanent-quality-contract) when planning, scaffolding, implementing, testing, reviewing or accepting work. Keep existing failures blocking and reuse only matching evidence.

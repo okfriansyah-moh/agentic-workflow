@@ -12,6 +12,21 @@ class ResourceSystemTests(unittest.TestCase):
     def base(self):
         return {"cpu_count": 8.0, "memory_total_bytes": None, "memory_available_bytes": None, "pressure": "unknown", "measurement_notes": []}
 
+    def test_linux_kernel_group_zero_does_not_hide_owned_processes(self):
+        rows = ('2 0 0 0 Mon Oct 26 10:00:00 2026\n'
+                '10 1 10 100 Mon Oct 26 10:01:00 2026\n'
+                '11 10 10 50 Mon Oct 26 10:01:01 2026\n')
+        with patch.object(system.platform, 'system', return_value='Linux'), patch.object(system, '_command', return_value=rows):
+            result = system.process_tree(10, 10)
+        self.assertTrue(result['known'])
+        self.assertEqual(result['pids'], [10, 11])
+        self.assertEqual(result['rss_bytes'], 150 * 1024)
+        self.assertEqual(result['outside_group'], [])
+
+    def test_negative_process_group_still_blocks_measurement(self):
+        with patch.object(system.platform, 'system', return_value='Linux'), patch.object(system, '_command', return_value='2 0 -1 0 Mon Oct 26 10:00:00 2026\n'):
+            self.assertFalse(system.process_tree(2, 2)['known'])
+
     def test_mac_pages_and_warning(self):
         values = {"hw.memsize": str(16 * system.GIB), "kern.memorystatus_vm_pressure_level": "2"}
         def command(args):

@@ -38,3 +38,5 @@ Normal execution is sequential. This skill does not independently authorize suba
 Use stable case IDs; record retired cases and replacement links instead of recycling IDs. Reconcile source changes, scenario changes and evidence through the update rules in the output contract, including [persistence redesign acceptance](references/output-contract.md#persistence-redesign-and-evidence-preservation). Full coverage means distinct rules, boundaries, transitions and failure modes, not repeated variants that prove the same behavior.
 
 The selected Mekari and public-skill adaptations are documented in [sources](references/sources.md), with file identities in [source manifest](references/sources.json) and upstream notices in [NOTICE](NOTICE). QA Test Planner, Test Master, BMAD and Superpowers are adapted reference material, not required installed packages. See [validation record](references/validation.md) for the bounded evaluations and their limits.
+
+Apply the [permanent quality contract](../../docs/GATES.md#permanent-quality-contract) when planning, implementing, testing, reviewing or accepting work. Keep existing failures blocking and reuse only matching evidence.

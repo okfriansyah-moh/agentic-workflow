@@ -250,7 +250,7 @@ def _process_rows():
             if len(fields) != 9:
                 return None
             child, parent, group, rss = map(int, fields[:4])
-            if child <= 0 or parent < 0 or group <= 0 or rss < 0:
+            if child <= 0 or parent < 0 or group < 0 or rss < 0:
                 return None
             started = " ".join(fields[4:])
             rows[child] = (parent, group, rss * 1024, started)

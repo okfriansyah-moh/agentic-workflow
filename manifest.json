@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "version": "1.3.0",
+  "version": "1.4.0",
   "bundle": {
     "name": "agent-workflow",
-    "version": "1.3.0"
+    "version": "1.4.0"
   },
   "counts": {
     "reuse": 47,
@@ -71,7 +71,7 @@
       "owner": "forge",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "7e77213132f00d87663377ef6defa295f0fe7925f023cb85385c353edea22157"
+        "value": "1a1424f40928f735d07abf4f15add3db9cfeca65a5225d3c18d5265703ffbd68"
       },
       "conditional_dependencies": [
         "brainstorming",
@@ -105,7 +105,7 @@
       "owner": "forge",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "ecb10347666831eebe044a697eb126c0653e3da46c3da55723c8b14abbe3ded4"
+        "value": "64ee4208d1e9438f7b0d7e2ef9438b0de34640cb9c4e93145710edb21216c247"
       },
       "conditional_dependencies": [
         "api-design",
@@ -195,7 +195,7 @@
       "owner": "forge",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "2c193b9a1980b31833af8418c9b585fd8a17ab60aff0de617992b02db1fae155"
+        "value": "5b44c9d520cc20093d0d0fb33ed5d15331d1af07012f8ca5b0a41a54778eea2e"
       },
       "conditional_dependencies": [
         "api-design",
@@ -246,7 +246,7 @@
       "owner": "forge",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "b06a688d4d13436232c827893c8450ebcec56e343023278ec9d38dd401c0ce82"
+        "value": "8344ff23365eaaa671c857d466a5188d977ab44141eb90da0da2d4e95e0419e3"
       },
       "conditional_dependencies": [
         "design-system",
@@ -966,7 +966,7 @@
       "owner": "review-verify",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "0007be7f20d19b63258f84a5e7fe6fc8db84990cff8fadee74ece9cc26ab6dfd"
+        "value": "e60801232a2c34b40dadf03d8e4904a585d30bc51bb54e5b68e60b58b33ff2d5"
       },
       "conditional_dependencies": [
         "code-review",
@@ -1033,7 +1033,7 @@
       "owner": "review-verify",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "c42f143ead0de371623077a0e50602f2242ccc80a163b8ef44ff73a74b512886"
+        "value": "6df57037648d7ccb997b8388c56f636d4c73cae69538598146941056eb29bea8"
       },
       "conditional_dependencies": [
         "coding-standards",
@@ -1066,7 +1066,7 @@
       "owner": "forge",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "f813ac1b29a46b6cd1bb3537c58aa9617124dc127c4c79294e78a10e93a83e6c"
+        "value": "65d5f4934ac8f96836c65eb2d59d061d7a908264ebadf9d7e3822eb8dd426248"
       },
       "conditional_dependencies": [
         "code-review",
@@ -1099,7 +1099,7 @@
       "owner": "forge",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "890536c40b3882e09c87bd7d581694cf517643b84a0581ac69a5597361a42244"
+        "value": "bbfafd3184a0043dbcd6c463747d922b9d8c181fa7352be80fc52fb8f6b50117"
       },
       "conditional_dependencies": [
         "coding-standards",
@@ -1133,7 +1133,7 @@
       "owner": "forge",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "62af3bc9e00aad8f57f9c65b3d31abca95e734476f11ed5b0104348654c8f976"
+        "value": "c5875f02b21b26e152bfa5ed34efbaffb5e8d37d98bb18a785dafb7cc79fd3b4"
       },
       "conditional_dependencies": [
         "coding-standards",
@@ -1199,7 +1199,7 @@
       "owner": "review-verify",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "606a4760cd0de203bf127936d8c28bac44f4c52e96374f81b9da081b6433232b"
+        "value": "356302c5744842fe5e6844280b0fbc45f9da13010f96d3169540146e3c6dadd5"
       },
       "conditional_dependencies": [
         "coding-standards"
@@ -1293,7 +1293,7 @@
       "owner": "forge",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "b6da617e8d96662ebcfd1a5d99fce872ae0e17855061765fbffe9068e9cc7160"
+        "value": "278b005f28455438248ddff7dbbf0cdddef9b46a27c402b311a366f7a531cc7e"
       },
       "conditional_dependencies": [
         "coding-standards",
@@ -1612,7 +1612,7 @@
       "owner": "operations",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "ee5fdf9aff36e10f9bb72657a854d457a5b8a9380f1c5eca5f0c2e8e78737e80"
+        "value": "90eb345382bf97fd2a3378600ef3a974242c942ad5fa84fa79160eb0c9d3f8fc"
       },
       "conditional_dependencies": []
     },
@@ -1675,7 +1675,7 @@
       "owner": "review-verify",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "a476ae13364cd54fe167eeb63abb72073b09528e4eea20734d2701f183bcca9a"
+        "value": "756ff286cbb3f8cae15bd1d64a275c8de0e200de776157568d7d1df90ae3885c"
       },
       "conditional_dependencies": [
         "code-quality",
@@ -1867,7 +1867,7 @@
       "owner": "operations",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "1ac78cdd873eadcdfcefeef8ddf84fbd7d2b35ef46479a8ca2782a8a1d58b6ae"
+        "value": "c45cf2c7991eb9d2ca78a3f75f971593e0469359301fe6ee295a1589f93b943d"
       },
       "conditional_dependencies": [
         "failure"
@@ -1932,7 +1932,7 @@
       "owner": "qa-evidence",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "46feeaeab4d7c4ea4e8867e65bab1272451fc4f8d98c0b432f15c74ddf7bc030"
+        "value": "1d27d55b89e78b86080f2907bfcb3bcb15dca89c5780e4df66dd2fd5f1bdae29"
       },
       "conditional_dependencies": [
         "record-test-video",
@@ -1965,7 +1965,7 @@
       "owner": "forge",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "39554b31985bd78d7eac56517b899201b881367eeab4ec11617a8c665e6e00f3"
+        "value": "4b564028ede407ae8dbca9a3934093194a3c6c77b1b380610225ea1c594d8a62"
       },
       "conditional_dependencies": [
         "acceptance-verification",
@@ -2002,7 +2002,7 @@
       "owner": "forge",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "1fb3169c1cf91f42a64e0839b942204e698c4c6e416d93dc27187f37c9f7416f"
+        "value": "6834031ffd4136717557924331b54edae1e14e88fbbe40d35c82b3ddaf018c9e"
       },
       "conditional_dependencies": [
         "atdd-creation",
@@ -2042,7 +2042,7 @@
       "owner": "forge",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "240b58f047c06eeb1ecb2bcf372a9e0941a128e12641d93c80aaa8e66837844e"
+        "value": "0f687260128a35fc58169739aaa310eb72dd6a3b4b49153cd6fd109b2f5b0bcc"
       },
       "conditional_dependencies": [
         "coding-standards",
@@ -2077,7 +2077,7 @@
       "owner": "forge",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "ed2d1454f4657488efe4c73dd8885027c4b37f16f92e87a0c72514fc580ba439"
+        "value": "c4a2ecd698b7246d98b384ece8dce14ded3000bda5c66e84d2c100d334c0addc"
       },
       "conditional_dependencies": [
         "pr",
@@ -2177,7 +2177,7 @@
       "owner": "review-verify",
       "checksum": {
         "algorithm": "sha256-tree-v1",
-        "value": "a125fa019819ed32614d67df055cb914dc7ff7e3f0633f1122b30d65ae1bf1d4"
+        "value": "8a0375764c0f18896f4f3e2d6a48341869421799b8621ff3fdaaa1fef69ca5a3"
       },
       "conditional_dependencies": []
     },

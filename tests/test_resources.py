@@ -184,3 +184,24 @@ class RunnerTests(unittest.TestCase):
         self.assertEqual(env['OMP_NUM_THREADS'], '1')
         self.assertIn('--max-workers=2', argv)
         self.assertIn('--no-daemon', argv)
+
+class ForegroundCommandTests(unittest.TestCase):
+    def test_foreground_retains_bounded_output_and_status(self):
+        import argparse
+        from agent_workflow import resources
+        with tempfile.TemporaryDirectory() as directory:
+            args = argparse.Namespace(repo=directory, log='.ai/reports/run.log', timeout=30, argv=['--', 'echo', 'ok'])
+            with patch('agent_workflow.process_runner.run_process', return_value={'status': 'failed', 'stdout': b'out', 'stderr': b'err', 'exit_code': 7}) as run:
+                result = resources.run_foreground(args)
+            run.assert_called_once_with(['echo', 'ok'], Path(directory).resolve(), 30)
+            self.assertEqual(result['status'], 'failed')
+            self.assertEqual((Path(directory) / result['log']).read_bytes(), b'outerr')
+            self.assertNotIn('stdout', result)
+
+    def test_foreground_rejects_empty_command_and_escaping_log(self):
+        import argparse
+        from agent_workflow import resources
+        with tempfile.TemporaryDirectory() as directory:
+            for argv, log in [([], 'log'), (['echo'], '../escape')]:
+                with self.assertRaises(ValueError):
+                    resources.run_foreground(argparse.Namespace(repo=directory, log=log, timeout=30, argv=argv))

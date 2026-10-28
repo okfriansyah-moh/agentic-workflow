@@ -7,3 +7,5 @@ Use scoped ownership for delegated changes and an independent reviewer. Do not s
 Run `python3 -m unittest discover -s tests -v` for runtime changes. Use the optional external fixture runner for changed tool profiles. Missing scanners, unavailable services, native host loading and host trust must have separate results; none count as a pass.
 
 Keep manifest skill digests current after skill edits. Keep runtime documents and native adapters aligned with actual CLI behavior. Check authored artifacts with `resources/wording/check_output_wording.py`; policy/checker definitions and immutable upstream evidence are explicit policy exceptions. Personal voice is conditional; the shared output policy always applies.
+
+For new products, features and iterations, apply the [permanent quality contract](docs/GATES.md#permanent-quality-contract). Workflow maintenance verifies its runtime and installer boundaries; installation structure does not establish product acceptance or native host loading.

@@ -18,3 +18,5 @@ Browser assertions/direct inspection can establish ordinary UI behavior. Require
 Reassign deferred proof explicitly and keep it pending. Inspect assertions and source behavior within the one combined selection review. Reuse valid results at unchanged inputs; rerun affected checks after changes. No standalone task/evidence review or method-approval loop is required.
 
 Apply the [shared wording policy](../../resources/wording/output-wording.md) before delivery.
+
+Apply the [permanent quality contract](../../docs/GATES.md#permanent-quality-contract) for configured checks and feature acceptance. Installation, native loading and passing product evidence require separate results; existing failures remain blocking.

@@ -22,3 +22,5 @@ Prepare deployment/recovery procedures only within the authorized scope. PR merg
 Return exact build/Compose/CI checks, image/tool versions, artifacts, recovery limits and configuration still required.
 
 Apply the [shared wording policy](../../resources/wording/output-wording.md) to authored output. Read supporting skills only for the current task.
+
+Apply the [permanent quality contract](../../docs/GATES.md#permanent-quality-contract) for configured checks and feature acceptance. Installation, native loading and passing product evidence require separate results; existing failures remain blocking.

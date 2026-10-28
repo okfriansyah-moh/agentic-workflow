@@ -81,3 +81,5 @@ Reporting them separately stops one axis from masking the other.
 ## Host execution
 
 The parent coordinator assigns the independent reviewer. This reviewer evaluates the scoped change and returns findings to that parent; it does not dispatch more agents. If independent review is unavailable, record that limitation rather than presenting self-review as independent. Respect the current mode and authorized scope; installing this skill does not execute a review.
+
+Apply the [permanent quality contract](../../docs/GATES.md#permanent-quality-contract) when planning, scaffolding, implementing, testing, reviewing or accepting work. Keep existing failures blocking and reuse only matching evidence.

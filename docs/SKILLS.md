@@ -2,7 +2,7 @@
 
 [Selection delivery](DELIVERY.md) governs runtime review timing and repair budgets. Skill availability does not require loading every dependency.
 
-Version 1.3.0 contains 74 entries: 47 reused, 14 new, 7 adapted from supplied material and 6 adapted anti-slop skills. Every entry is available globally and in the project bundle; availability does not activate every skill or install external tools. The machine-readable manifest records sources, input digests, installed tree hashes, dependencies, activation and ownership.
+Version 1.4.0 contains 74 entries: 47 reused, 14 new, 7 adapted from supplied material and 6 adapted anti-slop skills. Every entry is available globally and in the project bundle; availability does not activate every skill or install external tools. The machine-readable manifest records sources, input digests, installed tree hashes, dependencies, activation and ownership.
 
 | Skill | Source | Owner | Purpose |
 | --- | --- | --- | --- |

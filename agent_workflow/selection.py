@@ -116,6 +116,7 @@ def _start(root, spec, state):
             'group_ids': spec.get('group_ids', []), 'dependencies': dependencies,
             'inputs': spec.get('inputs', {}), 'constraints': _strings(spec.get('constraints', []), 'constraints', False),
             'completed_task_ids': completed, 'product_paths': paths, 'required_checks': commands,
+            'quality_scope': spec.get('quality_scope'),
             'requirements': spec.get('requirements'), 'status': 'implementing', 'repair_budget_id': budget_id,
             'created_at': now, 'last_checkpoint_at': now, 'branch': git(root, 'branch', '--show-current').stdout.strip(),
             'initial_revision': revision(root), 'last_revision': revision(root), 'pr_head': _pr_head(root, spec.get('pr_head')),
@@ -334,6 +335,8 @@ def _accept(root, item, state, spec):
         result = validate_evidence(root, item['requirements'], read_json(spec['evidence']))
         if result['errors']:
             raise CoordinationError('; '.join(result['errors']))
+    from .selection_quality import validate_acceptance
+    validate_acceptance(root, item, review, spec, state)
     return _finish_acceptance(root, item, state, spec, receipt, review)
 
 
